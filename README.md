@@ -67,7 +67,7 @@ video-lecture-transcript-qa-bot/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/video-lecture-transcript-qa-bot.git
+   git clone https://github.com/JAKKABHANUMANOJKUMAR/video-lecture-transcript-qa-bot.git
    cd video-lecture-transcript-qa-bot
    ```
 
