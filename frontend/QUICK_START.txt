@@ -1,0 +1,79 @@
+╔════════════════════════════════════════════════════════════════╗
+║  Video Lecture Transcript Q&A Bot - Hardcoded Demo             ║
+║  QUICK START GUIDE                                              ║
+╚════════════════════════════════════════════════════════════════╝
+
+🚀 THREE SIMPLE STEPS:
+
+1. INSTALL DEPENDENCIES
+   $ npm install
+
+2. START DEVELOPMENT SERVER
+   $ npm run dev
+
+   Opens at: http://localhost:5173
+
+3. LOGIN WITH DEMO CREDENTIALS
+
+   Option A - Click Quick Login Buttons:
+   • "Login as Admin" - Instant access
+   • "Login as User" - Instant access
+
+   Option B - Manual Login:
+   • Admin Email: admin@example.com
+     Password: password
+
+   • User Email: user@example.com
+     Password: password
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ WHAT YOU'LL SEE:
+
+ADMIN DASHBOARD:
+✓ 4 Statistics Cards (Users, Online, Usage Time, Alerts)
+✓ User Activity Trend Chart
+✓ Quick Alerts Panel
+✓ Recent Users Table
+✓ Navigation Sidebar with 5 sections
+
+USER CHAT:
+✓ Chat Interface
+✓ Suggested Questions
+✓ Message History
+✓ Responsive Navigation
+✓ Full Sidebar Menu
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📱 RESPONSIVE DESIGN:
+• Works on Desktop (1920px)
+• Works on Tablet (768px)
+• Works on Mobile (375px)
+• Hamburger menu on small screens
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 PERFORMANCE:
+• Bundle Size: 172 KB (52 KB gzipped)
+• No Database Setup
+• No API Keys Required
+• Zero Configuration
+• Zero External Dependencies
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION:
+• DEMO_GUIDE.md - Detailed walkthrough
+• HARDCODED_DEMO_SUMMARY.md - Technical details
+• README.md - Project overview
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎉 READY? Let's Go!
+
+$ npm install && npm run dev
+
+Your app opens at http://localhost:5173
+
+Enjoy! 🚀
