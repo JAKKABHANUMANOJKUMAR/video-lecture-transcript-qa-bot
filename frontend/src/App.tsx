@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './lib/auth-context';
 import { LoginPage } from './pages/LoginPage';
 import { AdminDashboard } from './pages/AdminDashboard';
@@ -15,7 +15,7 @@ import { UserSettings } from './pages/UserSettings';
 import { UserSidebar } from './components/UserSidebar';
 
 function AppContent() {
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -46,6 +46,13 @@ function AppContent() {
     setActiveChatId((cur) => (cur === id ? null : cur));
   };
 
+  // Land non-admin users directly on the New Chat page after login
+  useEffect(() => {
+    if (profile && profile.role !== 'admin') {
+      setActiveTab('chat');
+    }
+  }, [profile]);
+
   const handleUserTab = (tab: string) => {
     if (tab === 'chat') {
       setActiveChatId(null);
@@ -53,6 +60,14 @@ function AppContent() {
     }
     setActiveTab(tab);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="w-10 h-10 border-4 border-slate-200 border-t-green-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!user) {
     return <LoginPage />;
@@ -93,24 +108,26 @@ function AppContent() {
         onToggle={() => setSidebarOpen(!sidebarOpen)}
       />
       <div className="flex-1 overflow-auto">
-        {activeTab === 'chat' && (
-          <UserDashboard
-            key={activeChatId ?? `new-${newChatNonce}`}
-            initialSession={activeChatId ? chatSessions.find((s) => s.id === activeChatId) ?? null : null}
-            onPersist={persistSession}
-          />
-        )}
-        {activeTab === 'library' && <UserLibrary onOpenChat={() => handleUserTab('chat')} />}
-        {activeTab === 'recent' && (
+        {activeTab === 'library' ? (
+          <UserLibrary onOpenChat={() => handleUserTab('chat')} />
+        ) : activeTab === 'recent' ? (
           <UserRecent
             sessions={chatSessions}
             onOpen={openChat}
             onDelete={deleteSession}
             onNewChat={() => handleUserTab('chat')}
           />
+        ) : activeTab === 'complaint' ? (
+          <UserComplaints />
+        ) : activeTab === 'settings' ? (
+          <UserSettings />
+        ) : (
+          <UserDashboard
+            key={activeChatId ?? `new-${newChatNonce}`}
+            initialSession={activeChatId ? chatSessions.find((s) => s.id === activeChatId) ?? null : null}
+            onPersist={persistSession}
+          />
         )}
-        {activeTab === 'complaint' && <UserComplaints />}
-        {activeTab === 'settings' && <UserSettings />}
       </div>
     </div>
   );
