@@ -1,19 +1,23 @@
 from functools import lru_cache
+from pathlib import Path
 from urllib.parse import quote_plus
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+BASE_DIR = Path(__file__).resolve().parent
+
 
 class Settings(BaseSettings):
-    """Application settings loaded from environment variables / .env file."""
+    """RAG pipeline settings, loaded from rag/.env."""
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=str(BASE_DIR / ".env"), env_file_encoding="utf-8", extra="ignore"
+    )
 
-    # Project
-    PROJECT_NAME: str = "Video Lecture Transcript Q&A API"
-    API_PREFIX: str = "/api"
+    # CORS (comma-separated; set to your Vercel frontend URL in production)
+    CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
 
-    # PostgreSQL — set DATABASE_URL in cloud (Neon/Render), or individual vars locally
+    # PostgreSQL (shared with backend) — set DATABASE_URL in cloud
     DATABASE_URL: str | None = None
     POSTGRES_SERVER: str = "localhost"
     POSTGRES_PORT: int = 5432
@@ -21,16 +25,24 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_DB: str = "video_lecture_transcript"
 
-    # Security
-    SECRET_KEY: str = "change-me"
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+    # Groq LLM
+    GROQ_API_KEY: str = ""
+    GROQ_MODEL: str = "llama-3.3-70b-versatile"
 
-    # CORS
-    BACKEND_CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+    # Whisper
+    WHISPER_MODEL: str = "base"
 
-    # Seeding
-    SEED_DEMO_DATA: bool = True
+    # Embeddings
+    EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+
+    # ChromaDB
+    CHROMA_DIR: str = "chroma_db"
+    CHROMA_COLLECTION: str = "transcripts"
+
+    # Retrieval / chunking
+    CHUNK_SIZE: int = 1000
+    CHUNK_OVERLAP: int = 150
+    TOP_K: int = 4
 
     @property
     def database_url(self) -> str:
@@ -49,7 +61,14 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins(self) -> list[str]:
-        return [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",") if origin.strip()]
+        return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+
+    @property
+    def chroma_path(self) -> str:
+        path = Path(self.CHROMA_DIR)
+        if not path.is_absolute():
+            path = BASE_DIR / path
+        return str(path)
 
 
 @lru_cache

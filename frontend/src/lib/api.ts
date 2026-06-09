@@ -1,4 +1,9 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000/api';
+const API_URL =
+  import.meta.env.VITE_API_URL !== undefined
+    ? import.meta.env.VITE_API_URL
+    : import.meta.env.DEV
+      ? 'http://localhost:8000/api'
+      : '/api';
 
 const TOKEN_KEY = 'askora_token';
 

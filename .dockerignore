@@ -1,0 +1,10 @@
+**/.venv
+**/venv
+**/node_modules
+**/__pycache__
+**/.env
+**/chroma_db
+**/.git
+frontend/
+*.md
+.gitignore

@@ -6,8 +6,12 @@ import {
   AudioLines,
   RotateCw,
   Video,
-  Check,
+  CheckCircle2,
+  Loader2,
+  Languages,
+  Clock,
 } from 'lucide-react';
+import { rag, RagError } from '../lib/rag';
 
 type Stage = 'welcome' | 'compose' | 'workspace';
 
@@ -17,6 +21,13 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface TranscriptInfo {
+  id: string;
+  language: string;
+  durationSeconds: number;
+  numChunks: number;
+}
+
 export interface ChatSession {
   id: string;
   title: string;
@@ -24,6 +35,8 @@ export interface ChatSession {
   videoName: string;
   step: number;
   updatedAt: number;
+  transcriptId?: string | null;
+  transcript?: TranscriptInfo | null;
 }
 
 interface UserDashboardProps {
@@ -31,12 +44,15 @@ interface UserDashboardProps {
   onPersist?: (session: ChatSession) => void;
 }
 
-const STEPS = ['Analysis', 'Planning', 'Review'];
-
 const INPUT_CHIPS = [
   { id: 'notes', label: 'Generate Notes', icon: FileText },
   { id: 'assistance', label: 'Assistance', icon: Sparkles },
 ];
+
+const makeId = () =>
+  typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 const OraLogo: React.FC<{ size?: number; className?: string }> = ({ size = 64, className = '' }) => (
   <div className={`relative ${className}`} style={{ width: size, height: size }}>
@@ -65,17 +81,42 @@ const ResetButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   </button>
 );
 
+const formatDuration = (seconds: number) => {
+  const m = Math.floor(seconds / 60);
+  const s = Math.round(seconds % 60);
+  return `${m}m ${s}s`;
+};
+
 export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, onPersist }) => {
-  const [sessionId, setSessionId] = useState(() => initialSession?.id ?? Date.now().toString());
+  const [sessionId, setSessionId] = useState(() => initialSession?.id ?? makeId());
   const [stage, setStage] = useState<Stage>(initialSession ? 'workspace' : 'welcome');
   const [input, setInput] = useState('');
   const [workspaceInput, setWorkspaceInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>(initialSession?.messages ?? []);
-  const [step, setStep] = useState(initialSession?.step ?? 0);
   const [typing, setTyping] = useState(false);
   const [activeChip, setActiveChip] = useState('notes');
   const [videoName, setVideoName] = useState(initialSession?.videoName ?? '');
+  const [transcriptId, setTranscriptId] = useState<string | null>(
+    initialSession?.transcriptId ?? null,
+  );
+  const [transcript, setTranscript] = useState<TranscriptInfo | null>(
+    initialSession?.transcript ?? null,
+  );
+  const [processing, setProcessing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const answersEndRef = useRef<HTMLDivElement>(null);
+  const questionsEndRef = useRef<HTMLDivElement>(null);
+
+  const userMessages = messages.filter((m) => m.role === 'user');
+  const botMessages = messages.filter((m) => m.role === 'bot');
+
+  useEffect(() => {
+    answersEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [botMessages, typing]);
+
+  useEffect(() => {
+    questionsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [userMessages]);
 
   useEffect(() => {
     if (stage === 'workspace' && messages.length > 0 && onPersist) {
@@ -84,71 +125,104 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
         title: messages[0]?.content?.slice(0, 60) || 'New chat',
         messages,
         videoName,
-        step,
+        step: 0,
         updatedAt: Date.now(),
+        transcriptId,
+        transcript,
       });
     }
-  }, [messages, step, videoName, stage, sessionId, onPersist]);
+  }, [messages, videoName, stage, sessionId, transcriptId, transcript, onPersist]);
 
   const reset = () => {
-    setSessionId(Date.now().toString());
+    setSessionId(makeId());
     setStage('welcome');
     setInput('');
     setWorkspaceInput('');
     setMessages([]);
-    setStep(0);
     setTyping(false);
     setActiveChip('notes');
     setVideoName('');
+    setTranscriptId(null);
+    setTranscript(null);
+    setProcessing(false);
   };
 
   const openFilePicker = () => fileInputRef.current?.click();
 
-  const handleVideoSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const appendMessage = (role: ChatMessage['role'], content: string) => {
+    setMessages((prev) => [...prev, { id: makeId(), role, content }]);
+  };
+
+  const handleVideoSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    setVideoName(file.name);
 
-    if (stage !== 'workspace') {
-      // First upload starts the workspace flow at the Analysis step
-      setMessages([
-        { id: Date.now().toString(), role: 'user', content: `Generate notes for video: ${file.name}` },
-      ]);
-      setStage('workspace');
-      setStep(0);
-      setInput('');
-      setTyping(true);
-      setTimeout(() => setTyping(false), 1800);
-    } else {
-      // Subsequent upload advances to the next step
-      setMessages((prev) => [
-        ...prev,
-        { id: Date.now().toString(), role: 'user', content: `Uploaded new video: ${file.name}` },
-      ]);
-      setStep((s) => Math.min(STEPS.length - 1, s + 1));
-      setTyping(true);
-      setTimeout(() => setTyping(false), 1800);
+    setVideoName(file.name);
+    setStage('workspace');
+    appendMessage('user', `Uploaded video: ${file.name}`);
+    setProcessing(true);
+    setTyping(true);
+
+    try {
+      const res = await rag.ingest(file, file.name);
+      setTranscriptId(res.transcript_id);
+      setTranscript({
+        id: res.transcript_id,
+        language: res.language,
+        durationSeconds: res.duration_seconds,
+        numChunks: res.num_chunks,
+      });
+      appendMessage(
+        'bot',
+        `I've transcribed and indexed "${file.name}" (language: ${res.language}, length: ${formatDuration(
+          res.duration_seconds,
+        )}, ${res.num_chunks} sections). Ask me anything about this video!`,
+      );
+    } catch (err) {
+      const msg =
+        err instanceof RagError
+          ? err.message
+          : 'Something went wrong while processing the video.';
+      appendMessage('bot', `Sorry, I couldn't process that video. ${msg}`);
+    } finally {
+      setProcessing(false);
+      setTyping(false);
+    }
+  };
+
+  const ask = async (question: string) => {
+    const text = question.trim();
+    if (!text || typing) return;
+
+    setStage('workspace');
+    appendMessage('user', text);
+    setTyping(true);
+
+    try {
+      const res = await rag.query(text, transcriptId);
+      appendMessage('bot', res.answer);
+    } catch (err) {
+      const msg =
+        err instanceof RagError ? err.message : 'Something went wrong while answering.';
+      appendMessage('bot', `Sorry, I ran into a problem. ${msg}`);
+    } finally {
+      setTyping(false);
     }
   };
 
   const startWorkspace = (prompt: string) => {
     const text = prompt.trim();
     if (!text) return;
-    setMessages([{ id: Date.now().toString(), role: 'user', content: text }]);
-    setStage('workspace');
     setInput('');
-    setTyping(true);
-    setTimeout(() => setTyping(false), 1800);
+    ask(text);
   };
 
   const sendWorkspaceMessage = () => {
     const text = workspaceInput.trim();
     if (!text) return;
-    setMessages((prev) => [...prev, { id: Date.now().toString(), role: 'user', content: text }]);
     setWorkspaceInput('');
-    setTyping(true);
-    setTimeout(() => setTyping(false), 1800);
+    ask(text);
   };
 
   // ---------- Welcome + Compose (shared centered layout) ----------
@@ -158,7 +232,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
         <input
           ref={fileInputRef}
           type="file"
-          accept="video/*"
+          accept="video/*,audio/*"
           className="hidden"
           onChange={handleVideoSelected}
         />
@@ -219,7 +293,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                     }
                   }}
                   rows={2}
-                  placeholder="Generate notes"
+                  placeholder="Upload a video, then ask a question about it…"
                   className="w-full resize-none bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 text-base outline-none"
                 />
                 <div className="flex items-center justify-between mt-2">
@@ -269,122 +343,84 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
       <input
         ref={fileInputRef}
         type="file"
-        accept="video/*"
+        accept="video/*,audio/*"
         className="hidden"
         onChange={handleVideoSelected}
       />
-      {/* Left: workspace */}
-      <div className="flex flex-col border-r border-slate-200 dark:border-slate-700 p-6 overflow-y-auto">
-        {videoName && (
-          <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/15 text-sm text-indigo-700 dark:text-indigo-300 w-fit">
-            <Video className="w-4 h-4" />
-            <span className="font-medium truncate max-w-xs">{videoName}</span>
-          </div>
-        )}
-        {/* Stepper */}
-        <div className="flex items-center justify-center gap-2 mb-8">
-          {STEPS.map((label, i) => {
-            const completed = i < step;
-            const active = i === step;
-            return (
-              <React.Fragment key={label}>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`flex items-center justify-center w-5 h-5 rounded-full border-2 transition ${
-                      completed || active
-                        ? 'border-green-500 bg-green-500 text-white'
-                        : 'border-slate-300 dark:border-slate-600 text-transparent'
-                    }`}
-                  >
-                    <Check className="w-3 h-3" />
-                  </span>
-                  <span
-                    className={`text-sm font-medium ${
-                      active
-                        ? 'text-slate-900 dark:text-white'
-                        : 'text-slate-400 dark:text-slate-500'
-                    }`}
-                  >
-                    {label}
-                  </span>
-                </div>
-                {i < STEPS.length - 1 && (
-                  <span
-                    className={`w-16 h-px ${
-                      i < step ? 'bg-green-500' : 'bg-slate-200 dark:bg-slate-700'
-                    }`}
-                  />
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
-
-        {/* Skeleton content cards */}
-        <div className="space-y-5 flex-1">
-          {[0, 1, 2].map((card) => (
-            <div
-              key={card}
-              className="rounded-xl border border-slate-200 dark:border-slate-700 p-5 space-y-3"
-            >
-              {[0, 1, 2].map((line) => (
-                <div
-                  key={line}
-                  className="h-2.5 rounded-full bg-slate-200 dark:bg-slate-700 animate-pulse"
-                  style={{ width: `${[95, 88, 70][line]}%` }}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-
-        {/* Previous / Next */}
-        <div className="flex items-center justify-end gap-3 pt-6">
-          <button
-            onClick={() => setStep((s) => Math.max(0, s - 1))}
-            disabled={step === 0}
-            className="px-5 py-2 rounded-full text-sm font-medium text-slate-500 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-          <button
-            onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}
-            disabled={step === STEPS.length - 1}
-            className="px-6 py-2 rounded-full text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
-        </div>
-      </div>
-
-      {/* Right: Ora chat panel */}
-      <div className="flex flex-col h-full overflow-hidden">
+      {/* Left: Ora answers */}
+      <div className="flex flex-col h-full overflow-hidden border-r border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
           <div className="flex items-center gap-2">
             <OraLogo size={28} />
             <span className="text-2xl font-extrabold text-indigo-500 tracking-tight">Ora</span>
+            <span className="text-sm text-slate-400 dark:text-slate-500">Answers</span>
           </div>
           <ResetButton onClick={reset} />
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col justify-end gap-4">
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                  m.role === 'user'
-                    ? 'bg-indigo-100 dark:bg-indigo-500/20 text-slate-800 dark:text-slate-100'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100'
-                }`}
-              >
-                {m.content}
+        {videoName && (
+          <div className="px-6 pt-4">
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/15 text-sm text-indigo-700 dark:text-indigo-300 w-fit">
+              <Video className="w-4 h-4" />
+              <span className="font-medium truncate max-w-xs">{videoName}</span>
+            </div>
+          </div>
+        )}
+
+        {transcript && !processing && (
+          <div className="px-6 pt-3 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800">
+              <Languages className="w-3 h-3" /> {transcript.language.toUpperCase()}
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800">
+              <Clock className="w-3 h-3" /> {formatDuration(transcript.durationSeconds)}
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400">
+              <CheckCircle2 className="w-3 h-3" /> {transcript.numChunks} sections indexed
+            </span>
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
+          {processing && botMessages.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center gap-4">
+              <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+              <div>
+                <p className="font-semibold text-slate-800 dark:text-slate-100">
+                  Transcribing &amp; indexing your video…
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                  Your answer will appear here once processing completes.
+                </p>
               </div>
             </div>
-          ))}
+          ) : botMessages.length === 0 && !typing ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 text-slate-500 dark:text-slate-400">
+              <OraLogo size={48} />
+              <p className="text-sm max-w-xs">
+                {transcript
+                  ? 'Ask a question on the right — the answer will show up here.'
+                  : 'Upload a video, then ask questions. Answers appear on this side.'}
+              </p>
+              {!transcript && !processing && (
+                <button
+                  onClick={openFilePicker}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition"
+                >
+                  <Video className="w-4 h-4" />
+                  Upload Video
+                </button>
+              )}
+            </div>
+          ) : (
+            botMessages.map((m) => (
+              <div key={m.id} className="flex justify-start">
+                <div className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                  {m.content}
+                </div>
+              </div>
+            ))
+          )}
 
           {typing && (
             <div className="flex items-center gap-2">
@@ -400,6 +436,31 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
               </div>
             </div>
           )}
+          <div ref={answersEndRef} />
+        </div>
+      </div>
+
+      {/* Right: user questions + input */}
+      <div className="flex flex-col h-full overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
+          <span className="text-lg font-semibold text-slate-700 dark:text-slate-200">Your questions</span>
+        </div>
+
+        <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4">
+          {userMessages.length === 0 ? (
+            <div className="flex-1 flex items-center justify-center text-sm text-slate-400 dark:text-slate-500 text-center px-4">
+              Type your question below and press send.
+            </div>
+          ) : (
+            userMessages.map((m) => (
+              <div key={m.id} className="flex justify-end">
+                <div className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap bg-indigo-100 dark:bg-indigo-500/20 text-slate-800 dark:text-slate-100">
+                  {m.content}
+                </div>
+              </div>
+            ))
+          )}
+          <div ref={questionsEndRef} />
         </div>
 
         {/* Input box with chips */}
@@ -416,12 +477,13 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                   }
                 }}
                 rows={1}
-                placeholder="Ask Ora anything..."
+                placeholder={processing ? 'Processing video…' : 'Ask Ora anything about the video…'}
                 className="flex-1 resize-none bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 text-sm outline-none py-1"
               />
               <button
                 onClick={sendWorkspaceMessage}
-                className="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-slate-700 transition"
+                disabled={typing || !workspaceInput.trim()}
+                className="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 title="Send"
               >
                 <Send className="w-5 h-5" />
