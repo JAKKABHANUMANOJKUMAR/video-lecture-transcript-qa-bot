@@ -1,3 +1,5 @@
+import { tokenStore } from './api';
+
 // Empty string = same origin (single-server Docker / nginx gateway)
 const RAG_URL =
   import.meta.env.VITE_RAG_API_URL !== undefined
@@ -5,6 +7,13 @@ const RAG_URL =
     : import.meta.env.DEV
       ? 'http://localhost:8100'
       : '';
+
+/** Authorization header carrying the logged-in user's JWT, so the RAG service
+ *  can scope all transcripts/queries to that user. */
+function authHeader(): Record<string, string> {
+  const token = tokenStore.get();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 export class RagError extends Error {
   status: number;
@@ -53,7 +62,11 @@ export const rag = {
 
     let res: Response;
     try {
-      res = await fetch(`${RAG_URL}/ingest`, { method: 'POST', body: form });
+      res = await fetch(`${RAG_URL}/ingest`, {
+        method: 'POST',
+        headers: authHeader(),
+        body: form,
+      });
     } catch {
       throw new RagError('Cannot reach the RAG service. Is it running on port 8100?', 0);
     }
@@ -72,7 +85,7 @@ export const rag = {
     try {
       res = await fetch(`${RAG_URL}/query`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeader() },
         body: JSON.stringify({
           question,
           transcript_id: transcriptId ?? null,

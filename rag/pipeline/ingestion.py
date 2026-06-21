@@ -31,9 +31,11 @@ def save_transcript(
     source_path: str | None = None,
     title: str | None = None,
     video_id: str | None = None,
+    user_id: str | None = None,
 ) -> Transcript:
     """Step 2 — store original + English text in the `transcripts` table."""
     transcript = Transcript(
+        user_id=user_id,
         video_id=video_id,
         source_path=source_path,
         title=title,
@@ -67,6 +69,7 @@ def index_transcript(db: Session, transcript: Transcript) -> int:
         chunks=chunks,
         video_id=transcript.video_id,
         language="en",
+        user_id=transcript.user_id,
     )
 
     transcript.indexed = True
@@ -79,6 +82,7 @@ def ingest_video(
     *,
     title: str | None = None,
     video_id: str | None = None,
+    user_id: str | None = None,
 ) -> IngestionResult:
     """End-to-end: video -> Whisper -> DB -> chunks -> embeddings -> ChromaDB."""
     init_db()
@@ -88,7 +92,7 @@ def ingest_video(
     db = SessionLocal()
     try:
         transcript = save_transcript(
-            db, result, source_path=path, title=title, video_id=video_id
+            db, result, source_path=path, title=title, video_id=video_id, user_id=user_id
         )
         num_chunks = index_transcript(db, transcript)
         return IngestionResult(

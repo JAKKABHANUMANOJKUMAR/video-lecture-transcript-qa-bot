@@ -29,6 +29,7 @@ def add_chunks(
     chunks: list[str],
     video_id: str | None = None,
     language: str = "en",
+    user_id: str | None = None,
 ) -> int:
     """Embed and store chunks. Returns the number of chunks added."""
     if not chunks:
@@ -40,6 +41,7 @@ def add_chunks(
         {
             "transcript_id": transcript_id,
             "video_id": video_id or "",
+            "user_id": user_id or "",
             "chunk_index": i,
             "language": language,
         }
@@ -54,15 +56,30 @@ def query(
     top_k: int | None = None,
     video_id: str | None = None,
     transcript_id: str | None = None,
+    user_id: str | None = None,
 ) -> list[dict]:
-    """Similarity search. Optionally scope to a single video or transcript."""
+    """Similarity search, always scoped to the owning user.
+
+    When ``user_id`` is provided, results are restricted to that user's chunks,
+    optionally narrowed further to a single transcript or video.
+    """
     collection = get_collection()
 
-    where: dict | None = None
+    conditions: list[dict] = []
+    if user_id is not None:
+        conditions.append({"user_id": user_id})
     if transcript_id:
-        where = {"transcript_id": transcript_id}
+        conditions.append({"transcript_id": transcript_id})
     elif video_id:
-        where = {"video_id": video_id}
+        conditions.append({"video_id": video_id})
+
+    where: dict | None
+    if not conditions:
+        where = None
+    elif len(conditions) == 1:
+        where = conditions[0]
+    else:
+        where = {"$and": conditions}
 
     result = collection.query(
         query_texts=[question],

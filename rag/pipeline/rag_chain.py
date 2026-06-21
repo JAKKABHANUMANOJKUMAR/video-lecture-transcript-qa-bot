@@ -50,10 +50,15 @@ def answer_question(
     top_k: int | None = None,
     video_id: str | None = None,
     transcript_id: str | None = None,
+    user_id: str | None = None,
 ) -> RagAnswer:
     """Retrieve relevant chunks and generate a grounded answer with Groq."""
     hits = vector_query(
-        question, top_k=top_k, video_id=video_id, transcript_id=transcript_id
+        question,
+        top_k=top_k,
+        video_id=video_id,
+        transcript_id=transcript_id,
+        user_id=user_id,
     )
 
     if not hits:

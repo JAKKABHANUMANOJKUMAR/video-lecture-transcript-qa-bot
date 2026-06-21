@@ -16,11 +16,12 @@ import tempfile
 from pathlib import Path
 
 import chromadb
-from fastapi import FastAPI, File, Form, HTTPException, Query, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
+from rag.auth import get_current_user_id
 from rag.config import settings
 from rag.pipeline.embeddings import LocalEmbeddingFunction
 from rag.pipeline.ingestion import ingest_video
@@ -92,8 +93,13 @@ def chroma_viewer():
   <header>
     <h1>ChromaDB Viewer</h1>
     <div class="sub" id="path"></div>
+    <div class="sub">Shows only your own transcripts. Paste your login token (from the app) to authenticate.</div>
   </header>
   <main>
+    <div class="search">
+      <input id="token" placeholder="Bearer token (JWT) — required" />
+      <button onclick="saveToken()">Save token</button>
+    </div>
     <div class="stats" id="stats"></div>
     <div class="search">
       <input id="q" placeholder="Similarity search (e.g. why is python popular?)" />
@@ -103,8 +109,18 @@ def chroma_viewer():
     <div id="chunks"></div>
   </main>
   <script>
+    function getToken() { return sessionStorage.getItem('rag_viewer_token') || ''; }
+    function authHeaders() {
+      const t = getToken();
+      return t ? { Authorization: 'Bearer ' + t } : {};
+    }
+    function saveToken() {
+      sessionStorage.setItem('rag_viewer_token', document.getElementById('token').value.trim());
+      loadStats(); loadAll();
+    }
     async function loadStats() {
-      const r = await fetch('/api/chroma/stats');
+      const r = await fetch('/api/chroma/stats', { headers: authHeaders() });
+      if (r.status === 401) { document.getElementById('path').textContent = 'Enter a valid token to view your data.'; return; }
       const d = await r.json();
       document.getElementById('path').textContent = d.path + ' · collection: ' + d.collection;
       document.getElementById('stats').innerHTML = `
@@ -128,17 +144,20 @@ def chroma_viewer():
       return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
     async function loadAll() {
-      const r = await fetch('/api/chroma/chunks?limit=50');
+      const r = await fetch('/api/chroma/chunks?limit=50', { headers: authHeaders() });
+      if (r.status === 401) { renderChunks([]); return; }
       const d = await r.json();
       renderChunks(d.chunks);
     }
     async function search() {
       const q = document.getElementById('q').value.trim();
       if (!q) return loadAll();
-      const r = await fetch('/api/chroma/search?q=' + encodeURIComponent(q));
+      const r = await fetch('/api/chroma/search?q=' + encodeURIComponent(q), { headers: authHeaders() });
+      if (r.status === 401) { renderChunks([]); return; }
       const d = await r.json();
       renderChunks(d.chunks);
     }
+    document.getElementById('token').value = getToken();
     loadStats(); loadAll();
     document.getElementById('q').addEventListener('keydown', e => { if (e.key === 'Enter') search(); });
   </script>
@@ -147,22 +166,25 @@ def chroma_viewer():
 
 
 @app.get("/api/chroma/stats")
-def chroma_stats():
+def chroma_stats(user_id: str = Depends(get_current_user_id)):
     col = _get_collection()
-    data = col.get(include=["metadatas"])
+    data = col.get(where={"user_id": user_id}, include=["metadatas"])
     transcript_ids = {m.get("transcript_id") for m in data["metadatas"] if m.get("transcript_id")}
     return {
         "path": settings.chroma_path,
         "collection": settings.CHROMA_COLLECTION,
-        "count": col.count(),
+        "count": len(data["metadatas"]),
         "transcripts": len(transcript_ids),
     }
 
 
 @app.get("/api/chroma/chunks")
-def chroma_chunks(limit: int = Query(default=20, le=200)):
+def chroma_chunks(
+    limit: int = Query(default=20, le=200),
+    user_id: str = Depends(get_current_user_id),
+):
     col = _get_collection()
-    data = col.get(limit=limit, include=["documents", "metadatas"])
+    data = col.get(where={"user_id": user_id}, limit=limit, include=["documents", "metadatas"])
     chunks = [
         {"text": doc, "metadata": meta, "distance": None}
         for doc, meta in zip(data["documents"], data["metadatas"])
@@ -171,8 +193,12 @@ def chroma_chunks(limit: int = Query(default=20, le=200)):
 
 
 @app.get("/api/chroma/search")
-def chroma_search(q: str = Query(..., min_length=1), top_k: int = Query(default=5, le=20)):
-    hits = vector_query(q, top_k=top_k)
+def chroma_search(
+    q: str = Query(..., min_length=1),
+    top_k: int = Query(default=5, le=20),
+    user_id: str = Depends(get_current_user_id),
+):
+    hits = vector_query(q, top_k=top_k, user_id=user_id)
     chunks = [{"text": h["text"], "metadata": h["metadata"], "distance": h["distance"]} for h in hits]
     return {"chunks": chunks}
 
@@ -182,13 +208,16 @@ async def ingest(
     file: UploadFile = File(...),
     title: str | None = Form(default=None),
     video_id: str | None = Form(default=None),
+    user_id: str = Depends(get_current_user_id),
 ):
     suffix = Path(file.filename or "upload").suffix or ".mp4"
     tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
     try:
         shutil.copyfileobj(file.file, tmp)
         tmp.close()
-        result = ingest_video(tmp.name, title=title or file.filename, video_id=video_id)
+        result = ingest_video(
+            tmp.name, title=title or file.filename, video_id=video_id, user_id=user_id
+        )
     except Exception as exc:  # surface pipeline errors to the client
         raise HTTPException(status_code=500, detail=str(exc)) from exc
     finally:
@@ -204,7 +233,7 @@ async def ingest(
 
 
 @app.post("/query")
-def query(req: QueryRequest):
+def query(req: QueryRequest, user_id: str = Depends(get_current_user_id)):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question must not be empty")
     try:
@@ -213,6 +242,7 @@ def query(req: QueryRequest):
             top_k=req.top_k,
             video_id=req.video_id,
             transcript_id=req.transcript_id,
+            user_id=user_id,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc

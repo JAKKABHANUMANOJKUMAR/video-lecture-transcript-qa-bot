@@ -25,6 +25,11 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_DB: str = "video_lecture_transcript"
 
+    # Security — MUST match the backend's SECRET_KEY/ALGORITHM so RAG can
+    # validate the same JWTs the backend issues and identify the user.
+    SECRET_KEY: str = "change-me"
+    ALGORITHM: str = "HS256"
+
     # Groq LLM
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"

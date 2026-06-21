@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Inbox,
   CircleDot,
@@ -12,6 +12,7 @@ import {
   X,
   User,
 } from 'lucide-react';
+import { api, ApiError } from '../lib/api';
 
 type ComplaintStatus = 'Open' | 'In Progress' | 'Resolved';
 type Priority = 'Low' | 'Medium' | 'High';
@@ -40,41 +41,45 @@ const CATEGORIES = [
 
 const PRIORITIES: Priority[] = ['Low', 'Medium', 'High'];
 
-const INITIAL_COMPLAINTS: Complaint[] = [
-  {
-    id: 'TKT-2001',
-    title: 'Transcript missing for ML lecture',
-    category: 'Transcript Issue',
-    priority: 'High',
-    description: 'The transcript for "Machine Learning: Linear Regression" did not generate even after several hours.',
-    submittedAt: 'Jun 05, 2026',
-    status: 'In Progress',
-    adminResponse: 'We are reprocessing the video on our transcription servers.',
-    resolution: '',
-  },
-  {
-    id: 'TKT-2002',
-    title: 'Chatbot gave irrelevant answer',
-    category: 'Chatbot Response Issue',
-    priority: 'Medium',
-    description: 'When asking about Python decorators, the bot answered about Java instead.',
-    submittedAt: 'Jun 03, 2026',
-    status: 'Resolved',
-    adminResponse: 'Thanks for reporting. We retrained the retrieval index for Python content.',
-    resolution: 'Fixed retrieval mapping and verified correct answers. Closed on Jun 04, 2026.',
-  },
-  {
-    id: 'TKT-2003',
-    title: 'Video upload keeps failing',
-    category: 'Video Upload Issue',
-    priority: 'High',
-    description: 'My RAG lecture upload fails at 90% every time.',
-    submittedAt: 'Jun 06, 2026',
-    status: 'Open',
-    adminResponse: '',
-    resolution: '',
-  },
-];
+/** Complaint as returned by the backend (per-user scoped at /api/complaints). */
+interface ApiComplaint {
+  id: string;
+  ticket_id: string;
+  user_id: string;
+  title: string;
+  category: string;
+  priority: string;
+  description: string;
+  screenshot_url: string | null;
+  status: string;
+  admin_response: string | null;
+  created_at: string;
+  resolved_at: string | null;
+}
+
+const PRIORITY_TO_API: Record<Priority, string> = { Low: 'low', Medium: 'medium', High: 'high' };
+const PRIORITY_FROM_API: Record<string, Priority> = { low: 'Low', medium: 'Medium', high: 'High' };
+const STATUS_FROM_API: Record<string, ComplaintStatus> = {
+  open: 'Open',
+  in_progress: 'In Progress',
+  resolved: 'Resolved',
+};
+
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
+const mapComplaint = (c: ApiComplaint): Complaint => ({
+  id: c.ticket_id,
+  title: c.title,
+  category: c.category,
+  priority: PRIORITY_FROM_API[c.priority] ?? 'Medium',
+  description: c.description,
+  submittedAt: formatDate(c.created_at),
+  status: STATUS_FROM_API[c.status] ?? 'Open',
+  adminResponse: c.admin_response ?? '',
+  resolution: c.resolved_at ? `Resolved on ${formatDate(c.resolved_at)}.` : '',
+  screenshot: c.screenshot_url ?? undefined,
+});
 
 const statusBadge: Record<ComplaintStatus, string> = {
   Open: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
@@ -97,12 +102,36 @@ const EMPTY_FORM = {
 };
 
 export const UserComplaints: React.FC = () => {
-  const [complaints, setComplaints] = useState<Complaint[]>(INITIAL_COMPLAINTS);
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Complaint | null>(null);
   const [banner, setBanner] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load only the logged-in user's complaints from the backend.
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    api
+      .get<ApiComplaint[]>('/complaints')
+      .then((list) => {
+        if (active) setComplaints(list.map(mapComplaint));
+      })
+      .catch((err) => {
+        if (active)
+          setError(err instanceof ApiError ? err.message : 'Could not load your complaints.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const stats = useMemo(() => ({
     total: complaints.length,
@@ -129,25 +158,28 @@ export const UserComplaints: React.FC = () => {
     { title: 'Resolved', value: stats.resolved, icon: <CheckCircle2 className="w-6 h-6" />, accent: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-500/15' },
   ];
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim() || !form.description.trim()) return;
-    const newComplaint: Complaint = {
-      id: `TKT-${2004 + complaints.length}`,
-      title: form.title.trim(),
-      category: form.category,
-      priority: form.priority,
-      description: form.description.trim(),
-      submittedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      status: 'Open',
-      adminResponse: '',
-      resolution: '',
-      screenshot: form.screenshot || undefined,
-    };
-    setComplaints((prev) => [newComplaint, ...prev]);
-    setForm(EMPTY_FORM);
-    setBanner(true);
-    setTimeout(() => setBanner(false), 2500);
+    if (!form.title.trim() || !form.description.trim() || submitting) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const created = await api.post<ApiComplaint>('/complaints', {
+        title: form.title.trim(),
+        category: form.category,
+        priority: PRIORITY_TO_API[form.priority],
+        description: form.description.trim(),
+        screenshot_url: form.screenshot || null,
+      });
+      setComplaints((prev) => [mapComplaint(created), ...prev]);
+      setForm(EMPTY_FORM);
+      setBanner(true);
+      setTimeout(() => setBanner(false), 2500);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Could not submit your complaint.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleScreenshot = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -166,6 +198,12 @@ export const UserComplaints: React.FC = () => {
       {banner && (
         <div className="mx-8 mt-4 px-4 py-3 bg-green-50 border border-green-200 rounded-lg text-sm font-medium text-green-700 dark:bg-green-500/15 dark:border-green-500/30 dark:text-green-400">
           Your complaint has been submitted successfully.
+        </div>
+      )}
+
+      {error && (
+        <div className="mx-8 mt-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm font-medium text-red-700 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-400">
+          {error}
         </div>
       )}
 
@@ -266,10 +304,11 @@ export const UserComplaints: React.FC = () => {
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
-                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition"
+                  disabled={submitting}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Send className="w-4 h-4" />
-                  Submit Complaint
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                  {submitting ? 'Submitting…' : 'Submit Complaint'}
                 </button>
                 <button
                   type="button"
@@ -334,10 +373,21 @@ export const UserComplaints: React.FC = () => {
                       </td>
                     </tr>
                   ))}
-                  {filtered.length === 0 && (
+                  {loading && (
                     <tr>
                       <td colSpan={6} className="px-4 py-10 text-center text-sm text-slate-400">
-                        No complaints found.
+                        <span className="inline-flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" /> Loading your complaints…
+                        </span>
+                      </td>
+                    </tr>
+                  )}
+                  {!loading && filtered.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-10 text-center text-sm text-slate-400">
+                        {complaints.length === 0
+                          ? "You haven't raised any complaints yet."
+                          : 'No complaints match your search.'}
                       </td>
                     </tr>
                   )}
