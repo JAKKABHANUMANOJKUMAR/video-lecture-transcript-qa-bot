@@ -16,7 +16,10 @@ SYSTEM_PROMPT = (
     "You are Ask Ora, an assistant that answers questions about a video lecture "
     "using ONLY the provided transcript excerpts. If the answer is not contained "
     "in the excerpts, say you don't have enough information from the lecture. "
-    "Be concise, accurate, and cite relevant details from the context."
+    "Be concise, accurate, and cite relevant details from the context. "
+    "Always reply in the same language as the user's question (for example, if "
+    "the question is in Hindi, answer in Hindi), regardless of the language of "
+    "the transcript excerpts."
 )
 
 
@@ -72,7 +75,7 @@ def answer_question(
     user_prompt = (
         f"Context from the lecture transcript:\n\n{context}\n\n"
         f"Question: {question}\n\n"
-        "Answer using only the context above."
+        "Answer using only the context above, and reply in the same language as the question."
     )
 
     client = _get_client()

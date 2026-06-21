@@ -37,8 +37,9 @@ class Settings(BaseSettings):
     # Whisper
     WHISPER_MODEL: str = "base"
 
-    # Embeddings
-    EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+    # Embeddings — multilingual so questions in any language match the indexed
+    # transcript chunks (cross-lingual retrieval). 50+ languages supported.
+    EMBEDDING_MODEL: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
     # ChromaDB
     CHROMA_DIR: str = "chroma_db"

@@ -7,6 +7,9 @@ env/
 chroma_db/
 *.log
 _rag.*
+_*.out
+_*.err
+models/
 uploads/
 *.wav
 *.mp3
