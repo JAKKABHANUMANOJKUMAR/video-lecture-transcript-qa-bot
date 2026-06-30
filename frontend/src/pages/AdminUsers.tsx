@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Users,
   UserCheck,
@@ -13,10 +13,12 @@ import {
   Moon,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from 'lucide-react';
 import { useTheme } from '../lib/theme-context';
+import { api, ApiError, ApiUser, formatDate, formatRelative, formatUsageMinutes, titleCaseStatus } from '../lib/api';
 
-type UserStatus = 'Active' | 'Offline' | 'Blocked';
+type UserStatus = 'active' | 'inactive' | 'blocked';
 
 interface UserRecord {
   id: string;
@@ -27,70 +29,73 @@ interface UserRecord {
   lastLogin: string;
   joined: string;
   role: string;
-  totalSessions: number;
 }
 
-const INITIAL_USERS: UserRecord[] = [
-  { id: 'U-1001', username: 'John Doe', email: 'john@example.com', status: 'Active', usageTime: '4h 12m', lastLogin: '2 min ago', joined: 'Jan 12, 2026', role: 'Student', totalSessions: 184 },
-  { id: 'U-1002', username: 'Jane Smith', email: 'jane@example.com', status: 'Offline', usageTime: '2h 48m', lastLogin: '5 hours ago', joined: 'Feb 03, 2026', role: 'Student', totalSessions: 96 },
-  { id: 'U-1003', username: 'Mike Johnson', email: 'mike@example.com', status: 'Blocked', usageTime: '38m', lastLogin: '3 days ago', joined: 'Feb 21, 2026', role: 'Student', totalSessions: 22 },
-  { id: 'U-1004', username: 'Sarah Williams', email: 'sarah@example.com', status: 'Active', usageTime: '6h 05m', lastLogin: 'Just now', joined: 'Dec 28, 2025', role: 'Educator', totalSessions: 240 },
-  { id: 'U-1005', username: 'David Brown', email: 'david@example.com', status: 'Offline', usageTime: '1h 22m', lastLogin: '1 day ago', joined: 'Mar 09, 2026', role: 'Student', totalSessions: 58 },
-  { id: 'U-1006', username: 'Emily Davis', email: 'emily@example.com', status: 'Active', usageTime: '3h 47m', lastLogin: '12 min ago', joined: 'Jan 30, 2026', role: 'Student', totalSessions: 132 },
-  { id: 'U-1007', username: 'Chris Wilson', email: 'chris@example.com', status: 'Offline', usageTime: '52m', lastLogin: '2 days ago', joined: 'Apr 02, 2026', role: 'Student', totalSessions: 41 },
-  { id: 'U-1008', username: 'Olivia Martinez', email: 'olivia@example.com', status: 'Active', usageTime: '5h 18m', lastLogin: '3 min ago', joined: 'Nov 15, 2025', role: 'Educator', totalSessions: 201 },
-  { id: 'U-1009', username: 'Daniel Lee', email: 'daniel@example.com', status: 'Blocked', usageTime: '14m', lastLogin: '1 week ago', joined: 'Apr 18, 2026', role: 'Student', totalSessions: 9 },
-  { id: 'U-1010', username: 'Sophia Garcia', email: 'sophia@example.com', status: 'Offline', usageTime: '2h 09m', lastLogin: '8 hours ago', joined: 'Feb 11, 2026', role: 'Student', totalSessions: 77 },
-  { id: 'U-1011', username: 'James Rodriguez', email: 'james@example.com', status: 'Active', usageTime: '4h 56m', lastLogin: '20 min ago', joined: 'Jan 05, 2026', role: 'Student', totalSessions: 165 },
-  { id: 'U-1012', username: 'Mia Hernandez', email: 'mia@example.com', status: 'Offline', usageTime: '1h 03m', lastLogin: '2 days ago', joined: 'Mar 22, 2026', role: 'Student', totalSessions: 34 },
-  { id: 'U-1013', username: 'William Lopez', email: 'william@example.com', status: 'Active', usageTime: '3h 31m', lastLogin: '7 min ago', joined: 'Dec 10, 2025', role: 'Educator', totalSessions: 158 },
-  { id: 'U-1014', username: 'Ava Gonzalez', email: 'ava@example.com', status: 'Blocked', usageTime: '27m', lastLogin: '5 days ago', joined: 'Apr 25, 2026', role: 'Student', totalSessions: 15 },
-  { id: 'U-1015', username: 'Ethan Clark', email: 'ethan@example.com', status: 'Offline', usageTime: '2h 40m', lastLogin: '11 hours ago', joined: 'Feb 28, 2026', role: 'Student', totalSessions: 88 },
-  { id: 'U-1016', username: 'Isabella Lewis', email: 'isabella@example.com', status: 'Active', usageTime: '5h 49m', lastLogin: '1 min ago', joined: 'Nov 30, 2025', role: 'Student', totalSessions: 213 },
-];
+function mapUser(u: ApiUser): UserRecord {
+  return {
+    id: u.id,
+    username: u.full_name,
+    email: u.email,
+    status: u.status as UserStatus,
+    usageTime: formatUsageMinutes(u.usage_minutes),
+    lastLogin: formatRelative(u.last_login),
+    joined: formatDate(u.created_at),
+    role: titleCaseStatus(u.role),
+  };
+}
 
-const STATUS_FILTERS: ('All' | UserStatus)[] = ['All', 'Active', 'Offline', 'Blocked'];
+const STATUS_FILTERS: ('All' | 'Active' | 'Inactive' | 'Blocked')[] = ['All', 'Active', 'Inactive', 'Blocked'];
 const PAGE_SIZE = 6;
 
-const statusDot: Record<UserStatus, string> = {
-  Active: 'bg-green-500',
-  Offline: 'bg-slate-400',
-  Blocked: 'bg-red-500',
+const statusDot: Record<string, string> = {
+  active: 'bg-green-500',
+  inactive: 'bg-slate-400',
+  blocked: 'bg-red-500',
 };
 
-const statusBadge: Record<UserStatus, string> = {
-  Active: 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
-  Offline: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
-  Blocked: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
+const statusBadge: Record<string, string> = {
+  active: 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
+  inactive: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300',
+  blocked: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
 };
 
 export const AdminUsers: React.FC = () => {
-  const [users, setUsers] = useState<UserRecord[]>(INITIAL_USERS);
+  const [users, setUsers] = useState<UserRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'All' | UserStatus>('All');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Inactive' | 'Blocked'>('All');
   const [page, setPage] = useState(1);
   const [selectedUser, setSelectedUser] = useState<UserRecord | null>(null);
   const { isDark, setTheme } = useTheme();
 
+  const loadUsers = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const status =
+        statusFilter === 'All' ? undefined : statusFilter.toLowerCase();
+      const data = await api.listUsers(search.trim() || undefined, status);
+      setUsers(data.map(mapUser));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to load users.');
+    } finally {
+      setLoading(false);
+    }
+  }, [search, statusFilter]);
+
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
   const summary = useMemo(() => {
     const total = users.length;
-    const active = users.filter((u) => u.status === 'Active').length;
-    const inactive = users.filter((u) => u.status !== 'Active').length;
+    const active = users.filter((u) => u.status === 'active').length;
+    const inactive = users.filter((u) => u.status !== 'active').length;
     return { total, active, inactive };
   }, [users]);
 
-  const filteredUsers = useMemo(() => {
-    return users.filter((u) => {
-      if (statusFilter !== 'All' && u.status !== statusFilter) return false;
-      if (search.trim()) {
-        const q = search.toLowerCase();
-        if (!u.username.toLowerCase().includes(q) && !u.email.toLowerCase().includes(q)) {
-          return false;
-        }
-      }
-      return true;
-    });
-  }, [users, statusFilter, search]);
+  const filteredUsers = users;
 
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -98,19 +103,21 @@ export const AdminUsers: React.FC = () => {
 
   const resetToFirstPage = () => setPage(1);
 
-  const toggleBlock = (id: string) => {
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === id
-          ? { ...u, status: u.status === 'Blocked' ? 'Offline' : 'Blocked' }
-          : u
-      )
-    );
-    setSelectedUser((cur) =>
-      cur && cur.id === id
-        ? { ...cur, status: cur.status === 'Blocked' ? 'Offline' : 'Blocked' }
-        : cur
-    );
+  const toggleBlock = async (id: string) => {
+    const user = users.find((u) => u.id === id);
+    if (!user) return;
+    const nextStatus = user.status === 'blocked' ? 'active' : 'blocked';
+    try {
+      await api.setUserStatus(id, nextStatus);
+      setUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, status: nextStatus as UserStatus } : u)),
+      );
+      setSelectedUser((cur) =>
+        cur && cur.id === id ? { ...cur, status: nextStatus as UserStatus } : cur,
+      );
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to update user.');
+    }
   };
 
   const summaryCards = [
@@ -159,6 +166,16 @@ export const AdminUsers: React.FC = () => {
         </div>
 
         <div className="p-8">
+          {error && (
+            <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-400">
+              {error}
+            </div>
+          )}
+          {loading && (
+            <div className="mb-4 flex items-center gap-2 text-sm text-slate-500">
+              <Loader2 className="w-4 h-4 animate-spin" /> Loading users…
+            </div>
+          )}
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {summaryCards.map((card) => (
@@ -244,7 +261,7 @@ export const AdminUsers: React.FC = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusBadge[u.status]}`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${statusDot[u.status]}`} />
-                          {u.status}
+                          {titleCaseStatus(u.status)}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300 whitespace-nowrap">{u.usageTime}</td>
@@ -260,14 +277,14 @@ export const AdminUsers: React.FC = () => {
                           </button>
                           <button
                             onClick={() => toggleBlock(u.id)}
-                            title={u.status === 'Blocked' ? 'Unblock User' : 'Block User'}
+                            title={u.status === 'blocked' ? 'Unblock User' : 'Block User'}
                             className={`p-1.5 rounded-md transition ${
-                              u.status === 'Blocked'
+                              u.status === 'blocked'
                                 ? 'text-green-600 hover:bg-green-50 dark:hover:bg-green-500/15'
                                 : 'text-red-600 hover:bg-red-50 dark:hover:bg-red-500/15'
                             }`}
                           >
-                            {u.status === 'Blocked' ? (
+                            {u.status === 'blocked' ? (
                               <CheckCircle2 className="w-4 h-4" />
                             ) : (
                               <Ban className="w-4 h-4" />
@@ -372,7 +389,6 @@ export const AdminUsers: React.FC = () => {
                 <DetailField label="Total Usage" value={selectedUser.usageTime} />
                 <DetailField label="Last Login" value={selectedUser.lastLogin} />
                 <DetailField label="Member Since" value={selectedUser.joined} />
-                <DetailField label="Total Sessions" value={String(selectedUser.totalSessions)} />
               </div>
 
               <div className="px-6 pb-4">
@@ -385,12 +401,12 @@ export const AdminUsers: React.FC = () => {
                 <button
                   onClick={() => toggleBlock(selectedUser.id)}
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition ${
-                    selectedUser.status === 'Blocked'
+                    selectedUser.status === 'blocked'
                       ? 'text-green-700 bg-green-50 hover:bg-green-100 dark:text-green-400 dark:bg-green-500/15 dark:hover:bg-green-500/25'
                       : 'text-red-700 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-500/15 dark:hover:bg-red-500/25'
                   }`}
                 >
-                  {selectedUser.status === 'Blocked' ? (
+                  {selectedUser.status === 'blocked' ? (
                     <>
                       <CheckCircle2 className="w-4 h-4" />
                       Unblock User

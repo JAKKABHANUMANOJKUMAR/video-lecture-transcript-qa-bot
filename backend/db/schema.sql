@@ -37,11 +37,13 @@ CREATE TABLE IF NOT EXISTS chat_sessions (
     user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title       VARCHAR(255) DEFAULT 'New chat',
     video_name  VARCHAR(512),
+    transcript_id  VARCHAR(64),
     step        INTEGER DEFAULT 0,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_chat_sessions_user_id ON chat_sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_sessions_transcript_id ON chat_sessions(transcript_id);
 
 CREATE TABLE IF NOT EXISTS chat_messages (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),

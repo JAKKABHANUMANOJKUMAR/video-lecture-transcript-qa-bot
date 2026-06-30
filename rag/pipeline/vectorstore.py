@@ -1,8 +1,4 @@
-"""Step 4 — ChromaDB persistent vector store.
-
-Chunks from all transcripts live in a single collection, tagged with
-`transcript_id` / `video_id` metadata so retrieval can be scoped to one video.
-"""
+"""Step 4 — ChromaDB persistent vector store."""
 
 from __future__ import annotations
 
@@ -11,17 +7,59 @@ from functools import lru_cache
 import chromadb
 
 from rag.config import settings
+from rag.pipeline.chunking import TimedChunk
 from rag.pipeline.embeddings import LocalEmbeddingFunction
 
 
 @lru_cache(maxsize=1)
 def get_collection():
     client = chromadb.PersistentClient(path=settings.chroma_path)
-    return client.get_or_create_collection(
-        name=settings.CHROMA_COLLECTION,
-        embedding_function=LocalEmbeddingFunction(),
-        metadata={"hnsw:space": "cosine"},
-    )
+    ef = LocalEmbeddingFunction()
+    try:
+        return client.get_collection(settings.CHROMA_COLLECTION, embedding_function=ef)
+    except Exception:
+        cols = client.list_collections()
+        if cols:
+            return client.get_collection(cols[0].name, embedding_function=ef)
+        return client.get_or_create_collection(
+            settings.CHROMA_COLLECTION,
+            embedding_function=ef,
+            metadata={"hnsw:space": "cosine"},
+        )
+
+
+def add_timed_chunks(
+    transcript_id: str,
+    chunks: list[TimedChunk],
+    video_id: str | None = None,
+    language: str = "en",
+    *,
+    variant: str = "primary",
+    lecture_title: str | None = None,
+    start_index: int = 0,
+) -> int:
+    """Embed and store timed chunks. Returns the number of chunks added."""
+    if not chunks:
+        return 0
+
+    collection = get_collection()
+    ids = [f"{transcript_id}:{variant}:{start_index + i}" for i in range(len(chunks))]
+    documents = [c.text for c in chunks]
+    metadatas = [
+        {
+            "transcript_id": transcript_id,
+            "video_id": video_id or "",
+            "chunk_index": start_index + i,
+            "language": language,
+            "variant": variant,
+            "lecture_title": lecture_title or "",
+            "start_seconds": float(c.start_seconds),
+            "end_seconds": float(c.end_seconds),
+        }
+        for i, c in enumerate(chunks)
+    ]
+    collection.upsert(ids=ids, documents=documents, metadatas=metadatas)
+    return len(chunks)
 
 
 def add_chunks(
@@ -29,26 +67,20 @@ def add_chunks(
     chunks: list[str],
     video_id: str | None = None,
     language: str = "en",
-    user_id: str | None = None,
+    *,
+    variant: str = "primary",
+    start_index: int = 0,
 ) -> int:
-    """Embed and store chunks. Returns the number of chunks added."""
-    if not chunks:
-        return 0
-
-    collection = get_collection()
-    ids = [f"{transcript_id}:{i}" for i in range(len(chunks))]
-    metadatas = [
-        {
-            "transcript_id": transcript_id,
-            "video_id": video_id or "",
-            "user_id": user_id or "",
-            "chunk_index": i,
-            "language": language,
-        }
-        for i in range(len(chunks))
-    ]
-    collection.upsert(ids=ids, documents=chunks, metadatas=metadatas)
-    return len(chunks)
+    """Backward-compatible plain-text chunk ingest."""
+    timed = [TimedChunk(text=t, start_seconds=0.0, end_seconds=0.0) for t in chunks]
+    return add_timed_chunks(
+        transcript_id,
+        timed,
+        video_id=video_id,
+        language=language,
+        variant=variant,
+        start_index=start_index,
+    )
 
 
 def query(
@@ -56,30 +88,15 @@ def query(
     top_k: int | None = None,
     video_id: str | None = None,
     transcript_id: str | None = None,
-    user_id: str | None = None,
 ) -> list[dict]:
-    """Similarity search, always scoped to the owning user.
-
-    When ``user_id`` is provided, results are restricted to that user's chunks,
-    optionally narrowed further to a single transcript or video.
-    """
+    """Similarity search. Optionally scope to a single video or transcript."""
     collection = get_collection()
 
-    conditions: list[dict] = []
-    if user_id is not None:
-        conditions.append({"user_id": user_id})
+    where: dict | None = None
     if transcript_id:
-        conditions.append({"transcript_id": transcript_id})
+        where = {"transcript_id": transcript_id}
     elif video_id:
-        conditions.append({"video_id": video_id})
-
-    where: dict | None
-    if not conditions:
-        where = None
-    elif len(conditions) == 1:
-        where = conditions[0]
-    else:
-        where = {"$and": conditions}
+        where = {"video_id": video_id}
 
     result = collection.query(
         query_texts=[question],

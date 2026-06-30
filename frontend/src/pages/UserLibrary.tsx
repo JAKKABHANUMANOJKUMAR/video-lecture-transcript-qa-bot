@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Video,
   CheckCircle2,
@@ -13,57 +13,64 @@ import {
   X,
   History,
 } from 'lucide-react';
+import { api, ApiError, ApiVideo, formatDate, formatDuration, formatRelative, titleCaseStatus } from '../lib/api';
 
-type VideoStatus = 'Processed' | 'Processing' | 'Failed';
-
-interface LectureVideo {
-  id: string;
-  title: string;
-  subject: string;
-  gradient: string;
-  uploadDate: string;
-  duration: string;
-  status: VideoStatus;
-  lastAccessed: string;
-  size: string;
-}
-
-const INITIAL_VIDEOS: LectureVideo[] = [
-  { id: 'VID-001', title: 'Python Basics: Variables & Data Types', subject: 'Python', gradient: 'from-blue-500 to-sky-400', uploadDate: 'May 28, 2026', duration: '42:15', status: 'Processed', lastAccessed: '2 hours ago', size: '320 MB' },
-  { id: 'VID-002', title: 'Python OOP & Classes Deep Dive', subject: 'Python', gradient: 'from-blue-600 to-indigo-400', uploadDate: 'May 30, 2026', duration: '58:40', status: 'Processed', lastAccessed: 'Yesterday', size: '510 MB' },
-  { id: 'VID-003', title: 'C Programming: Pointers & Memory', subject: 'C', gradient: 'from-slate-600 to-slate-400', uploadDate: 'Jun 01, 2026', duration: '37:22', status: 'Processed', lastAccessed: '3 days ago', size: '280 MB' },
-  { id: 'VID-004', title: 'Java Collections Framework', subject: 'Java', gradient: 'from-orange-500 to-amber-400', uploadDate: 'Jun 02, 2026', duration: '49:05', status: 'Processing', lastAccessed: 'Never', size: '430 MB' },
-  { id: 'VID-005', title: 'Machine Learning: Linear Regression', subject: 'ML', gradient: 'from-emerald-500 to-green-400', uploadDate: 'Jun 03, 2026', duration: '1:02:30', status: 'Processed', lastAccessed: '5 hours ago', size: '620 MB' },
-  { id: 'VID-006', title: 'ML: Neural Networks Explained', subject: 'ML', gradient: 'from-teal-500 to-emerald-400', uploadDate: 'Jun 04, 2026', duration: '55:18', status: 'Processing', lastAccessed: 'Never', size: '580 MB' },
-  { id: 'VID-007', title: 'RAG: Retrieval Augmented Generation', subject: 'RAG', gradient: 'from-purple-500 to-fuchsia-400', uploadDate: 'Jun 05, 2026', duration: '46:50', status: 'Processed', lastAccessed: '1 day ago', size: '470 MB' },
-  { id: 'VID-008', title: 'RAG Pipelines with Vector Databases', subject: 'RAG', gradient: 'from-violet-600 to-purple-400', uploadDate: 'Jun 06, 2026', duration: '51:12', status: 'Failed', lastAccessed: 'Never', size: '0 MB' },
-  { id: 'VID-009', title: 'Java Spring Boot Fundamentals', subject: 'Java', gradient: 'from-amber-600 to-orange-400', uploadDate: 'Jun 06, 2026', duration: '1:10:05', status: 'Processed', lastAccessed: '6 hours ago', size: '710 MB' },
-];
+const SUBJECT_GRADIENTS: Record<string, string> = {
+  python: 'from-blue-500 to-sky-400',
+  c: 'from-slate-600 to-slate-400',
+  java: 'from-orange-500 to-amber-400',
+  ml: 'from-emerald-500 to-green-400',
+  rag: 'from-purple-500 to-fuchsia-400',
+};
 
 const FILTERS = ['All Videos', 'Processed', 'Processing', 'Failed', 'Recently Added'] as const;
 type Filter = (typeof FILTERS)[number];
 
-const statusBadge: Record<VideoStatus, string> = {
-  Processed: 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
-  Processing: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400',
-  Failed: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
+const statusBadge: Record<string, string> = {
+  processed: 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
+  processing: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-400',
+  failed: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
 };
+
+function gradientFor(subject: string | null): string {
+  const key = (subject || 'general').toLowerCase();
+  return SUBJECT_GRADIENTS[key] ?? 'from-indigo-500 to-violet-400';
+}
 
 interface UserLibraryProps {
   onOpenChat: () => void;
 }
 
 export const UserLibrary: React.FC<UserLibraryProps> = ({ onOpenChat }) => {
-  const [videos, setVideos] = useState<LectureVideo[]>(INITIAL_VIDEOS);
+  const [videos, setVideos] = useState<ApiVideo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<Filter>('All Videos');
-  const [selected, setSelected] = useState<LectureVideo | null>(null);
+  const [selected, setSelected] = useState<ApiVideo | null>(null);
+
+  const loadVideos = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await api.listVideos();
+      setVideos(data);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to load videos.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadVideos();
+  }, [loadVideos]);
 
   const stats = useMemo(() => {
     const total = videos.length;
-    const processed = videos.filter((v) => v.status === 'Processed').length;
-    const processing = videos.filter((v) => v.status === 'Processing').length;
-    const storageMb = videos.reduce((sum, v) => sum + parseInt(v.size) || 0, 0);
+    const processed = videos.filter((v) => v.status === 'processed').length;
+    const processing = videos.filter((v) => v.status === 'processing').length;
+    const storageMb = videos.reduce((sum, v) => sum + (v.size_mb || 0), 0);
     return {
       total,
       processed,
@@ -74,33 +81,59 @@ export const UserLibrary: React.FC<UserLibraryProps> = ({ onOpenChat }) => {
 
   const filtered = useMemo(() => {
     let list = videos;
-    if (filter === 'Processed') list = list.filter((v) => v.status === 'Processed');
-    else if (filter === 'Processing') list = list.filter((v) => v.status === 'Processing');
-    else if (filter === 'Failed') list = list.filter((v) => v.status === 'Failed');
-    else if (filter === 'Recently Added') list = [...list].slice(-4).reverse();
+    if (filter === 'Processed') list = list.filter((v) => v.status === 'processed');
+    else if (filter === 'Processing') list = list.filter((v) => v.status === 'processing');
+    else if (filter === 'Failed') list = list.filter((v) => v.status === 'failed');
+    else if (filter === 'Recently Added') list = [...list].slice(0, 4);
 
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
-        (v) => v.title.toLowerCase().includes(q) || v.subject.toLowerCase().includes(q)
+        (v) =>
+          v.title.toLowerCase().includes(q) ||
+          (v.subject || '').toLowerCase().includes(q),
       );
     }
     return list;
   }, [videos, filter, search]);
 
   const recentlyViewed = useMemo(
-    () => videos.filter((v) => v.lastAccessed !== 'Never').slice(0, 4),
-    [videos]
+    () =>
+      [...videos]
+        .filter((v) => v.last_accessed)
+        .sort((a, b) => new Date(b.last_accessed!).getTime() - new Date(a.last_accessed!).getTime())
+        .slice(0, 4),
+    [videos],
   );
 
-  const deleteVideo = (id: string) => {
-    setVideos((prev) => prev.filter((v) => v.id !== id));
-    setSelected((cur) => (cur?.id === id ? null : cur));
+  const deleteVideo = async (id: string) => {
+    try {
+      await api.deleteVideo(id);
+      setVideos((prev) => prev.filter((v) => v.id !== id));
+      setSelected((cur) => (cur?.id === id ? null : cur));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to delete video.');
+    }
   };
 
-  const statusIcon = (status: VideoStatus) => {
-    if (status === 'Processed') return <CheckCircle2 className="w-3.5 h-3.5" />;
-    if (status === 'Processing') return <Loader2 className="w-3.5 h-3.5 animate-spin" />;
+  const openChatForVideo = async (video: ApiVideo) => {
+    if (video.status !== 'processed') return;
+    try {
+      await api.markVideoAccessed(video.id);
+      setVideos((prev) =>
+        prev.map((v) =>
+          v.id === video.id ? { ...v, last_accessed: new Date().toISOString() } : v,
+        ),
+      );
+    } catch {
+      /* non-blocking */
+    }
+    onOpenChat();
+  };
+
+  const statusIcon = (status: string) => {
+    if (status === 'processed') return <CheckCircle2 className="w-3.5 h-3.5" />;
+    if (status === 'processing') return <Loader2 className="w-3.5 h-3.5 animate-spin" />;
     return <X className="w-3.5 h-3.5" />;
   };
 
@@ -119,7 +152,12 @@ export const UserLibrary: React.FC<UserLibraryProps> = ({ onOpenChat }) => {
       </div>
 
       <div className="p-8">
-        {/* Statistics Cards */}
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-400">
+            {error}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {summaryCards.map((card) => (
             <div key={card.title} className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
@@ -136,7 +174,6 @@ export const UserLibrary: React.FC<UserLibraryProps> = ({ onOpenChat }) => {
           ))}
         </div>
 
-        {/* Search & Filter */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-5 mb-8">
           <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
             <div className="relative flex-1 max-w-md">
@@ -167,75 +204,82 @@ export const UserLibrary: React.FC<UserLibraryProps> = ({ onOpenChat }) => {
           </div>
         </div>
 
-        {/* Video Grid */}
         <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Video Library</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {filtered.map((video) => (
-            <div
-              key={video.id}
-              className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col"
-            >
-              {/* Thumbnail */}
-              <div className={`relative h-36 bg-gradient-to-br ${video.gradient} flex items-center justify-center`}>
-                <span className="text-white/90 text-lg font-bold tracking-wide">{video.subject}</span>
-                <span className="absolute bottom-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/40 text-white text-xs font-medium">
-                  <Clock className="w-3 h-3" />
-                  {video.duration}
-                </span>
-              </div>
-              <div className="p-4 flex flex-col flex-1">
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2">
-                  {video.title}
-                </h3>
-                <div className="mt-2 flex items-center justify-between">
-                  <span className="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
-                    <CalendarDays className="w-3.5 h-3.5" />
-                    {video.uploadDate}
-                  </span>
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge[video.status]}`}>
-                    {statusIcon(video.status)}
-                    {video.status}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
-                  Last accessed: {video.lastAccessed}
-                </p>
 
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
-                  <button
-                    onClick={onOpenChat}
-                    disabled={video.status !== 'Processed'}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <Play className="w-3.5 h-3.5" />
-                    Open Chat
-                  </button>
-                  <button
-                    onClick={() => setSelected(video)}
-                    title="View Details"
-                    className="p-2 rounded-lg text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-                  >
-                    <Eye className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => deleteVideo(video.id)}
-                    title="Delete Video"
-                    className="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/15 transition"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+        {loading ? (
+          <div className="flex items-center justify-center py-16 text-slate-500">
+            <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            {filtered.map((video) => {
+              const subject = video.subject || 'Lecture';
+              const gradient = gradientFor(video.subject);
+              return (
+                <div
+                  key={video.id}
+                  className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col"
+                >
+                  <div className={`relative h-36 bg-gradient-to-br ${gradient} flex items-center justify-center`}>
+                    <span className="text-white/90 text-lg font-bold tracking-wide">{subject}</span>
+                    <span className="absolute bottom-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/40 text-white text-xs font-medium">
+                      <Clock className="w-3 h-3" />
+                      {formatDuration(video.duration_seconds)}
+                    </span>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white leading-snug line-clamp-2">
+                      {video.title}
+                    </h3>
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
+                        <CalendarDays className="w-3.5 h-3.5" />
+                        {formatDate(video.created_at)}
+                      </span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge[video.status] ?? statusBadge.processing}`}>
+                        {statusIcon(video.status)}
+                        {titleCaseStatus(video.status)}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                      Last accessed: {formatRelative(video.last_accessed)}
+                    </p>
+                    <div className="flex items-center gap-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                      <button
+                        onClick={() => openChatForVideo(video)}
+                        disabled={video.status !== 'processed'}
+                        className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        <Play className="w-3.5 h-3.5" />
+                        Open Chat
+                      </button>
+                      <button
+                        onClick={() => setSelected(video)}
+                        title="View Details"
+                        className="p-2 rounded-lg text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => deleteVideo(video.id)}
+                        title="Delete Video"
+                        className="p-2 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/15 transition"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
+              );
+            })}
+            {filtered.length === 0 && (
+              <div className="col-span-full text-center py-12 text-sm text-slate-400">
+                No videos yet. Upload a video from New Chat to see it here.
               </div>
-            </div>
-          ))}
-          {filtered.length === 0 && (
-            <div className="col-span-full text-center py-12 text-sm text-slate-400">
-              No videos match your search or filter.
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
-        {/* Recent Activity */}
         <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
           <div className="flex items-center gap-2 mb-5">
             <History className="w-5 h-5 text-slate-700 dark:text-slate-300" />
@@ -247,15 +291,15 @@ export const UserLibrary: React.FC<UserLibraryProps> = ({ onOpenChat }) => {
                 key={v.id}
                 className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/40 transition"
               >
-                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${v.gradient} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
-                  {v.subject}
+                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${gradientFor(v.subject)} flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                  {v.subject || 'Lec'}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-100 truncate">{v.title}</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500">Viewed {v.lastAccessed}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">Viewed {formatRelative(v.last_accessed)}</p>
                 </div>
                 <button
-                  onClick={onOpenChat}
+                  onClick={() => openChatForVideo(v)}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-slate-700 transition"
                 >
                   Open Chat
@@ -269,57 +313,44 @@ export const UserLibrary: React.FC<UserLibraryProps> = ({ onOpenChat }) => {
         </div>
       </div>
 
-      {/* Video Details Modal */}
       {selected && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={`relative h-40 bg-gradient-to-br ${selected.gradient} flex items-center justify-center`}>
-              <span className="text-white text-2xl font-bold">{selected.subject}</span>
-              <button
-                onClick={() => setSelected(null)}
-                className="absolute top-3 right-3 p-1.5 rounded-md bg-black/30 text-white hover:bg-black/50 transition"
-              >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setSelected(null)}>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden" onClick={(e) => e.stopPropagation()}>
+            <div className={`relative h-40 bg-gradient-to-br ${gradientFor(selected.subject)} flex items-center justify-center`}>
+              <span className="text-white text-2xl font-bold">{selected.subject || 'Lecture'}</span>
+              <button onClick={() => setSelected(null)} className="absolute top-3 right-3 p-1.5 rounded-md bg-black/30 text-white hover:bg-black/50 transition">
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="p-6">
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">{selected.title}</h2>
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <Detail label="Video ID" value={selected.id} />
-                <Detail label="Subject" value={selected.subject} />
-                <Detail label="Upload Date" value={selected.uploadDate} />
-                <Detail label="Duration" value={selected.duration} />
-                <Detail label="File Size" value={selected.size} />
-                <Detail label="Last Accessed" value={selected.lastAccessed} />
+                <Detail label="Video ID" value={selected.id.slice(0, 8) + '…'} />
+                <Detail label="Subject" value={selected.subject || '—'} />
+                <Detail label="Upload Date" value={formatDate(selected.created_at)} />
+                <Detail label="Duration" value={formatDuration(selected.duration_seconds)} />
+                <Detail label="File Size" value={`${selected.size_mb} MB`} />
+                <Detail label="Last Accessed" value={formatRelative(selected.last_accessed)} />
                 <div>
                   <p className="text-xs font-medium text-slate-400 mb-1">Status</p>
                   <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusBadge[selected.status]}`}>
                     {statusIcon(selected.status)}
-                    {selected.status}
+                    {titleCaseStatus(selected.status)}
                   </span>
                 </div>
               </div>
               <div className="flex gap-2 mt-6">
                 <button
-                  onClick={() => {
-                    setSelected(null);
-                    onOpenChat();
-                  }}
-                  disabled={selected.status !== 'Processed'}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  onClick={() => { setSelected(null); openChatForVideo(selected); }}
+                  disabled={selected.status !== 'processed'}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40"
                 >
                   <Play className="w-4 h-4" />
                   Open Chat
                 </button>
                 <button
                   onClick={() => deleteVideo(selected.id)}
-                  className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-500/15 dark:hover:bg-red-500/25 transition"
+                  className="flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 dark:text-red-400 dark:bg-red-500/15 transition"
                 >
                   <Trash2 className="w-4 h-4" />
                   Delete

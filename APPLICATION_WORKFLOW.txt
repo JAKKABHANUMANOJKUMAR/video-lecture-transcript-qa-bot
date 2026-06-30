@@ -1,0 +1,338 @@
+ASK ORA - VIDEO LECTURE TRANSCRIPT Q&A BOT
+FULL APPLICATION WORKFLOW
+
+
+OVERVIEW
+
+This application lets a user upload a video lecture, automatically transcribes it, stores the text in a database, converts the text into searchable vector embeddings, and answers user questions using AI grounded in that video content.
+
+The system has three main parts running together:
+
+Frontend (React) on port 5173 - the website the user sees
+Backend API (FastAPI) on port 8000 - login, users, complaints, chat history API
+RAG Service (FastAPI) on port 8100 - video transcription, vector search, AI answers
+
+Data is stored in:
+PostgreSQL database named video_lecture_transcript
+ChromaDB folder rag/chroma_db for vector embeddings
+Groq cloud API for generating final answers
+
+
+STEP 1 - USER OPENS THE APPLICATION
+
+User opens the browser and goes to http://localhost:5173
+
+The React frontend loads the login page with Sign In and Sign Up options.
+
+User can sign in with email and password or create a new account on the Sign Up tab.
+
+
+STEP 2 - LOGIN AND AUTHENTICATION
+
+When user signs in, the frontend sends the email and password to the backend:
+
+POST http://localhost:8000/api/auth/login
+
+The backend checks the users table in PostgreSQL. Passwords are stored as bcrypt hashes, not plain text.
+
+If credentials are correct, the backend creates a JWT access token and returns it along with the user profile (name, email, role).
+
+The frontend saves this token in browser localStorage under the key askora_token.
+
+On every future page load, the frontend sends the token to GET /api/auth/me to restore the logged-in session automatically.
+
+If the user role is admin, the admin dashboard opens (users, alerts, analytics, settings).
+
+If the user role is user, the New Chat page opens directly.
+
+
+STEP 3 - USER UPLOADS A VIDEO
+
+On the New Chat page, the user clicks Upload Video and selects a video or audio file.
+
+The screen splits into two panels:
+Left panel shows Ora answers
+Right panel shows user questions and the input box
+
+The uploaded filename appears as a user message on the right side.
+
+A processing spinner appears on the left while the video is being handled.
+
+
+STEP 4 - VIDEO SENT TO RAG SERVICE
+
+The frontend sends the video file to the RAG service:
+
+POST http://localhost:8100/ingest
+
+The file is uploaded as multipart form data. The request stays open until the full pipeline finishes.
+
+
+STEP 5 - AUDIO EXTRACTION
+
+Inside the RAG service, the file is saved to a temporary location.
+
+The openai-whisper library uses ffmpeg to extract and decode the audio from the video file.
+
+Audio is converted to 16kHz mono format which Whisper requires.
+
+The Whisper model used is set in rag/.env as WHISPER_MODEL. Default is base locally, tiny in cloud Docker for less memory.
+
+
+STEP 6 - SPEECH TO TEXT IN ORIGINAL LANGUAGE
+
+Whisper runs a transcribe task on the audio.
+
+It detects the spoken language automatically (for example en, hi, ta, es).
+
+The full transcript in the original language is produced as original_text.
+
+
+STEP 7 - TRANSLATION TO ENGLISH IF NEEDED
+
+If the detected language is English, english_text is set equal to original_text.
+
+If the detected language is not English, Whisper runs a second translate pass on the same audio to produce english_text in English.
+
+Both original_text and english_text are kept.
+
+
+STEP 8 - SAVE TRANSCRIPT TEXT TO POSTGRESQL
+
+The transcript is saved to the transcripts table in PostgreSQL.
+
+Saved fields include:
+transcript id
+video title and filename
+detected language
+original_text full transcript in original language
+english_text full transcript in English
+duration in seconds
+status completed
+created timestamp
+
+This is the permanent text record of what was spoken in the video.
+
+
+STEP 9 - TEXT CHUNKING
+
+The english_text is split into smaller overlapping chunks for search.
+
+Chunking is done by rag/pipeline/chunking.py using sentence-aware splitting.
+
+Default settings:
+CHUNK_SIZE 1000 characters per chunk
+CHUNK_OVERLAP 150 characters overlap between chunks
+
+Overlap ensures information at chunk boundaries is not lost during search.
+
+A typical 4 minute video produces around 6 chunks.
+
+
+STEP 10 - SAVE CHUNK TEXT TO POSTGRESQL
+
+Each chunk is saved as a row in the transcript_chunks table.
+
+Each row contains transcript_id, chunk_index, and the chunk text content.
+
+This is a text backup of chunks separate from the vector store.
+
+
+STEP 11 - VECTOR EMBEDDING
+
+Each chunk text is converted to a numerical vector using a local embedding model.
+
+Model: sentence-transformers/all-MiniLM-L6-v2
+Dimensions: 384
+Runs locally on CPU, no API key needed
+Library: sentence-transformers with PyTorch
+
+The same model is always used for both chunk embedding and query embedding so they are comparable.
+
+
+STEP 12 - SAVE VECTORS TO CHROMADB
+
+Vectors and chunk text are stored in ChromaDB.
+
+Location on disk: rag/chroma_db/
+Collection name: transcripts
+Similarity metric: cosine
+
+Each entry stores:
+chunk text as the document
+384-dimensional embedding vector
+metadata including transcript_id, chunk_index, video_id, language
+
+The transcripts table indexed field is set to true in PostgreSQL after this step completes.
+
+The RAG service returns transcript_id, language, duration, and num_chunks to the frontend.
+
+The left panel shows Video processed and ready. The user can now ask questions.
+
+
+STEP 13 - USER ASKS A QUESTION
+
+The user types a question in the right panel input box and presses Send.
+
+The question appears as a bubble on the right side.
+
+A typing indicator appears on the left while the answer is being generated.
+
+
+STEP 14 - QUESTION SENT TO RAG SERVICE
+
+The frontend sends:
+
+POST http://localhost:8100/query
+
+Body includes:
+question the user text
+transcript_id to search only the current video chunks
+top_k number of chunks to retrieve default 4
+
+
+STEP 15 - QUERY CONVERTED TO VECTOR
+
+The user question is embedded using the same model as the chunks:
+
+sentence-transformers/all-MiniLM-L6-v2
+
+This produces a 384-dimensional query vector in the same space as the stored chunk vectors.
+
+
+STEP 16 - SIMILARITY SEARCH IN CHROMADB
+
+ChromaDB searches the transcripts collection for vectors closest to the query vector.
+
+Method: cosine similarity nearest neighbor search
+Number of results: top 4 chunks by default (TOP_K setting in rag/.env)
+Filter: only chunks matching the current transcript_id
+
+Each result includes the chunk text, metadata, and a distance score. Lower distance means more similar and more relevant.
+
+
+STEP 17 - BUILD PROMPT FOR LLM
+
+The top matching chunk texts are combined into a context block.
+
+A system prompt tells the AI to answer only using the provided transcript excerpts and to say it does not know if the answer is not in the context.
+
+
+STEP 18 - LLM GENERATES THE ANSWER
+
+The context and question are sent to Groq cloud API.
+
+Model: llama-3.3-70b-versatile
+API key: GROQ_API_KEY in rag/.env
+Temperature: 0.2 for focused factual answers
+
+The LLM formats the retrieved chunk information into a clear natural language answer. It does not invent facts outside the retrieved context.
+
+The answer and source chunks are returned to the frontend.
+
+The answer appears on the left panel. The question stays on the right panel.
+
+
+STEP 19 - CHAT HISTORY
+
+The backend has chat_sessions and chat_messages tables in PostgreSQL and API endpoints at /api/chats for saving and loading chat history.
+
+The frontend currently keeps chat messages in browser memory during the session. The Recent page shows chats from this session memory.
+
+When the user closes the browser and logs in again, past chat Q&A is not yet automatically reloaded from PostgreSQL. The backend API is ready but the frontend is not fully wired to persist and restore chats from the database yet.
+
+What does persist across sessions:
+user account in users table
+full transcript text in transcripts table
+chunk text in transcript_chunks table
+vectors in ChromaDB on disk
+
+
+STEP 20 - USER VISITS RECENT PAGE
+
+During the same browser session, the user can open the Recent page and see past chats.
+
+Clicking a chat restores the messages and transcript id so the user can continue asking questions about the same video.
+
+
+STEP 21 - CHROMADB VIEWER
+
+To inspect what is stored in the vector database:
+
+Browser UI: http://localhost:8100/viewer
+Command line: python -m rag.inspect_db
+
+
+OTHER MODULES
+
+Library page shows hardcoded subject videos for demo purposes.
+
+Complaints page lets users file complaints saved to PostgreSQL complaints table. Filing a complaint also creates an alert for the admin.
+
+Admin module is separate from RAG. Admin sees user counts, alerts, analytics, and complaints but does not see raw user chat content or transcript text by design.
+
+Settings pages handle theme, profile, and notification preferences.
+
+
+CLOUD DEPLOYMENT
+
+For running everything on one free cloud server, use Docker Compose with Oracle Cloud Always Free VM.
+
+All services run on one machine:
+PostgreSQL in Docker
+Backend in Docker
+RAG in Docker
+Nginx gateway serves frontend and proxies /api to backend and /ingest /query to RAG on port 80
+
+See DEPLOY-FREE-ONE-CLOUD.md for full cloud setup steps.
+
+
+COMPLETE FLOW IN ONE SEQUENCE
+
+1. User opens app and logs in. JWT token saved. User lands on New Chat.
+2. User uploads a video file.
+3. Frontend sends file to RAG service POST /ingest.
+4. ffmpeg extracts audio from video.
+5. Whisper transcribes audio to original_text and detects language.
+6. If not English, Whisper translates to english_text.
+7. Both texts saved to PostgreSQL transcripts table.
+8. english_text split into chunks.
+9. Chunks saved to PostgreSQL transcript_chunks table.
+10. Each chunk embedded with all-MiniLM-L6-v2 model.
+11. Vectors and text saved to ChromaDB.
+12. Frontend receives transcript_id. Video ready message shown.
+13. User types a question on the right panel.
+14. Frontend sends POST /query with question and transcript_id.
+15. Question embedded with same MiniLM model.
+16. ChromaDB finds top 4 most similar chunks by cosine distance.
+17. Chunk texts sent as context to Groq LLM llama-3.3-70b-versatile.
+18. LLM returns a grounded answer.
+19. Answer shown on left panel. Question shown on right panel.
+20. Chat stored in browser memory for current session. Transcript and vectors persist in database permanently.
+
+
+MODELS SUMMARY
+
+Audio extraction: ffmpeg
+Speech to text: openai-whisper (WHISPER_MODEL base or tiny)
+Language detection: built into Whisper
+Translation to English: Whisper translate task
+Text chunking: custom sentence chunker in rag/pipeline/chunking.py
+Vector embedding: sentence-transformers/all-MiniLM-L6-v2 local 384 dimensions
+Vector storage and search: ChromaDB cosine similarity top 4
+Answer generation: Groq llama-3.3-70b-versatile cloud API
+Authentication: bcrypt password hashing and JWT tokens
+
+
+
+The Video Lecture Transcript Q&A Bot begins when a user logs into the application using their email and password. After successful authentication, the user is redirected to the dashboard where they can upload a video lecture. Once a video is uploaded through the frontend, the backend receives the file, validates its format and size, stores the video metadata in PostgreSQL, and saves the actual video file in storage. The backend then uses FFmpeg to extract the audio track from the uploaded video. After the audio extraction process is completed, the audio file is sent to OpenAI Whisper for speech-to-text conversion. Whisper transcribes the spoken content into text while also generating timestamps for different sections of the lecture. The generated transcript, along with timestamp information, is stored in PostgreSQL for future reference.
+
+After transcription, the system processes the transcript by dividing it into smaller chunks. These chunks are created based on token limits, sentence boundaries, or timestamp intervals to ensure efficient retrieval. Each chunk is then sent to an embedding model such as OpenAI text-embedding-3-small, text-embedding-3-large, BAAI BGE, or Sentence Transformers. The embedding model converts each text chunk into a high-dimensional vector representation that captures its semantic meaning. Along with the chunk text, timestamps, video identifiers, and user information, these embeddings are stored in ChromaDB, which serves as the vector database for semantic search.
+
+When a user asks a question about the uploaded lecture, the question is sent to the backend and converted into a vector using the same embedding model that was used for transcript chunks. This query vector is then sent to ChromaDB, where a similarity search is performed. ChromaDB compares the query embedding against all stored transcript embeddings and retrieves the top-k most relevant chunks based on semantic similarity. These retrieved chunks form the contextual knowledge required to answer the user's question.
+
+The backend combines the retrieved chunks and their associated timestamps into a context document and sends this context, along with the user's question, to a Large Language Model such as GPT-4o, GPT-4.1, Gemini 2.5 Flash, Claude Sonnet, or Llama 3.3. The LLM analyzes the provided context and generates a clear, human-readable answer. The model is responsible for understanding the context, generating accurate responses, improving grammar, organizing information, summarizing concepts, and presenting the answer in a natural conversational format. Since the answer is generated using retrieved transcript chunks, the system can also provide source timestamps, allowing users to jump directly to the relevant section of the original video.
+
+After the answer is generated, the application stores the user's question, the generated answer, session information, video identifiers, timestamps, and user details in PostgreSQL. This creates a persistent chat history for every lecture. Whenever the user asks follow-up questions, the system can utilize previous conversation history to maintain context and provide more coherent responses. If the user logs out and later returns to the application, the system retrieves all previously uploaded videos, processed transcripts, chat sessions, questions, and answers from PostgreSQL. This enables users to continue their learning journey from where they left off without losing any information.
+
+The Library page displays all uploaded videos, transcript processing statuses, previous chat sessions, and generated notes. Users can reopen any lecture and continue interacting with it. Throughout the workflow, PostgreSQL serves as the primary database for storing user accounts, video metadata, transcripts, chat histories, session information, and application data, while ChromaDB acts as the vector database responsible for semantic retrieval. FFmpeg handles audio extraction, Whisper performs transcription, embedding models generate vector representations, ChromaDB retrieves relevant context through similarity search, and the LLM generates final answers. Together, these components create a Retrieval-Augmented Generation (RAG) system that allows users to upload lecture videos, ask questions in natural language, receive context-aware answers, and access their previous learning history at any time.

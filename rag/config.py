@@ -25,11 +25,6 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_DB: str = "video_lecture_transcript"
 
-    # Security — MUST match the backend's SECRET_KEY/ALGORITHM so RAG can
-    # validate the same JWTs the backend issues and identify the user.
-    SECRET_KEY: str = "change-me"
-    ALGORITHM: str = "HS256"
-
     # Groq LLM
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
@@ -37,13 +32,13 @@ class Settings(BaseSettings):
     # Whisper
     WHISPER_MODEL: str = "base"
 
-    # Embeddings — multilingual so questions in any language match the indexed
-    # transcript chunks (cross-lingual retrieval). 50+ languages supported.
+    # Embeddings
     EMBEDDING_MODEL: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
     # ChromaDB
     CHROMA_DIR: str = "chroma_db"
-    CHROMA_COLLECTION: str = "transcripts"
+    CHROMA_COLLECTION: str = "transcripts_multilingual"
+    MEDIA_DIR: str = "media"
 
     # Retrieval / chunking
     CHUNK_SIZE: int = 1000
@@ -72,6 +67,14 @@ class Settings(BaseSettings):
     @property
     def chroma_path(self) -> str:
         path = Path(self.CHROMA_DIR)
+        if not path.is_absolute():
+            path = BASE_DIR / path
+        return str(path)
+
+
+    @property
+    def media_path(self) -> str:
+        path = Path(self.MEDIA_DIR)
         if not path.is_absolute():
             path = BASE_DIR / path
         return str(path)

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
 from app.deps import get_current_user
@@ -15,8 +15,13 @@ router = APIRouter(prefix="/chats", tags=["chats"])
 
 
 def _get_owned_session(session_id: str, db: Session, user: User) -> ChatSession:
-    session = db.get(ChatSession, session_id)
-    if not session or session.user_id != user.id:
+    session = (
+        db.query(ChatSession)
+        .options(joinedload(ChatSession.messages))
+        .filter(ChatSession.id == session_id, ChatSession.user_id == user.id)
+        .first()
+    )
+    if not session:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chat not found")
     return session
 
@@ -25,6 +30,7 @@ def _get_owned_session(session_id: str, db: Session, user: User) -> ChatSession:
 def list_chats(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return (
         db.query(ChatSession)
+        .options(joinedload(ChatSession.messages))
         .filter(ChatSession.user_id == current_user.id)
         .order_by(ChatSession.updated_at.desc())
         .all()
@@ -41,6 +47,8 @@ def create_chat(
         user_id=current_user.id,
         title=payload.title,
         video_name=payload.video_name,
+        video_id=payload.video_id,
+        transcript_id=payload.transcript_id,
         step=payload.step,
     )
     session.messages = [
@@ -49,7 +57,8 @@ def create_chat(
     db.add(session)
     db.commit()
     db.refresh(session)
-    return session
+    # Re-load with messages for a consistent response payload
+    return _get_owned_session(session.id, db, current_user)
 
 
 @router.get("/{session_id}", response_model=ChatSessionPublic)
@@ -73,6 +82,10 @@ def update_chat(
         session.title = payload.title
     if payload.video_name is not None:
         session.video_name = payload.video_name
+    if payload.video_id is not None:
+        session.video_id = payload.video_id
+    if payload.transcript_id is not None:
+        session.transcript_id = payload.transcript_id
     if payload.step is not None:
         session.step = payload.step
     if payload.messages is not None:
@@ -82,8 +95,7 @@ def update_chat(
             ChatMessage(role=m.role, content=m.content) for m in payload.messages
         ]
     db.commit()
-    db.refresh(session)
-    return session
+    return _get_owned_session(session.id, db, current_user)
 
 
 @router.delete("/{session_id}", response_model=MessageResponse)

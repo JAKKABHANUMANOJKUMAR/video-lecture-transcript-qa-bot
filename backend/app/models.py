@@ -58,6 +58,8 @@ class ChatSession(Base):
     )
     title: Mapped[str] = mapped_column(String(255), default="New chat")
     video_name: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    video_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
+    transcript_id: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)
     step: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

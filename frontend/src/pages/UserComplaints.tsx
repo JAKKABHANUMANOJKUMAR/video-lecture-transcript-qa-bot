@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Inbox,
   CircleDot,
@@ -12,13 +12,14 @@ import {
   X,
   User,
 } from 'lucide-react';
-import { api, ApiError } from '../lib/api';
+import { api, ApiComplaint, ApiError, formatDate, titleCaseStatus, toApiPriority } from '../lib/api';
 
-type ComplaintStatus = 'Open' | 'In Progress' | 'Resolved';
+type ComplaintStatus = 'open' | 'in_progress' | 'resolved';
 type Priority = 'Low' | 'Medium' | 'High';
 
-interface Complaint {
+interface ComplaintView {
   id: string;
+  ticketId: string;
   title: string;
   category: string;
   priority: Priority;
@@ -41,50 +42,26 @@ const CATEGORIES = [
 
 const PRIORITIES: Priority[] = ['Low', 'Medium', 'High'];
 
-/** Complaint as returned by the backend (per-user scoped at /api/complaints). */
-interface ApiComplaint {
-  id: string;
-  ticket_id: string;
-  user_id: string;
-  title: string;
-  category: string;
-  priority: string;
-  description: string;
-  screenshot_url: string | null;
-  status: string;
-  admin_response: string | null;
-  created_at: string;
-  resolved_at: string | null;
+function mapComplaint(c: ApiComplaint): ComplaintView {
+  return {
+    id: c.id,
+    ticketId: c.ticket_id,
+    title: c.title,
+    category: c.category,
+    priority: (c.priority.charAt(0).toUpperCase() + c.priority.slice(1)) as Priority,
+    description: c.description,
+    submittedAt: formatDate(c.created_at),
+    status: c.status as ComplaintStatus,
+    adminResponse: c.admin_response || '',
+    resolution: c.resolved_at ? `Resolved on ${formatDate(c.resolved_at)}` : '',
+    screenshot: c.screenshot_url || undefined,
+  };
 }
 
-const PRIORITY_TO_API: Record<Priority, string> = { Low: 'low', Medium: 'medium', High: 'high' };
-const PRIORITY_FROM_API: Record<string, Priority> = { low: 'Low', medium: 'Medium', high: 'High' };
-const STATUS_FROM_API: Record<string, ComplaintStatus> = {
-  open: 'Open',
-  in_progress: 'In Progress',
-  resolved: 'Resolved',
-};
-
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-
-const mapComplaint = (c: ApiComplaint): Complaint => ({
-  id: c.ticket_id,
-  title: c.title,
-  category: c.category,
-  priority: PRIORITY_FROM_API[c.priority] ?? 'Medium',
-  description: c.description,
-  submittedAt: formatDate(c.created_at),
-  status: STATUS_FROM_API[c.status] ?? 'Open',
-  adminResponse: c.admin_response ?? '',
-  resolution: c.resolved_at ? `Resolved on ${formatDate(c.resolved_at)}.` : '',
-  screenshot: c.screenshot_url ?? undefined,
-});
-
-const statusBadge: Record<ComplaintStatus, string> = {
-  Open: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
-  'In Progress': 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400',
-  Resolved: 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
+const statusBadge: Record<string, string> = {
+  open: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
+  in_progress: 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400',
+  resolved: 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
 };
 
 const priorityBadge: Record<Priority, string> = {
@@ -102,42 +79,38 @@ const EMPTY_FORM = {
 };
 
 export const UserComplaints: React.FC = () => {
-  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [complaints, setComplaints] = useState<ComplaintView[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState(EMPTY_FORM);
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<Complaint | null>(null);
+  const [selected, setSelected] = useState<ComplaintView | null>(null);
   const [banner, setBanner] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load only the logged-in user's complaints from the backend.
-  useEffect(() => {
-    let active = true;
+  const loadComplaints = useCallback(async () => {
     setLoading(true);
-    api
-      .get<ApiComplaint[]>('/complaints')
-      .then((list) => {
-        if (active) setComplaints(list.map(mapComplaint));
-      })
-      .catch((err) => {
-        if (active)
-          setError(err instanceof ApiError ? err.message : 'Could not load your complaints.');
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-    return () => {
-      active = false;
-    };
+    setError('');
+    try {
+      const data = await api.listComplaints();
+      setComplaints(data.map(mapComplaint));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to load complaints.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadComplaints();
+  }, [loadComplaints]);
 
   const stats = useMemo(() => ({
     total: complaints.length,
-    open: complaints.filter((c) => c.status === 'Open').length,
-    inProgress: complaints.filter((c) => c.status === 'In Progress').length,
-    resolved: complaints.filter((c) => c.status === 'Resolved').length,
+    open: complaints.filter((c) => c.status === 'open').length,
+    inProgress: complaints.filter((c) => c.status === 'in_progress').length,
+    resolved: complaints.filter((c) => c.status === 'resolved').length,
   }), [complaints]);
 
   const filtered = useMemo(() => {
@@ -145,9 +118,9 @@ export const UserComplaints: React.FC = () => {
     const q = search.toLowerCase();
     return complaints.filter(
       (c) =>
-        c.id.toLowerCase().includes(q) ||
+        c.ticketId.toLowerCase().includes(q) ||
         c.title.toLowerCase().includes(q) ||
-        c.category.toLowerCase().includes(q)
+        c.category.toLowerCase().includes(q),
     );
   }, [complaints, search]);
 
@@ -160,14 +133,14 @@ export const UserComplaints: React.FC = () => {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim() || !form.description.trim() || submitting) return;
+    if (!form.title.trim() || !form.description.trim()) return;
     setSubmitting(true);
-    setError(null);
+    setError('');
     try {
-      const created = await api.post<ApiComplaint>('/complaints', {
+      const created = await api.createComplaint({
         title: form.title.trim(),
         category: form.category,
-        priority: PRIORITY_TO_API[form.priority],
+        priority: toApiPriority(form.priority),
         description: form.description.trim(),
         screenshot_url: form.screenshot || null,
       });
@@ -176,7 +149,7 @@ export const UserComplaints: React.FC = () => {
       setBanner(true);
       setTimeout(() => setBanner(false), 2500);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Could not submit your complaint.');
+      setError(err instanceof ApiError ? err.message : 'Failed to submit complaint.');
     } finally {
       setSubmitting(false);
     }
@@ -201,13 +174,12 @@ export const UserComplaints: React.FC = () => {
         </div>
       )}
 
-      {error && (
-        <div className="mx-8 mt-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm font-medium text-red-700 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-400">
-          {error}
-        </div>
-      )}
-
       <div className="p-8">
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-400">
+            {error}
+          </div>
+        )}
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {summaryCards.map((card) => (
@@ -305,10 +277,10 @@ export const UserComplaints: React.FC = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-60"
                 >
-                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                  {submitting ? 'Submitting…' : 'Submit Complaint'}
+                  <Send className="w-4 h-4" />
+                  Submit Complaint
                 </button>
                 <button
                   type="button"
@@ -349,9 +321,15 @@ export const UserComplaints: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                  {filtered.map((c) => (
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-10 text-center text-sm text-slate-400">
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto text-indigo-500" />
+                      </td>
+                    </tr>
+                  ) : filtered.map((c) => (
                     <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
-                      <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white whitespace-nowrap">{c.id}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white whitespace-nowrap">{c.ticketId}</td>
                       <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 max-w-[160px]">
                         <span className="line-clamp-1">{c.title}</span>
                       </td>
@@ -359,7 +337,7 @@ export const UserComplaints: React.FC = () => {
                       <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">{c.submittedAt}</td>
                       <td className="px-4 py-3">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusBadge[c.status]}`}>
-                          {c.status}
+                          {titleCaseStatus(c.status)}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -373,21 +351,10 @@ export const UserComplaints: React.FC = () => {
                       </td>
                     </tr>
                   ))}
-                  {loading && (
-                    <tr>
-                      <td colSpan={6} className="px-4 py-10 text-center text-sm text-slate-400">
-                        <span className="inline-flex items-center gap-2">
-                          <Loader2 className="w-4 h-4 animate-spin" /> Loading your complaints…
-                        </span>
-                      </td>
-                    </tr>
-                  )}
                   {!loading && filtered.length === 0 && (
                     <tr>
                       <td colSpan={6} className="px-4 py-10 text-center text-sm text-slate-400">
-                        {complaints.length === 0
-                          ? "You haven't raised any complaints yet."
-                          : 'No complaints match your search.'}
+                        No complaints found.
                       </td>
                     </tr>
                   )}
@@ -411,7 +378,7 @@ export const UserComplaints: React.FC = () => {
             <div className="flex items-start justify-between p-6 border-b border-slate-200 dark:border-slate-700">
               <div>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">{selected.title}</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{selected.id}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{selected.ticketId}</p>
               </div>
               <button
                 onClick={() => setSelected(null)}
@@ -434,7 +401,7 @@ export const UserComplaints: React.FC = () => {
                 <div>
                   <p className="text-xs font-medium text-slate-400 mb-1">Current Status</p>
                   <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusBadge[selected.status]}`}>
-                    {selected.status}
+                    {titleCaseStatus(selected.status)}
                   </span>
                 </div>
               </div>
