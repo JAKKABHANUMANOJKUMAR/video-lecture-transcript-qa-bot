@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import Base, SessionLocal, engine
 from app.routers import alerts, analytics, auth, chats, complaints, users, videos
+from app.schema_bootstrap import apply_schema_patches
 from app.seed import seed_demo_accounts
 
 
@@ -13,6 +14,7 @@ from app.seed import seed_demo_accounts
 async def lifespan(app: FastAPI):
     # Create all tables on startup (simple bootstrap; use Alembic for migrations in prod)
     Base.metadata.create_all(bind=engine)
+    apply_schema_patches()
     if settings.SEED_DEMO_DATA:
         db = SessionLocal()
         try:

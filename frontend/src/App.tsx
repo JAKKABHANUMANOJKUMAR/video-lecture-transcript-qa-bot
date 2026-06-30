@@ -13,13 +13,32 @@ import { UserRecent } from './pages/UserRecent';
 import { UserComplaints } from './pages/UserComplaints';
 import { UserSettings } from './pages/UserSettings';
 import { UserSidebar } from './components/UserSidebar';
+import { api, type ApiChatSession } from './lib/api';
+
+function fromApiChat(s: ApiChatSession): ChatSession {
+  return {
+    id: s.id,
+    title: s.title,
+    messages: s.messages.map((m) => ({
+      id: m.id,
+      role: m.role as 'user' | 'bot',
+      content: m.content,
+    })),
+    videoName: s.video_name ?? '',
+    videoId: s.video_id,
+    step: s.step,
+    updatedAt: new Date(s.updated_at).getTime(),
+    transcriptId: s.transcript_id,
+    mediaKey: s.video_id ?? s.transcript_id,
+    transcript: null,
+  };
+}
 
 function AppContent() {
   const { user, profile, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // User chat session history (shared between New Chat and Recent)
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [newChatNonce, setNewChatNonce] = useState(0);
@@ -36,17 +55,45 @@ function AppContent() {
     });
   }, []);
 
-  const openChat = (id: string) => {
+  const openChat = async (id: string) => {
+    try {
+      const chat = await api.getChat(id);
+      persistSession(fromApiChat(chat));
+    } catch {
+      /* fall back to cached session if fetch fails */
+    }
     setActiveChatId(id);
     setActiveTab('chat');
   };
 
-  const deleteSession = (id: string) => {
+  const deleteSession = async (id: string) => {
+    try {
+      await api.deleteChat(id);
+    } catch {
+      /* ignore */
+    }
     setChatSessions((prev) => prev.filter((s) => s.id !== id));
     setActiveChatId((cur) => (cur === id ? null : cur));
   };
 
-  // Land non-admin users directly on the New Chat page after login
+  useEffect(() => {
+    if (profile?.role === 'user') {
+      api
+        .listChats()
+        .then((chats) => setChatSessions(chats.map(fromApiChat)))
+        .catch(() => setChatSessions([]));
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    if (profile?.role === 'user' && activeTab === 'recent') {
+      api
+        .listChats()
+        .then((chats) => setChatSessions(chats.map(fromApiChat)))
+        .catch(() => {});
+    }
+  }, [profile, activeTab]);
+
   useEffect(() => {
     if (profile && profile.role !== 'admin') {
       setActiveTab('chat');

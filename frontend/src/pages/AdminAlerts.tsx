@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AlertCircle,
   MessageSquareWarning,
@@ -16,6 +16,7 @@ import {
   X,
   User,
 } from 'lucide-react';
+import { api, ApiAlert, ApiError, formatDateTime, titleCaseStatus } from '../lib/api';
 
 type Priority = 'Low' | 'Medium' | 'High';
 type Status = 'Open' | 'In Progress' | 'Resolved';
@@ -46,45 +47,6 @@ interface SummaryCard {
   trendUp: boolean;
 }
 
-const SUMMARY_CARDS: SummaryCard[] = [
-  {
-    title: 'Open Alerts',
-    count: 18,
-    icon: <AlertCircle className="w-6 h-6" />,
-    accent: 'text-red-600',
-    iconBg: 'bg-red-50',
-    trend: '+12% vs last week',
-    trendUp: true,
-  },
-  {
-    title: 'Pending Complaints',
-    count: 7,
-    icon: <MessageSquareWarning className="w-6 h-6" />,
-    accent: 'text-amber-600',
-    iconBg: 'bg-amber-50',
-    trend: '+3 new today',
-    trendUp: true,
-  },
-  {
-    title: 'System Warnings',
-    count: 4,
-    icon: <ShieldAlert className="w-6 h-6" />,
-    accent: 'text-blue-600',
-    iconBg: 'bg-blue-50',
-    trend: '-2 vs yesterday',
-    trendUp: false,
-  },
-  {
-    title: 'Resolved Alerts',
-    count: 142,
-    icon: <CheckCircle2 className="w-6 h-6" />,
-    accent: 'text-green-600',
-    iconBg: 'bg-green-50',
-    trend: '+8% this month',
-    trendUp: true,
-  },
-];
-
 const FILTER_TABS: { id: string; label: string }[] = [
   { id: 'all', label: 'All Alerts' },
   { id: 'complaint', label: 'Complaints' },
@@ -93,114 +55,36 @@ const FILTER_TABS: { id: string; label: string }[] = [
   { id: 'resolved', label: 'Resolved' },
 ];
 
-const INITIAL_ALERTS: AlertRecord[] = [
-  {
-    id: 'ALT-1001',
-    type: 'Complaint',
-    category: 'complaint',
-    userName: 'John Doe',
-    userEmail: 'john@example.com',
-    message: 'Transcript answer was inaccurate for Lecture 12',
-    description:
-      'The Q&A bot returned an incorrect summary when asked about the key topics covered in Lecture 12. The response referenced content from a different lecture entirely.',
-    createdAt: '2026-06-07 10:42 AM',
-    priority: 'High',
-    status: 'Open',
-    adminNotes: 'Escalated to transcript processing team for review.',
-    history: [
-      { label: 'Complaint submitted by John Doe', time: '2026-06-07 10:42 AM' },
-      { label: 'Auto-assigned to Support Queue', time: '2026-06-07 10:43 AM' },
-    ],
-  },
-  {
-    id: 'ALT-1002',
-    type: 'Transcript Failure',
-    category: 'system',
-    userName: 'System',
-    userEmail: 'system@askora.ai',
-    message: 'Failed to generate transcript for video_123',
-    description:
-      'The transcription pipeline timed out while processing video_123. The job has been retried twice without success.',
-    createdAt: '2026-06-07 09:15 AM',
-    priority: 'Medium',
-    status: 'In Progress',
-    adminNotes: 'Investigating worker node memory limits.',
-    history: [
-      { label: 'System raised transcript failure', time: '2026-06-07 09:15 AM' },
-      { label: 'Status changed to In Progress', time: '2026-06-07 09:30 AM' },
-    ],
-  },
-  {
-    id: 'ALT-1003',
-    type: 'Security Alert',
-    category: 'security',
-    userName: 'Jane Smith',
-    userEmail: 'jane@example.com',
-    message: 'Multiple failed login attempts detected',
-    description:
-      '5 consecutive failed login attempts were detected from an unrecognized IP address for this account within 2 minutes.',
-    createdAt: '2026-06-06 11:58 PM',
-    priority: 'High',
-    status: 'Open',
-    adminNotes: 'Temporary account lock applied. Awaiting user verification.',
-    history: [
-      { label: 'Security alert triggered', time: '2026-06-06 11:58 PM' },
-      { label: 'Account temporarily locked', time: '2026-06-06 11:59 PM' },
-    ],
-  },
-  {
-    id: 'ALT-1004',
-    type: 'System Warning',
-    category: 'system',
-    userName: 'System',
-    userEmail: 'system@askora.ai',
-    message: 'System memory usage above 80%',
-    description:
-      'Average memory utilization on the application servers exceeded 80% over a 15-minute window.',
-    createdAt: '2026-06-06 08:20 PM',
-    priority: 'Low',
-    status: 'In Progress',
-    adminNotes: 'Monitoring autoscaling behavior.',
-    history: [{ label: 'Warning generated', time: '2026-06-06 08:20 PM' }],
-  },
-  {
-    id: 'ALT-1005',
-    type: 'Complaint',
-    category: 'complaint',
-    userName: 'Mike Johnson',
-    userEmail: 'mike@example.com',
-    message: 'Unable to access lecture library',
-    description:
-      'User reported a blank screen when opening the lecture library section on mobile devices.',
-    createdAt: '2026-06-05 03:10 PM',
-    priority: 'Medium',
-    status: 'Resolved',
-    adminNotes: 'Fixed mobile rendering bug in library view. Deployed in v1.2.3.',
-    history: [
-      { label: 'Complaint submitted by Mike Johnson', time: '2026-06-05 03:10 PM' },
-      { label: 'Fix deployed', time: '2026-06-05 06:45 PM' },
-      { label: 'Marked as Resolved', time: '2026-06-05 06:50 PM' },
-    ],
-  },
-  {
-    id: 'ALT-1006',
-    type: 'Complaint',
-    category: 'complaint',
-    userName: 'Sarah Williams',
-    userEmail: 'sarah@example.com',
-    message: 'Requesting transcript download feature',
-    description:
-      'User would like the ability to export lecture transcripts as PDF for offline study.',
-    createdAt: '2026-06-05 01:25 PM',
-    priority: 'Low',
-    status: 'Resolved',
-    adminNotes: 'Feature request logged in product backlog.',
-    history: [
-      { label: 'Feedback submitted', time: '2026-06-05 01:25 PM' },
-      { label: 'Logged as feature request', time: '2026-06-05 02:00 PM' },
-    ],
-  },
-];
+function mapAlert(a: ApiAlert): AlertRecord {
+  const statusMap: Record<string, Status> = {
+    open: 'Open',
+    in_progress: 'In Progress',
+    resolved: 'Resolved',
+  };
+  const priorityMap: Record<string, Priority> = {
+    low: 'Low',
+    medium: 'Medium',
+    high: 'High',
+  };
+  return {
+    id: a.id,
+    type: titleCaseStatus(a.alert_type),
+    category: (a.alert_type === 'complaint' || a.alert_type === 'system' || a.alert_type === 'security'
+      ? a.alert_type
+      : 'system') as AlertCategory,
+    userName: a.user_name || 'System',
+    userEmail: '',
+    message: a.message,
+    description: a.admin_notes || a.message,
+    createdAt: formatDateTime(a.created_at),
+    priority: priorityMap[a.priority] || 'Medium',
+    status: statusMap[a.status] || 'Open',
+    adminNotes: a.admin_notes || '',
+    history: [{ label: a.message, time: formatDateTime(a.created_at) }],
+  };
+}
+
+const INITIAL_ALERTS: AlertRecord[] = [];
 
 interface RecentNotification {
   icon: React.ReactNode;
@@ -208,39 +92,6 @@ interface RecentNotification {
   description: string;
   time: string;
 }
-
-const RECENT_NOTIFICATIONS: RecentNotification[] = [
-  {
-    icon: <MessageSquareWarning className="w-4 h-4 text-amber-600" />,
-    iconBg: 'bg-amber-50',
-    description: 'New complaint submitted by John Doe',
-    time: '2 min ago',
-  },
-  {
-    icon: <AlertCircle className="w-4 h-4 text-red-600" />,
-    iconBg: 'bg-red-50',
-    description: 'Transcript processing failure for video_123',
-    time: '1 hr ago',
-  },
-  {
-    icon: <ShieldAlert className="w-4 h-4 text-purple-600" />,
-    iconBg: 'bg-purple-50',
-    description: 'Multiple failed login attempts detected',
-    time: '3 hrs ago',
-  },
-  {
-    icon: <Bell className="w-4 h-4 text-blue-600" />,
-    iconBg: 'bg-blue-50',
-    description: 'System warning: memory usage above 80%',
-    time: '5 hrs ago',
-  },
-  {
-    icon: <CheckCircle2 className="w-4 h-4 text-green-600" />,
-    iconBg: 'bg-green-50',
-    description: 'Complaint #1005 has been resolved',
-    time: 'Yesterday',
-  },
-];
 
 const priorityStyles: Record<Priority, string> = {
   Low: 'bg-slate-100 text-slate-700',
@@ -258,11 +109,91 @@ const STATUS_FILTERS: ('All' | Status)[] = ['All', 'Open', 'In Progress', 'Resol
 
 export const AdminAlerts: React.FC = () => {
   const [alerts, setAlerts] = useState<AlertRecord[]>(INITIAL_ALERTS);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [dateFilter, setDateFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<'All' | Status>('All');
   const [selectedAlert, setSelectedAlert] = useState<AlertRecord | null>(null);
+
+  const loadAlerts = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await api.listAlerts();
+      setAlerts(data.map(mapAlert));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to load alerts.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadAlerts();
+  }, [loadAlerts]);
+
+  const summaryCards = useMemo((): SummaryCard[] => {
+    const open = alerts.filter((a) => a.status === 'Open').length;
+    const complaints = alerts.filter((a) => a.category === 'complaint').length;
+    const system = alerts.filter((a) => a.category === 'system').length;
+    const resolved = alerts.filter((a) => a.status === 'Resolved').length;
+    return [
+      {
+        title: 'Open Alerts',
+        count: open,
+        icon: <AlertCircle className="w-6 h-6" />,
+        accent: 'text-red-600',
+        iconBg: 'bg-red-50',
+        trend: `${alerts.length} total`,
+        trendUp: open > 0,
+      },
+      {
+        title: 'Complaint Alerts',
+        count: complaints,
+        icon: <MessageSquareWarning className="w-6 h-6" />,
+        accent: 'text-amber-600',
+        iconBg: 'bg-amber-50',
+        trend: 'From database',
+        trendUp: true,
+      },
+      {
+        title: 'System Alerts',
+        count: system,
+        icon: <ShieldAlert className="w-6 h-6" />,
+        accent: 'text-blue-600',
+        iconBg: 'bg-blue-50',
+        trend: 'Live count',
+        trendUp: false,
+      },
+      {
+        title: 'Resolved Alerts',
+        count: resolved,
+        icon: <CheckCircle2 className="w-6 h-6" />,
+        accent: 'text-green-600',
+        iconBg: 'bg-green-50',
+        trend: 'All time',
+        trendUp: true,
+      },
+    ];
+  }, [alerts]);
+
+  const recentNotifications = useMemo((): RecentNotification[] => {
+    return alerts.slice(0, 5).map((a) => ({
+      icon:
+        a.category === 'complaint' ? (
+          <MessageSquareWarning className="w-4 h-4 text-amber-600" />
+        ) : a.category === 'security' ? (
+          <ShieldAlert className="w-4 h-4 text-purple-600" />
+        ) : (
+          <AlertCircle className="w-4 h-4 text-red-600" />
+        ),
+      iconBg: 'bg-slate-50',
+      description: a.message,
+      time: a.createdAt,
+    }));
+  }, [alerts]);
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter((alert) => {
@@ -290,24 +221,37 @@ export const AdminAlerts: React.FC = () => {
     });
   }, [alerts, activeFilter, statusFilter, search]);
 
-  const cycleStatus = (id: string) => {
-    setAlerts((prev) =>
-      prev.map((a) => {
-        if (a.id !== id) return a;
-        const next: Status =
-          a.status === 'Open' ? 'In Progress' : a.status === 'In Progress' ? 'Resolved' : 'Open';
-        return { ...a, status: next };
-      })
-    );
+  const cycleStatus = async (id: string) => {
+    const alert = alerts.find((a) => a.id === id);
+    if (!alert) return;
+    const next: Status =
+      alert.status === 'Open' ? 'In Progress' : alert.status === 'In Progress' ? 'Resolved' : 'Open';
+    const apiStatus = next.toLowerCase().replace(/ /g, '_');
+    try {
+      await api.updateAlert(id, { status: apiStatus });
+      setAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status: next } : a)));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to update alert.');
+    }
   };
 
-  const markResolved = (id: string) => {
-    setAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'Resolved' } : a)));
+  const markResolved = async (id: string) => {
+    try {
+      await api.updateAlert(id, { status: 'resolved' });
+      setAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status: 'Resolved' } : a)));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to resolve alert.');
+    }
   };
 
-  const deleteAlert = (id: string) => {
-    setAlerts((prev) => prev.filter((a) => a.id !== id));
-    setSelectedAlert((cur) => (cur?.id === id ? null : cur));
+  const deleteAlert = async (id: string) => {
+    try {
+      await api.deleteAlert(id);
+      setAlerts((prev) => prev.filter((a) => a.id !== id));
+      setSelectedAlert((cur) => (cur?.id === id ? null : cur));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to delete alert.');
+    }
   };
 
   return (
@@ -319,9 +263,17 @@ export const AdminAlerts: React.FC = () => {
       </div>
 
       <div className="p-8">
+        {loading && (
+          <div className="mb-4 text-sm text-slate-500">Loading alerts…</div>
+        )}
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+            {error}
+          </div>
+        )}
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {SUMMARY_CARDS.map((card) => (
+          {summaryCards.map((card) => (
             <div
               key={card.title}
               className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm"
@@ -501,7 +453,7 @@ export const AdminAlerts: React.FC = () => {
                 <h2 className="text-base font-semibold text-slate-900 dark:text-white">Recent Alerts</h2>
               </div>
               <div className="space-y-4">
-                {RECENT_NOTIFICATIONS.map((note, i) => (
+                {recentNotifications.map((note, i) => (
                   <div key={i} className="flex gap-3">
                     <div className={`w-8 h-8 rounded-lg ${note.iconBg} flex items-center justify-center flex-shrink-0`}>
                       {note.icon}

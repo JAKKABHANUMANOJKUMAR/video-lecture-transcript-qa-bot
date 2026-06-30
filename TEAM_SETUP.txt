@@ -1,0 +1,345 @@
+================================================================================
+ASK ORA - TEAM SETUP GUIDE (After Pulling from GitHub)
+================================================================================
+
+Repository:
+  https://github.com/JAKKABHANUMANOJKUMAR/video-lecture-transcript-qa-bot.git
+
+This file lists everything a new team member must install and configure
+after cloning the project.
+
+
+================================================================================
+1. SOFTWARE TO INSTALL (on your machine)
+================================================================================
+
+Install these BEFORE running the application:
+
+  [Required] Git
+    Download: https://git-scm.com/downloads
+    Check:    git --version
+
+  [Required] Python 3.10 or newer (3.12 recommended)
+    Download: https://www.python.org/downloads/
+    Check:    python --version
+    Note:     During install, tick "Add Python to PATH"
+
+  [Required] Node.js 18 or newer (includes npm)
+    Download: https://nodejs.org/
+    Check:    node --version
+              npm --version
+
+  [Required] PostgreSQL 16 or 18
+    Download: https://www.postgresql.org/download/
+    Remember the postgres user password you set during install
+    Check:    PostgreSQL service running in Windows Services
+
+  [Required] ffmpeg (for Whisper audio extraction from video)
+    Windows:  winget install Gyan.FFmpeg
+    Check:    ffmpeg -version
+
+  [Required] Groq API key (free - for AI answers)
+    Sign up:  https://console.groq.com/keys
+    Create a key and save it - needed in rag/.env
+
+  [Optional] pgAdmin 4 (GUI to view PostgreSQL tables)
+    Usually installed with PostgreSQL
+
+
+================================================================================
+2. CLONE THE REPOSITORY
+================================================================================
+
+  git clone https://github.com/JAKKABHANUMANOJKUMAR/video-lecture-transcript-qa-bot.git
+  cd video-lecture-transcript-qa-bot
+
+Project folder structure after clone:
+
+  frontend/     React UI (Vite + TypeScript)
+  backend/      FastAPI auth, users, complaints, chat API
+  rag/          RAG pipeline (Whisper, ChromaDB, Groq)
+  run-services.ps1     Start all services (Windows)
+  RUN_COMMANDS.txt     Quick run commands
+  APPLICATION_WORKFLOW.txt   How the app works
+
+
+================================================================================
+3. WHAT IS NOT IN GITHUB (you create locally)
+================================================================================
+
+These are gitignored and NOT pulled from GitHub:
+
+  backend/.env          Backend secrets and DB password
+  rag/.env              Groq key and DB password
+  frontend/.env         Frontend API URLs
+  backend/.venv/        Python virtual environment
+  rag/.venv/            Python virtual environment
+  frontend/node_modules/  npm packages
+  rag/chroma_db/        Vector database (created after first video upload)
+
+Each team member creates their own .env files and installs dependencies locally.
+
+
+================================================================================
+4. POSTGRESQL DATABASE SETUP
+================================================================================
+
+Step 1: Make sure PostgreSQL service is running
+
+Step 2: Create the database (from project root):
+
+  cd backend
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+  python create_db.py
+
+This creates database: video_lecture_transcript
+
+Tables are auto-created when backend and RAG services start for the first time.
+
+
+================================================================================
+5. BACKEND SETUP
+================================================================================
+
+  cd backend
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+
+Create environment file:
+
+  copy .env.example .env
+
+Edit backend/.env with your values:
+
+  POSTGRES_SERVER=localhost
+  POSTGRES_PORT=5432
+  POSTGRES_USER=postgres
+  POSTGRES_PASSWORD=YOUR_POSTGRES_PASSWORD
+  POSTGRES_DB=video_lecture_transcript
+  SECRET_KEY=any-long-random-string
+  BACKEND_CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+  SEED_DEMO_DATA=true
+
+Test backend alone:
+
+  uvicorn app.main:app --reload --port 8000
+
+Open: http://localhost:8000/docs
+
+
+================================================================================
+6. RAG SERVICE SETUP
+================================================================================
+
+  cd rag
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+
+Note: First pip install takes 10-20 minutes (downloads PyTorch, Whisper, etc.)
+
+Create environment file:
+
+  copy .env.example .env
+
+Edit rag/.env with your values:
+
+  POSTGRES_SERVER=localhost
+  POSTGRES_PORT=5432
+  POSTGRES_USER=postgres
+  POSTGRES_PASSWORD=YOUR_POSTGRES_PASSWORD
+  POSTGRES_DB=video_lecture_transcript
+  GROQ_API_KEY=gsk_your_key_from_console.groq.com
+  GROQ_MODEL=llama-3.3-70b-versatile
+  WHISPER_MODEL=base
+  EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+  CHROMA_DIR=chroma_db
+  CHROMA_COLLECTION=transcripts
+  TOP_K=4
+  CHUNK_SIZE=1000
+  CHUNK_OVERLAP=150
+
+Test RAG alone (from project root, not inside rag folder):
+
+  cd ..
+  .\rag\.venv\Scripts\python.exe -m uvicorn rag.app:app --reload --port 8100
+
+Open: http://localhost:8100/docs
+Chroma viewer: http://localhost:8100/viewer
+
+
+================================================================================
+7. FRONTEND SETUP
+================================================================================
+
+  cd frontend
+  npm install
+
+Create frontend/.env file (this file is not in GitHub - create manually):
+
+  VITE_API_URL=http://localhost:8000/api
+  VITE_RAG_API_URL=http://localhost:8100
+
+Test frontend alone:
+
+  npm run dev
+
+Open: http://localhost:5173
+
+
+================================================================================
+8. RUN ALL SERVICES TOGETHER
+================================================================================
+
+From project root:
+
+  .\run-services.ps1
+
+OR double-click: run-services.bat
+
+This opens 3 terminals:
+  Backend  -> http://localhost:8000
+  RAG      -> http://localhost:8100
+  Frontend -> http://localhost:5173
+
+See RUN_COMMANDS.txt for manual terminal commands.
+
+
+================================================================================
+9. LOGIN CREDENTIALS (demo accounts - auto-created on first backend start)
+================================================================================
+
+  User login:   user@example.com    / password
+  Admin login:  admin@example.com   / password
+
+User module: New Chat, upload video, ask questions
+Admin module: Dashboard, users, alerts, analytics
+
+
+================================================================================
+10. FIRST TEST AFTER SETUP
+================================================================================
+
+1. Open http://localhost:5173
+2. Login as user@example.com / password
+3. Go to New Chat
+4. Click Upload Video and select a short mp3 or mp4 file
+5. Wait for "Video processed and ready" on left panel
+6. Type a question on the right panel
+7. Answer should appear on the left panel
+
+Optional CLI test:
+
+  .\rag\.venv\Scripts\python.exe -m rag.ingest "C:\path\to\video.mp4" --title "Test"
+  .\rag\.venv\Scripts\python.exe -m rag.query "What is this about?"
+
+
+================================================================================
+11. ENV FILES CHECKLIST (all 3 required)
+================================================================================
+
+  [ ] backend/.env       copy from backend/.env.example
+  [ ] rag/.env           copy from rag/.env.example  + add GROQ_API_KEY
+  [ ] frontend/.env      create manually (see section 7)
+
+All three must use the SAME PostgreSQL password and database name.
+
+
+================================================================================
+12. PORTS USED (make sure these are free)
+================================================================================
+
+  5173  Frontend (Vite)
+  8000  Backend API
+  8100  RAG service
+  5432  PostgreSQL
+
+If port 8000 or 8100 is busy, stop old processes or change ports in .env files.
+
+
+================================================================================
+13. COMMON ERRORS AND FIXES
+================================================================================
+
+  "Cannot reach the server" on login
+    -> Start backend: uvicorn app.main:app --port 8000
+
+  "Cannot reach the RAG service" on video upload
+    -> Start RAG: uvicorn rag.app:app --port 8100
+
+  PostgreSQL connection failed
+    -> Check PostgreSQL is running
+    -> Check password in backend/.env and rag/.env match
+
+  ffmpeg not found / Whisper fails
+    -> Install ffmpeg: winget install Gyan.FFmpeg
+    -> Restart terminal after install
+
+  Groq error / no answer
+    -> Add valid GROQ_API_KEY in rag/.env
+
+  Port already in use (WinError 10048)
+    -> Kill old process: Get-NetTCPConnection -LocalPort 8000
+    -> Stop-Process -Id <PID> -Force
+
+  npm not found
+    -> Install Node.js and restart terminal
+
+  Module not found Python
+    -> Activate venv: .\.venv\Scripts\Activate.ps1
+    -> pip install -r requirements.txt again
+
+
+================================================================================
+14. USEFUL DOCUMENTATION FILES IN REPO
+================================================================================
+
+  RUN_COMMANDS.txt           Commands to start services
+  APPLICATION_WORKFLOW.txt   Full application flow explained
+  backend/README.md          Backend API details
+  rag/README.md              RAG pipeline details
+  DEPLOY-FREE-ONE-CLOUD.md   Deploy all on one free cloud VM
+  DEPLOYMENT.md              Deploy on Render + Vercel + Neon
+
+
+================================================================================
+15. QUICK SETUP SUMMARY (copy-paste order for Windows)
+================================================================================
+
+  git clone https://github.com/JAKKABHANUMANOJKUMAR/video-lecture-transcript-qa-bot.git
+  cd video-lecture-transcript-qa-bot
+
+  cd backend
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+  copy .env.example .env
+  (edit .env - set POSTGRES_PASSWORD)
+  python create_db.py
+  cd ..
+
+  cd rag
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+  copy .env.example .env
+  (edit .env - set POSTGRES_PASSWORD and GROQ_API_KEY)
+  cd ..
+
+  cd frontend
+  npm install
+  (create .env with VITE_API_URL and VITE_RAG_API_URL - see section 7)
+  cd ..
+
+  winget install Gyan.FFmpeg
+
+  .\run-services.ps1
+
+  Open http://localhost:5173
+
+================================================================================
+END OF TEAM SETUP GUIDE
+================================================================================

@@ -10,8 +10,10 @@ import {
   Loader2,
   Languages,
   Clock,
+  BookOpen,
 } from 'lucide-react';
-import { rag, RagError } from '../lib/rag';
+import { rag, RagError, mediaUrl, type IngestProgress, type QuerySource } from '../lib/rag';
+import { api } from '../lib/api';
 
 type Stage = 'welcome' | 'compose' | 'workspace';
 
@@ -19,6 +21,7 @@ export interface ChatMessage {
   id: string;
   role: 'user' | 'bot';
   content: string;
+  sources?: QuerySource[];
 }
 
 export interface TranscriptInfo {
@@ -33,6 +36,8 @@ export interface ChatSession {
   title: string;
   messages: ChatMessage[];
   videoName: string;
+  videoId?: string | null;
+  mediaKey?: string | null;
   step: number;
   updatedAt: number;
   transcriptId?: string | null;
@@ -87,6 +92,48 @@ const formatDuration = (seconds: number) => {
   return `${m}m ${s}s`;
 };
 
+const formatTimestamp = (seconds: number | null | undefined) => {
+  if (seconds == null) return '0:00';
+  const total = Math.max(0, Math.floor(seconds));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+};
+
+
+const STAGE_LABELS: Record<string, string> = {
+  uploading: 'Uploading',
+  processing: 'Processing',
+  loading_model: 'Loading model',
+  extracting_audio: 'Extracting audio',
+  transcribing: 'Transcribing',
+  translating: 'Translating',
+  saving: 'Saving',
+  chunking: 'Chunking',
+  embedding: 'Indexing',
+  complete: 'Complete',
+};
+
+const ProcessingProgress: React.FC<{ progress: IngestProgress }> = ({ progress }) => (
+  <div className="w-full max-w-md mx-auto space-y-4">
+    <div className="flex items-center justify-between text-sm">
+      <span className="font-medium text-slate-700 dark:text-slate-200">
+        {STAGE_LABELS[progress.stage] ?? 'Processing'}
+      </span>
+      <span className="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">
+        {progress.percent}%
+      </span>
+    </div>
+    <div className="h-3 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+      <div
+        className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500 ease-out"
+        style={{ width: `${progress.percent}%` }}
+      />
+    </div>
+    <p className="text-sm text-slate-500 dark:text-slate-400 text-center">{progress.message}</p>
+  </div>
+);
+
 export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, onPersist }) => {
   const [sessionId, setSessionId] = useState(() => initialSession?.id ?? makeId());
   const [stage, setStage] = useState<Stage>(initialSession ? 'workspace' : 'welcome');
@@ -96,6 +143,14 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
   const [typing, setTyping] = useState(false);
   const [activeChip, setActiveChip] = useState('notes');
   const [videoName, setVideoName] = useState(initialSession?.videoName ?? '');
+  const [videoId, setVideoId] = useState<string | null>(initialSession?.videoId ?? null);
+  const [mediaKey, setMediaKey] = useState<string | null>(
+    initialSession?.mediaKey ?? initialSession?.videoId ?? initialSession?.transcriptId ?? null,
+  );
+  const [videoUrl, setVideoUrl] = useState<string | null>(() =>
+    mediaUrl(initialSession?.mediaKey ?? initialSession?.videoId ?? initialSession?.transcriptId ?? null),
+  );
+  const [searchAllLectures, setSearchAllLectures] = useState(false);
   const [transcriptId, setTranscriptId] = useState<string | null>(
     initialSession?.transcriptId ?? null,
   );
@@ -103,9 +158,17 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     initialSession?.transcript ?? null,
   );
   const [processing, setProcessing] = useState(false);
+  const [ingestProgress, setIngestProgress] = useState<IngestProgress>({
+    percent: 0,
+    stage: 'uploading',
+    message: 'Starting…',
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const blobUrlRef = useRef<string | null>(null);
   const answersEndRef = useRef<HTMLDivElement>(null);
   const questionsEndRef = useRef<HTMLDivElement>(null);
+  const syncedRef = useRef(!!initialSession);
 
   const userMessages = messages.filter((m) => m.role === 'user');
   const botMessages = messages.filter((m) => m.role === 'bot');
@@ -119,21 +182,73 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
   }, [userMessages]);
 
   useEffect(() => {
-    if (stage === 'workspace' && messages.length > 0 && onPersist) {
-      onPersist({
-        id: sessionId,
-        title: messages[0]?.content?.slice(0, 60) || 'New chat',
-        messages,
-        videoName,
-        step: 0,
-        updatedAt: Date.now(),
-        transcriptId,
-        transcript,
-      });
-    }
-  }, [messages, videoName, stage, sessionId, transcriptId, transcript, onPersist]);
+    return () => {
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (stage !== 'workspace' || messages.length === 0) return;
+
+    const session: ChatSession = {
+      id: sessionId,
+      title: messages[0]?.content?.slice(0, 60) || 'New chat',
+      messages,
+      videoName,
+      videoId,
+      mediaKey,
+      step: 0,
+      updatedAt: Date.now(),
+      transcriptId,
+      transcript,
+    };
+    onPersist?.(session);
+
+    const payload = {
+      title: session.title,
+      video_name: session.videoName || null,
+      video_id: session.videoId || null,
+      transcript_id: session.transcriptId || null,
+      step: session.step,
+      messages: session.messages.map((m) => ({ role: m.role, content: m.content })),
+    };
+
+    const sync = async () => {
+      try {
+        if (!syncedRef.current) {
+          const created = await api.createChat(payload);
+          syncedRef.current = true;
+          if (created.id !== sessionId) {
+            setSessionId(created.id);
+            onPersist?.({ ...session, id: created.id });
+          }
+        } else {
+          await api.updateChat(sessionId, payload);
+        }
+      } catch {
+        if (syncedRef.current) {
+          syncedRef.current = false;
+          try {
+            const created = await api.createChat(payload);
+            syncedRef.current = true;
+            if (created.id !== sessionId) {
+              setSessionId(created.id);
+              onPersist?.({ ...session, id: created.id });
+            }
+          } catch {
+            /* backend sync is best-effort */
+          }
+        }
+      }
+    };
+    sync();
+  }, [messages, videoName, videoId, mediaKey, stage, sessionId, transcriptId, transcript, onPersist]);
 
   const reset = () => {
+    syncedRef.current = false;
     setSessionId(makeId());
     setStage('welcome');
     setInput('');
@@ -142,15 +257,28 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     setTyping(false);
     setActiveChip('notes');
     setVideoName('');
+    setVideoId(null);
+    setMediaKey(null);
+    setVideoUrl(null);
+    setSearchAllLectures(false);
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current);
+      blobUrlRef.current = null;
+    }
     setTranscriptId(null);
     setTranscript(null);
     setProcessing(false);
+    setIngestProgress({ percent: 0, stage: 'uploading', message: 'Starting…' });
   };
 
   const openFilePicker = () => fileInputRef.current?.click();
 
-  const appendMessage = (role: ChatMessage['role'], content: string) => {
-    setMessages((prev) => [...prev, { id: makeId(), role, content }]);
+  const appendMessage = (
+    role: ChatMessage['role'],
+    content: string,
+    sources?: QuerySource[],
+  ) => {
+    setMessages((prev) => [...prev, { id: makeId(), role, content, sources }]);
   };
 
   const handleVideoSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,12 +288,44 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
 
     setVideoName(file.name);
     setStage('workspace');
+    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+    blobUrlRef.current = URL.createObjectURL(file);
+    setVideoUrl(blobUrlRef.current);
     appendMessage('user', `Uploaded video: ${file.name}`);
     setProcessing(true);
-    setTyping(true);
+    setIngestProgress({ percent: 0, stage: 'uploading', message: 'Uploading video…' });
+
+    const sizeMb = Math.max(1, Math.round(file.size / (1024 * 1024)));
+    let videoId: string | undefined;
+    try {
+      const video = await api.createVideo({
+        title: file.name,
+        size_mb: sizeMb,
+        status: 'processing',
+      });
+      videoId = video.id;
+      setVideoId(video.id);
+      setMediaKey(video.id);
+    } catch {
+      /* library record optional */
+    }
 
     try {
-      const res = await rag.ingest(file, file.name);
+      const res = await rag.ingestWithProgress(file, setIngestProgress, file.name, videoId);
+      if (videoId) {
+        await api.updateVideo(videoId, {
+          status: 'processed',
+          duration_seconds: Math.round(res.duration_seconds),
+        });
+      }
+      const key = res.media_key ?? videoId ?? res.transcript_id;
+      setMediaKey(key);
+      setVideoUrl(mediaUrl(key));
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
+      }
+      setIngestProgress({ percent: 100, stage: 'complete', message: 'Video processed and ready.' });
       setTranscriptId(res.transcript_id);
       setTranscript({
         id: res.transcript_id,
@@ -180,6 +340,9 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
         )}, ${res.num_chunks} sections). Ask me anything about this video!`,
       );
     } catch (err) {
+      if (videoId) {
+        await api.updateVideo(videoId, { status: 'failed' }).catch(() => {});
+      }
       const msg =
         err instanceof RagError
           ? err.message
@@ -187,7 +350,6 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
       appendMessage('bot', `Sorry, I couldn't process that video. ${msg}`);
     } finally {
       setProcessing(false);
-      setTyping(false);
     }
   };
 
@@ -200,8 +362,12 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     setTyping(true);
 
     try {
-      const res = await rag.query(text, transcriptId);
-      appendMessage('bot', res.answer);
+      const res = await rag.query(text, {
+        transcriptId: searchAllLectures ? null : transcriptId,
+        videoId: searchAllLectures ? null : videoId,
+        searchAll: searchAllLectures,
+      });
+      appendMessage('bot', res.answer, res.sources);
     } catch (err) {
       const msg =
         err instanceof RagError ? err.message : 'Something went wrong while answering.';
@@ -358,6 +524,17 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
           <ResetButton onClick={reset} />
         </div>
 
+        {videoUrl && (
+          <div className="px-6 pt-4">
+            <video
+              ref={videoRef}
+              src={videoUrl}
+              controls
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-black max-h-52 object-contain"
+            />
+          </div>
+        )}
+
         {videoName && (
           <div className="px-6 pt-4">
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/15 text-sm text-indigo-700 dark:text-indigo-300 w-fit">
@@ -383,15 +560,13 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
 
         <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
           {processing && botMessages.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center gap-4">
+            <div className="flex-1 flex flex-col items-center justify-center text-center gap-6 px-4">
               <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
-              <div>
-                <p className="font-semibold text-slate-800 dark:text-slate-100">
+              <div className="w-full">
+                <p className="font-semibold text-slate-800 dark:text-slate-100 mb-4">
                   Transcribing &amp; indexing your video…
                 </p>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  Your answer will appear here once processing completes.
-                </p>
+                <ProcessingProgress progress={ingestProgress} />
               </div>
             </div>
           ) : botMessages.length === 0 && !typing ? (
@@ -415,8 +590,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
           ) : (
             botMessages.map((m) => (
               <div key={m.id} className="flex justify-start">
-                <div className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                  {m.content}
+                <div className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100">
+                  <div className="whitespace-pre-wrap">{m.content}</div>
                 </div>
               </div>
             ))
@@ -444,6 +619,16 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
       <div className="flex flex-col h-full overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
           <span className="text-lg font-semibold text-slate-700 dark:text-slate-200">Your questions</span>
+          <label className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={searchAllLectures}
+              onChange={(e) => setSearchAllLectures(e.target.checked)}
+              className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+            />
+            <BookOpen className="w-3.5 h-3.5" />
+            Search all lectures
+          </label>
         </div>
 
         <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4">

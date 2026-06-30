@@ -1,0 +1,861 @@
+================================================================================
+ASK ORA — VIDEO LECTURE TRANSCRIPT Q&A BOT
+FULL APPLICATION DETAILS (Frontend, Backend, RAG, Vector DB, Chunks & More)
+================================================================================
+
+Project name     : Ask Ora / Video Lecture Transcript Q&A Bot
+Repository       : https://github.com/JAKKABHANUMANOJKUMAR/video-lecture-transcript-qa-bot
+Local root path  : C:\Users\manoj\Downloads\vl_07-06-2026
+Purpose          : Upload lecture videos, auto-transcribe with Whisper, store text
+                   in PostgreSQL, embed chunks in ChromaDB, answer questions using
+                   RAG (Retrieval-Augmented Generation) with Groq LLM.
+
+
+================================================================================
+1. HIGH-LEVEL ARCHITECTURE
+================================================================================
+
+The application is split into THREE independent services plus TWO data stores:
+
+  ┌─────────────────────────────────────────────────────────────────────────┐
+  │                         USER BROWSER                                    │
+  │                    http://localhost:5173                                │
+  └───────────────────────────────┬─────────────────────────────────────────┘
+                                  │
+          ┌───────────────────────┼───────────────────────┐
+          │                       │                       │
+          ▼                       ▼                       ▼
+  ┌───────────────┐     ┌─────────────────┐     ┌─────────────────┐
+  │   FRONTEND    │     │    BACKEND      │     │   RAG SERVICE   │
+  │  React + Vite │     │  FastAPI :8000  │     │  FastAPI :8100  │
+  │   Port 5173   │     │                 │     │                 │
+  └───────────────┘     └────────┬────────┘     └────────┬────────┘
+                                 │                       │
+                                 └───────────┬───────────┘
+                                             ▼
+                                 ┌───────────────────────┐
+                                 │     PostgreSQL        │
+                                 │  video_lecture_       │
+                                 │  transcript  :5432    │
+                                 └───────────────────────┘
+                                             │
+                                 ┌───────────┴───────────┐
+                                 │      ChromaDB         │
+                                 │  rag/chroma_db/       │
+                                 │  (vector embeddings)  │
+                                 └───────────────────────┘
+                                             │
+                                 ┌───────────┴───────────┐
+                                 │    Groq Cloud API     │
+                                 │  (answer generation)  │
+                                 └───────────────────────┘
+
+Service summary:
+  Frontend  → UI, login, upload video, ask questions, admin/user dashboards
+  Backend   → Auth (JWT), users, chats API, complaints, alerts, analytics
+  RAG       → Whisper transcription, chunking, embeddings, ChromaDB, Groq answers
+  PostgreSQL→ Users, chats, complaints, transcripts, chunk text backup
+  ChromaDB  → Vector embeddings for semantic similarity search
+  Groq API  → LLM for final grounded answers (cloud, requires API key)
+  ffmpeg    → Extracts audio from video files (required by Whisper)
+
+
+================================================================================
+2. FOLDER STRUCTURE
+================================================================================
+
+video-lecture-transcript-qa-bot/
+│
+├── frontend/                  React web application
+│   ├── src/
+│   │   ├── App.tsx              Main routing (admin vs user)
+│   │   ├── main.tsx             React entry point
+│   │   ├── index.css            Global + Tailwind styles
+│   │   ├── components/
+│   │   │   ├── AdminSidebar.tsx
+│   │   │   └── UserSidebar.tsx
+│   │   ├── lib/
+│   │   │   ├── api.ts           Backend REST client (JWT auth)
+│   │   │   ├── rag.ts           RAG service client (upload + query)
+│   │   │   ├── auth-context.tsx React auth state + login/signup
+│   │   │   ├── theme-context.tsx Dark/light theme
+│   │   │   └── supabase.ts      Legacy Supabase stub (not primary auth)
+│   │   └── pages/
+│   │       ├── LoginPage.tsx
+│   │       ├── UserDashboard.tsx   New Chat + video upload + Q&A
+│   │       ├── UserRecent.tsx      Session chat history (in-memory)
+│   │       ├── UserLibrary.tsx     Demo video library (hardcoded)
+│   │       ├── UserComplaints.tsx
+│   │       ├── UserSettings.tsx
+│   │       ├── AdminDashboard.tsx
+│   │       ├── AdminAlerts.tsx
+│   │       ├── AdminUsers.tsx
+│   │       ├── AdminAnalytics.tsx
+│   │       └── AdminSettings.tsx
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   └── .env.example
+│
+├── backend/                   FastAPI REST API
+│   ├── app/
+│   │   ├── main.py              FastAPI app + router registration
+│   │   ├── config.py            Settings from backend/.env
+│   │   ├── database.py          SQLAlchemy engine + session
+│   │   ├── models.py            ORM models (users, chats, etc.)
+│   │   ├── schemas.py           Pydantic request/response schemas
+│   │   ├── security.py          bcrypt + JWT token helpers
+│   │   ├── deps.py              Auth dependencies (get_current_user)
+│   │   ├── seed.py              Demo account seeding
+│   │   └── routers/
+│   │       ├── auth.py          /api/auth/*
+│   │       ├── users.py         /api/users/*
+│   │       ├── chats.py         /api/chats/*
+│   │       ├── videos.py        /api/videos/*
+│   │       ├── complaints.py    /api/complaints/*
+│   │       ├── alerts.py        /api/alerts/*
+│   │       └── analytics.py     /api/analytics/*
+│   ├── create_db.py             Creates PostgreSQL database
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── .env.example
+│
+├── rag/                       RAG pipeline + HTTP service
+│   ├── app.py                   FastAPI: /ingest, /query, /viewer
+│   ├── config.py                Settings from rag/.env
+│   ├── database.py              SQLAlchemy (shared PostgreSQL)
+│   ├── models.py                transcripts + transcript_chunks tables
+│   ├── ingest.py                CLI: python -m rag.ingest
+│   ├── query.py                 CLI: python -m rag.query
+│   ├── inspect_db.py            CLI: browse ChromaDB from terminal
+│   ├── pipeline/
+│   │   ├── transcription.py     Whisper: audio → text + translate
+│   │   ├── ingestion.py         Save DB + chunk + embed pipeline
+│   │   ├── chunking.py          Sentence-aware text splitter
+│   │   ├── embeddings.py        sentence-transformers for ChromaDB
+│   │   ├── vectorstore.py       ChromaDB add/query/delete
+│   │   └── rag_chain.py         Retrieve chunks + Groq answer
+│   ├── chroma_db/               Persistent ChromaDB files (auto-created)
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── .env.example
+│
+├── deploy/                    Cloud deployment helpers
+│   ├── nginx.conf               Reverse proxy (frontend + /api + RAG)
+│   ├── Dockerfile.gateway
+│   └── setup-oracle-vm.sh
+│
+├── docker-compose.yml         Run all services on one VM
+├── run-services.ps1           Start all 3 services locally (Windows)
+├── run-services.bat
+├── RUN_COMMANDS.txt           Quick run commands
+├── TEAM_SETUP.txt             Team onboarding
+├── APPLICATION_WORKFLOW.txt   Step-by-step user flow
+├── DEPLOYMENT.md              Cloud deployment guide
+├── DEPLOY-FREE-ONE-CLOUD.md   Oracle Cloud free tier guide
+├── render.yaml                Render.com config
+└── FULL_APPLICATION_DETAILS.txt   (this file)
+
+
+================================================================================
+3. FRONTEND — FULL DETAILS
+================================================================================
+
+Technology stack:
+  - React 18.3
+  - TypeScript 5.5
+  - Vite 5.4 (dev server + build tool)
+  - Tailwind CSS 3.4 (styling)
+  - Lucide React (icons)
+  - ESLint (linting)
+  - No Redux — React useState/useContext for state
+
+Port (local dev) : 5173
+Build output     : frontend/dist/
+Env file         : frontend/.env
+
+Environment variables:
+  VITE_API_URL       = http://localhost:8000/api     (backend)
+  VITE_RAG_API_URL   = http://localhost:8100        (RAG service)
+  In production/Docker: VITE_API_URL=/api, VITE_RAG_API_URL="" (same origin)
+
+Key source files:
+  frontend/src/lib/api.ts
+    - Talks to backend at VITE_API_URL
+    - Stores JWT in localStorage key: askora_token
+    - Methods: login, signup, me, complaints, etc.
+
+  frontend/src/lib/rag.ts
+    - Talks to RAG service at VITE_RAG_API_URL
+    - rag.ingest(file, title)  → POST /ingest (multipart upload)
+    - rag.query(question, transcriptId) → POST /query (JSON)
+
+  frontend/src/lib/auth-context.tsx
+    - Restores session from token on page load (GET /api/auth/me)
+    - signIn, signUp, signOut
+
+  frontend/src/pages/UserDashboard.tsx
+    - Main Q&A workspace
+    - Left panel  = bot answers
+    - Right panel = user questions + input
+    - Upload video → calls rag.ingest()
+    - Ask question → calls rag.query() with transcript_id scope
+
+Pages and roles:
+
+  USER (role = "user") — lands on New Chat after login
+  ┌────────────────┬──────────────────────────────────────────────────┐
+  │ Tab            │ File / Purpose                                   │
+  ├────────────────┼──────────────────────────────────────────────────┤
+  │ New Chat       │ UserDashboard.tsx — upload video + Q&A           │
+  │ Recent         │ UserRecent.tsx — in-session chat list            │
+  │ Library        │ UserLibrary.tsx — demo subjects (hardcoded)      │
+  │ Complaints     │ UserComplaints.tsx — file support tickets        │
+  │ Settings       │ UserSettings.tsx — profile, theme, notifications   │
+  └────────────────┴──────────────────────────────────────────────────┘
+
+  ADMIN (role = "admin") — lands on Admin Dashboard
+  ┌────────────────┬──────────────────────────────────────────────────┐
+  │ Tab            │ File / Purpose                                   │
+  ├────────────────┼──────────────────────────────────────────────────┤
+  │ Dashboard      │ AdminDashboard.tsx — stats + charts              │
+  │ Alerts         │ AdminAlerts.tsx — system/complaint alerts      │
+  │ Users          │ AdminUsers.tsx — user management                 │
+  │ Analytics      │ AdminAnalytics.tsx — usage analytics             │
+  │ Settings       │ AdminSettings.tsx — admin preferences            │
+  └────────────────┴──────────────────────────────────────────────────┘
+
+Authentication flow:
+  1. User enters email + password on LoginPage
+  2. POST /api/auth/login → returns { access_token, user }
+  3. Token saved to localStorage (askora_token)
+  4. All backend calls send: Authorization: Bearer <token>
+  5. On reload: GET /api/auth/me restores session
+
+Video upload + Q&A flow (frontend side):
+  1. User selects video file
+  2. Frontend POST /ingest to RAG (NOT backend) with multipart form
+  3. Waits for transcription + indexing (can take minutes)
+  4. Receives transcript_id, language, num_chunks
+  5. User asks question → POST /query with question + transcript_id
+  6. Answer displayed on left panel
+
+What is NOT fully wired yet:
+  - Chat messages stay in React memory (not saved to backend /api/chats on each message)
+  - Recent page only shows current browser session chats
+  - Library page uses hardcoded demo data, not live backend videos
+  - Video file itself is NOT stored permanently (only processed in RAG temp file)
+
+
+================================================================================
+4. BACKEND — FULL DETAILS
+================================================================================
+
+Technology stack:
+  - Python 3.10+
+  - FastAPI 0.115+
+  - Uvicorn (ASGI server)
+  - SQLAlchemy 2.0 (ORM)
+  - psycopg 3 (PostgreSQL driver)
+  - Pydantic 2 (validation)
+  - python-jose (JWT tokens)
+  - bcrypt (password hashing)
+  - python-multipart (file uploads)
+
+Port (local)     : 8000
+API prefix       : /api
+Swagger docs     : http://localhost:8000/docs
+Env file         : backend/.env
+Database         : PostgreSQL — video_lecture_transcript
+
+Environment variables (backend/.env):
+  DATABASE_URL              Cloud connection string (optional, overrides below)
+  POSTGRES_SERVER           localhost
+  POSTGRES_PORT             5432
+  POSTGRES_USER             postgres
+  POSTGRES_PASSWORD         your password
+  POSTGRES_DB               video_lecture_transcript
+  SECRET_KEY                JWT signing secret (change in production!)
+  ACCESS_TOKEN_EXPIRE_MINUTES  10080 (7 days)
+  BACKEND_CORS_ORIGINS      http://localhost:5173,...
+  SEED_DEMO_DATA            true
+
+Demo accounts (auto-seeded on startup):
+  Admin : admin@example.com / password
+  User  : user@example.com  / password
+
+PostgreSQL tables (backend/app/models.py):
+
+  users
+  ─────
+  id, full_name, email (unique), hashed_password, role (admin|user),
+  status (active|inactive|blocked), auth_provider (local|google),
+  avatar_url, usage_minutes, last_login, created_at, updated_at
+
+  chat_sessions
+  ─────────────
+  id, user_id (FK users), title, video_name, step, created_at, updated_at
+
+  chat_messages
+  ─────────────
+  id, session_id (FK chat_sessions), role (user|bot), content, created_at
+
+  videos
+  ──────
+  id, user_id, title, subject, description, thumbnail_url,
+  duration_seconds, size_mb, status (processed|processing|failed),
+  created_at, last_accessed
+
+  complaints
+  ──────────
+  id, ticket_id, user_id, title, category, priority, description,
+  screenshot_url, status, admin_response, created_at, resolved_at
+
+  alerts
+  ──────
+  id, alert_code, alert_type, user_id, user_name, message, priority,
+  status, admin_notes, is_read, created_at, resolved_at
+
+API endpoints (all prefixed with /api):
+
+  AUTH  /api/auth
+  ───────────────
+  POST   /signup          Create account → JWT token
+  POST   /login           Login → JWT token
+  POST   /token           OAuth2-compatible token endpoint
+  GET    /me                Current user profile (requires JWT)
+
+  USERS  /api/users
+  ────────────────
+  GET    /                  List users (admin)
+  GET    /me                Current user
+  PATCH  /me                Update profile
+  GET    /{user_id}         Get user by ID
+  PATCH  /{user_id}/status  Block/activate user
+  DELETE /{user_id}         Delete user
+
+  CHATS  /api/chats
+  ────────────────
+  GET    /                  List chat sessions for current user
+  POST   /                  Create chat session
+  GET    /{session_id}      Get session with messages
+  PUT    /{session_id}      Update session (title, messages)
+  DELETE /{session_id}      Delete session
+
+  VIDEOS  /api/videos
+  ───────────────────
+  GET    /                  List user's videos
+  POST   /                  Create video record
+  PATCH  /{video_id}        Update video metadata
+  POST   /{video_id}/access Mark as accessed
+  DELETE /{video_id}        Delete video
+
+  COMPLAINTS  /api/complaints
+  ───────────────────────────
+  GET    /                  List complaints
+  POST   /                  File new complaint (+ creates admin alert)
+  GET    /{complaint_id}    Get one complaint
+  PATCH  /{complaint_id}    Update status/response
+  DELETE /{complaint_id}    Delete complaint
+
+  ALERTS  /api/alerts
+  ───────────────────
+  GET    /                  List alerts (admin)
+  POST   /                  Create alert
+  PATCH  /{alert_id}        Update alert
+  DELETE /{alert_id}        Delete alert
+
+  ANALYTICS  /api/analytics
+  ─────────────────────────
+  GET    /summary           Dashboard summary stats
+
+Security:
+  - Passwords hashed with bcrypt (never stored plain text)
+  - JWT tokens signed with HS256 + SECRET_KEY
+  - Protected routes use Depends(get_current_user) from deps.py
+  - Admin-only routes check role == "admin"
+
+
+================================================================================
+5. RAG SERVICE — FULL DETAILS
+================================================================================
+
+Technology stack:
+  - Python 3.10+
+  - FastAPI + Uvicorn (HTTP API on port 8100)
+  - openai-whisper (speech-to-text + translation)
+  - ffmpeg (audio extraction — must be installed on system PATH)
+  - sentence-transformers (local embedding model)
+  - ChromaDB 0.5+ (persistent vector database)
+  - Groq Python SDK (cloud LLM for answers)
+  - SQLAlchemy + psycopg (same PostgreSQL as backend)
+
+Port (local)     : 8100
+Swagger docs     : http://localhost:8100/docs
+ChromaDB viewer  : http://localhost:8100/viewer
+Env file         : rag/.env
+
+Environment variables (rag/.env):
+  DATABASE_URL              Cloud connection string (optional)
+  POSTGRES_SERVER           localhost
+  POSTGRES_PORT             5432
+  POSTGRES_USER             postgres
+  POSTGRES_PASSWORD         your password
+  POSTGRES_DB               video_lecture_transcript
+  GROQ_API_KEY              Required — get free key at console.groq.com
+  GROQ_MODEL                llama-3.3-70b-versatile
+  WHISPER_MODEL             base (options: tiny|base|small|medium|large-v3)
+  EMBEDDING_MODEL           paraphrase-multilingual-MiniLM-L12-v2
+  CHROMA_DIR                chroma_db
+  CHROMA_COLLECTION         transcripts_multilingual
+  CHUNK_SIZE                1000 (characters per chunk)
+  CHUNK_OVERLAP             150 (overlap between chunks)
+  TOP_K                     4 (chunks retrieved per query)
+  CORS_ORIGINS              http://localhost:5173,...
+
+HTTP endpoints (RAG):
+
+  GET  /health                    Health check
+  GET  /viewer                    Browser UI to browse ChromaDB chunks
+  GET  /api/chroma/stats          Collection stats
+  GET  /api/chroma/chunks         List stored chunks
+  GET  /api/chroma/search?q=...   Similarity search test
+  POST /ingest                    Upload video → full pipeline
+  POST /query                     Ask question → RAG answer
+
+  POST /ingest (multipart form):
+    file      = video/audio file (required)
+    title     = display name (optional)
+    video_id  = link to backend videos table (optional)
+    Returns: { transcript_id, language, is_english, duration_seconds, num_chunks }
+
+  POST /query (JSON):
+    { "question": "...", "transcript_id": "...", "video_id": "...", "top_k": 4 }
+    Returns: { "answer": "...", "sources": [{ text, metadata, distance }] }
+
+CLI commands:
+  python -m rag.ingest "C:\path\to\video.mp4" --title "Lecture 1"
+  python -m rag.query "What is this lecture about?"
+  python -m rag.query "..." --transcript-id <uuid> --top-k 5
+  python -m rag.inspect_db
+
+
+================================================================================
+6. RAG PIPELINE — STEP BY STEP (INGEST + QUERY)
+================================================================================
+
+INGEST PIPELINE (video upload → searchable index)
+─────────────────────────────────────────────────
+
+Step 1 — AUDIO EXTRACTION
+  File    : rag/pipeline/transcription.py
+  Tool    : ffmpeg (called internally by whisper.load_audio)
+  Input   : Any video/audio file (.mp4, .mkv, .mp3, .wav, etc.)
+  Output  : 16 kHz mono PCM audio array
+  Note    : ffmpeg MUST be installed: winget install Gyan.FFmpeg
+
+Step 2 — SPEECH TO TEXT (original language)
+  File    : rag/pipeline/transcription.py
+  Model   : OpenAI Whisper (openai-whisper package)
+  Config  : WHISPER_MODEL in rag/.env (default: base)
+  Task    : transcribe (detect language + produce original_text)
+  Output  : original_text, detected language code (en, hi, ta, es, etc.)
+
+Step 3 — TRANSLATION TO ENGLISH (if not English)
+  File    : rag/pipeline/transcription.py
+  Task    : translate (Whisper built-in English translation)
+  Output  : english_text
+  Fallback: If translation fails, english_text = original_text
+  Note    : Both original_text AND english_text saved to PostgreSQL
+
+Step 4 — SAVE TRANSCRIPT TO POSTGRESQL
+  File    : rag/pipeline/ingestion.py → save_transcript()
+  Table   : transcripts (rag/models.py)
+  Fields  :
+    id, video_id, source_path, title, language, is_english,
+    original_text, english_text, duration_seconds, status, indexed,
+    created_at, updated_at
+
+Step 5 — TEXT CHUNKING
+  File    : rag/pipeline/chunking.py
+  Method  : Sentence-aware greedy chunking with character overlap
+  Settings:
+    CHUNK_SIZE    = 1000 characters
+    CHUNK_OVERLAP = 150 characters
+  Logic   :
+    - Split text on sentence boundaries (. ! ?)
+    - Accumulate sentences until chunk_size reached
+    - Next chunk starts with last 150 chars of previous chunk (overlap)
+    - For scripts without punctuation (Hindi, Tamil, etc.): character-window fallback
+  What gets chunked:
+    English video     → english/original text only (variant: primary)
+    Non-English video → BOTH original language (variant: original)
+                        AND english translation (variant: english)
+
+Step 6 — SAVE CHUNK TEXT TO POSTGRESQL
+  File    : rag/pipeline/ingestion.py → index_transcript()
+  Table   : transcript_chunks
+  Fields  : id, transcript_id, chunk_index, content, created_at
+  Purpose : Text backup / traceability (separate from vector store)
+
+Step 7 — VECTOR EMBEDDING
+  File    : rag/pipeline/embeddings.py
+  Library : sentence-transformers
+  Model   : paraphrase-multilingual-MiniLM-L12-v2
+  Dims    : 384-dimensional vectors
+  Runs    : Locally on CPU (no API key, no cloud cost)
+  Note    : Multilingual model supports cross-language search
+            (e.g. Hindi question can match Hindi or English chunks)
+
+Step 8 — SAVE TO CHROMADB
+  File    : rag/pipeline/vectorstore.py
+  Location: rag/chroma_db/ (on disk, persistent)
+  Collection: transcripts_multilingual
+  Metric  : Cosine similarity
+  Each stored entry:
+    id       = {transcript_id}:{variant}:{chunk_index}
+    document = chunk text (the actual words)
+    embedding= 384-dim vector (computed by embedding model)
+    metadata = { transcript_id, video_id, chunk_index, language, variant }
+
+  After indexing: transcripts.indexed = true in PostgreSQL
+
+
+QUERY PIPELINE (user question → AI answer)
+──────────────────────────────────────────
+
+Step 1 — USER QUESTION RECEIVED
+  Frontend sends: POST /query { question, transcript_id }
+
+Step 2 — QUERY EMBEDDING
+  File    : rag/pipeline/embeddings.py (via ChromaDB embedding function)
+  Same model as chunks: paraphrase-multilingual-MiniLM-L12-v2
+  Output  : 384-dim query vector
+
+Step 3 — SIMILARITY SEARCH
+  File    : rag/pipeline/vectorstore.py → query()
+  Engine  : ChromaDB cosine nearest-neighbor search
+  Results : TOP_K = 4 most similar chunks (default)
+  Filter  : Scoped to transcript_id (only current video's chunks)
+  Output  : List of { text, metadata, distance }
+            Lower distance = more relevant
+
+Step 4 — BUILD LLM PROMPT
+  File    : rag/pipeline/rag_chain.py
+  System  : "Answer ONLY from provided transcript excerpts..."
+           "Answer in the SAME language as the user's question."
+  Context : Top-K chunk texts combined as [Excerpt 1], [Excerpt 2], ...
+  User    : Question + instruction to use context only
+
+Step 5 — LLM ANSWER GENERATION
+  Provider: Groq (cloud API)
+  Model   : llama-3.3-70b-versatile
+  Key     : GROQ_API_KEY in rag/.env
+  Temp    : 0.2 (focused, factual)
+  Output  : Natural language answer grounded in retrieved chunks
+
+Step 6 — RETURN TO FRONTEND
+  Response: { answer, sources[] }
+  UI      : Answer on left panel, question on right panel
+
+
+================================================================================
+7. DATABASE SCHEMA — ALL TABLES
+================================================================================
+
+PostgreSQL database name: video_lecture_transcript
+
+BACKEND TABLES (backend/app/models.py):
+  users, chat_sessions, chat_messages, videos, complaints, alerts
+
+RAG TABLES (rag/models.py):
+
+  transcripts
+  ───────────
+  id              UUID primary key
+  video_id        Optional link to backend videos.id
+  source_path     Original file path (temp during ingest)
+  title           Video title / filename
+  language        Whisper-detected language code (en, hi, ta, ...)
+  is_english      Boolean
+  original_text   Full transcript in original language (TEXT)
+  english_text    Full transcript in English (TEXT)
+  duration_seconds Integer
+  status          completed | processing | failed
+  indexed         Boolean — true after ChromaDB embedding done
+  created_at, updated_at
+
+  transcript_chunks
+  ─────────────────
+  id              UUID primary key
+  transcript_id   FK → transcripts.id (CASCADE delete)
+  chunk_index     Integer (0, 1, 2, ...)
+  content         Chunk text (TEXT)
+  created_at
+
+
+================================================================================
+8. VECTOR DATABASE (CHROMADB) — FULL DETAILS
+================================================================================
+
+What is ChromaDB?
+  An open-source embedded vector database. Stores text + embeddings on disk.
+  Used for semantic (meaning-based) search, not exact keyword search.
+
+Location (local)  : rag/chroma_db/
+Collection name   : transcripts_multilingual
+Embedding function: LocalEmbeddingFunction (sentence-transformers)
+Similarity metric : Cosine distance (hnsw:space = cosine)
+
+How a chunk is stored:
+  ┌─────────────────────────────────────────────────────────────┐
+  │ ID: abc123:original:0                                       │
+  │ Document (text): "Python is a programming language..."      │
+  │ Vector: [0.12, -0.34, 0.56, ...] (384 numbers)              │
+  │ Metadata:                                                   │
+  │   transcript_id = abc123                                    │
+  │   video_id      = (optional)                                │
+  │   chunk_index   = 0                                         │
+  │   language      = hi                                        │
+  │   variant       = original | english | primary              │
+  └─────────────────────────────────────────────────────────────┘
+
+How search works:
+  1. User question → embedded to 384-dim vector
+  2. ChromaDB finds vectors with smallest cosine distance
+  3. Returns matching chunk texts + metadata + distance scores
+
+View / inspect ChromaDB:
+  Browser : http://localhost:8100/viewer
+  CLI     : python -m rag.inspect_db
+  API     : GET /api/chroma/stats, /api/chroma/chunks, /api/chroma/search?q=...
+
+Important notes:
+  - Re-upload videos after changing EMBEDDING_MODEL (vectors become incompatible)
+  - Collection name changed to transcripts_multilingual for multilingual model
+  - All videos share ONE collection; filtered by transcript_id at query time
+
+
+================================================================================
+9. CHUNKING — FULL DETAILS
+================================================================================
+
+File     : rag/pipeline/chunking.py
+Function : chunk_text(text, chunk_size=1000, chunk_overlap=150)
+
+Why chunk at all?
+  - LLMs have context limits — cannot send entire 1-hour transcript
+  - Embeddings work best on focused passages (~500-1500 chars)
+  - Similarity search returns the most relevant small sections
+
+Algorithm:
+  1. Strip whitespace from full transcript text
+  2. Split into sentences using regex: (?<=[.!?])\s+
+  3. If one giant sentence (> chunk_size, no punctuation): split by character windows
+  4. Greedily pack sentences into chunks up to CHUNK_SIZE chars
+  5. Each new chunk includes CHUNK_OVERLAP chars from end of previous chunk
+
+Example (English, CHUNK_SIZE=1000, OVERLAP=150):
+  Full text: 5000 characters → ~6 chunks for a 4-minute lecture
+
+Example (Hindi/Tamil — no Western punctuation):
+  Character-window fallback splits long unpunctuated text into fixed windows
+
+What gets chunked for multilingual videos:
+  Non-English: original_text chunks (language=hi, variant=original)
+               + english_text chunks (language=en, variant=english)
+  English    : single set (language=en, variant=primary)
+
+
+================================================================================
+10. MODELS & LIBRARIES USED (COMPLETE LIST)
+================================================================================
+
+┌──────────────────────┬────────────────────────────────────────────────────┐
+│ Component            │ Technology / Model                                 │
+├──────────────────────┼────────────────────────────────────────────────────┤
+│ Frontend framework   │ React 18 + TypeScript + Vite                       │
+│ Frontend styling     │ Tailwind CSS 3                                   │
+│ Frontend icons       │ Lucide React                                     │
+│ Backend framework    │ FastAPI + Uvicorn                                │
+│ Backend ORM          │ SQLAlchemy 2.0                                   │
+│ Database             │ PostgreSQL 16                                    │
+│ Auth                 │ JWT (python-jose) + bcrypt password hashing        │
+│ Audio extraction     │ ffmpeg (system install)                          │
+│ Speech-to-text       │ OpenAI Whisper (openai-whisper package)          │
+│ Language detection   │ Built into Whisper (auto on transcribe pass)       │
+│ Translation          │ Whisper translate task → English                   │
+│ Text chunking        │ Custom sentence-aware chunker (rag/pipeline/       │
+│                      │ chunking.py)                                       │
+│ Vector embeddings    │ sentence-transformers/                           │
+│                      │ paraphrase-multilingual-MiniLM-L12-v2              │
+│                      │ (384 dimensions, runs locally on CPU)              │
+│ Vector database      │ ChromaDB 0.5+ (persistent, cosine similarity)      │
+│ Answer LLM           │ Groq — llama-3.3-70b-versatile (cloud API)         │
+│ Containerization     │ Docker + Docker Compose                            │
+│ Reverse proxy        │ Nginx (production gateway)                         │
+│ Cloud deploy         │ Oracle Cloud Always Free / Render / Vercel         │
+└──────────────────────┴────────────────────────────────────────────────────┘
+
+Python packages — Backend (backend/requirements.txt):
+  fastapi, uvicorn, sqlalchemy, psycopg, pydantic, pydantic-settings,
+  python-jose, bcrypt, python-multipart, email-validator, python-dotenv
+
+Python packages — RAG (rag/requirements.txt):
+  openai-whisper, chromadb, sentence-transformers, groq, sqlalchemy, psycopg,
+  pydantic, pydantic-settings, python-dotenv, fastapi, uvicorn, python-multipart
+
+NPM packages — Frontend (frontend/package.json):
+  react, react-dom, lucide-react, @supabase/supabase-js
+  Dev: vite, typescript, tailwindcss, eslint, @vitejs/plugin-react
+
+
+================================================================================
+11. MULTI-LANGUAGE SUPPORT
+================================================================================
+
+Upload (any language video):
+  - Whisper auto-detects language on transcribe pass
+  - original_text saved in detected language
+  - english_text produced via Whisper translate (with fallback to original)
+  - BOTH texts chunked and embedded into ChromaDB
+
+Query (any language question):
+  - Multilingual embedding model matches cross-language meaning
+  - Groq LLM instructed to answer in the SAME language as the question
+  - Example: Hindi video + Hindi question → Hindi answer
+  - Example: Hindi video + English question → English answer
+
+
+================================================================================
+12. HOW TO RUN LOCALLY
+================================================================================
+
+Prerequisites:
+  - Python 3.10+
+  - Node.js 18+
+  - PostgreSQL running (database: video_lecture_transcript)
+  - ffmpeg installed (winget install Gyan.FFmpeg)
+  - Groq API key in rag/.env
+
+One-click start:
+  .\run-services.ps1
+
+Manual (3 terminals):
+  Terminal 1 — Backend:
+    cd backend
+    .\.venv\Scripts\Activate.ps1
+    uvicorn app.main:app --reload --port 8000
+
+  Terminal 2 — RAG:
+    cd C:\Users\manoj\Downloads\vl_07-06-2026
+    .\rag\.venv\Scripts\python.exe -m uvicorn rag.app:app --reload --port 8100
+
+  Terminal 3 — Frontend:
+    cd frontend
+    npm run dev
+
+Open in browser:
+  App          : http://localhost:5173
+  Backend docs : http://localhost:8000/docs
+  RAG docs     : http://localhost:8100/docs
+  ChromaDB UI  : http://localhost:8100/viewer
+
+Login:
+  User  : user@example.com / password
+  Admin : admin@example.com / password
+
+
+================================================================================
+13. DOCKER / CLOUD DEPLOYMENT
+================================================================================
+
+Docker Compose (all services on one VM):
+  copy .env.docker.example .env.docker
+  docker compose --env-file .env.docker up -d --build
+  Open: http://localhost (port 80 via Nginx gateway)
+
+Services in Docker:
+  db       → PostgreSQL 16
+  backend  → FastAPI :8000 (internal)
+  rag      → FastAPI :8100 (internal)
+  gateway  → Nginx :80 (serves frontend + proxies /api and RAG)
+
+Volumes:
+  pgdata   → PostgreSQL data
+  chroma   → ChromaDB vectors (/data/chroma in container)
+  hf_cache → HuggingFace model cache (Whisper + embeddings)
+
+Guides:
+  DEPLOY-FREE-ONE-CLOUD.md  → Oracle Cloud Always Free VM
+  DEPLOYMENT.md             → General cloud deployment
+  render.yaml               → Render.com service definitions
+  frontend/vercel.json      → Vercel frontend config
+
+
+================================================================================
+14. DATA PERSISTENCE — WHAT IS SAVED WHERE
+================================================================================
+
+┌─────────────────────────┬──────────────┬─────────────────────────────────┐
+│ Data                    │ Storage      │ Persists after browser close?   │
+├─────────────────────────┼──────────────┼─────────────────────────────────┤
+│ User accounts           │ PostgreSQL   │ YES                             │
+│ JWT token               │ localStorage │ YES (until expiry / logout)     │
+│ Full transcript text    │ PostgreSQL   │ YES (transcripts table)         │
+│ Chunk text backup       │ PostgreSQL   │ YES (transcript_chunks table)   │
+│ Vector embeddings       │ ChromaDB     │ YES (rag/chroma_db/ on disk)    │
+│ Chat Q&A messages       │ React memory │ NO (not wired to /api/chats)    │
+│ Uploaded video file     │ Temp only    │ NO (deleted after ingest)       │
+│ Complaints              │ PostgreSQL   │ YES                             │
+│ Admin alerts            │ PostgreSQL   │ YES                             │
+└─────────────────────────┴──────────────┴─────────────────────────────────┘
+
+
+================================================================================
+15. COMPLETE END-TO-END FLOW (ONE SEQUENCE)
+================================================================================
+
+ 1. User opens http://localhost:5173 and logs in
+ 2. Backend validates credentials → returns JWT → saved in localStorage
+ 3. User lands on New Chat (UserDashboard)
+ 4. User clicks Upload Video and selects a file
+ 5. Frontend POST /ingest → RAG service (multipart upload)
+ 6. RAG saves file to temp path
+ 7. ffmpeg extracts audio from video (via Whisper)
+ 8. Whisper transcribe pass → original_text + language detected
+ 9. If not English: Whisper translate pass → english_text
+10. Both texts saved to PostgreSQL transcripts table
+11. Text chunked (original + english for non-English videos)
+12. Chunks saved to PostgreSQL transcript_chunks table
+13. Each chunk embedded with multilingual MiniLM model (384 dims)
+14. Vectors + text saved to ChromaDB collection transcripts_multilingual
+15. RAG returns transcript_id to frontend → "Video processed and ready"
+16. User types question in any language on right panel
+17. Frontend POST /query { question, transcript_id }
+18. Question embedded with same multilingual model
+19. ChromaDB finds top 4 most similar chunks (cosine distance)
+20. Chunk texts sent as context to Groq llama-3.3-70b-versatile
+21. LLM returns grounded answer in user's language
+22. Answer shown on left panel
+
+
+================================================================================
+16. KNOWN LIMITATIONS & FUTURE WORK
+================================================================================
+
+  - Chat history not persisted to PostgreSQL from frontend (API exists)
+  - Video files not stored permanently (only transcript is kept)
+  - Library page shows hardcoded demo data
+  - No timestamp citations in answers yet (Whisper segments available but unused)
+  - Whisper "base" model is fast but less accurate than "medium"/"large-v3"
+  - First ingest downloads Whisper + embedding models (~few hundred MB)
+  - Long videos (30+ min) can take several minutes to transcribe on CPU
+  - Admin cannot view user chat content or raw transcripts by design
+
+
+================================================================================
+END OF DOCUMENT
+Generated for: Ask Ora Video Lecture Transcript Q&A Bot
+================================================================================

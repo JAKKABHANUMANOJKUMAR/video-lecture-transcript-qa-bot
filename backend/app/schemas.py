@@ -68,6 +68,8 @@ class ChatMessagePublic(ChatMessageBase):
 class ChatSessionCreate(BaseModel):
     title: str = "New chat"
     video_name: str | None = None
+    video_id: str | None = None
+    transcript_id: str | None = None
     step: int = 0
     messages: list[ChatMessageCreate] = []
 
@@ -75,6 +77,8 @@ class ChatSessionCreate(BaseModel):
 class ChatSessionUpdate(BaseModel):
     title: str | None = None
     video_name: str | None = None
+    video_id: str | None = None
+    transcript_id: str | None = None
     step: int | None = None
     messages: list[ChatMessageCreate] | None = None
 
@@ -85,6 +89,8 @@ class ChatSessionPublic(BaseModel):
     id: str
     title: str
     video_name: str | None = None
+    video_id: str | None = None
+    transcript_id: str | None = None
     step: int
     created_at: datetime
     updated_at: datetime
@@ -111,6 +117,7 @@ class VideoUpdate(BaseModel):
     title: str | None = None
     subject: str | None = None
     status: str | None = None
+    duration_seconds: int | None = None
     last_accessed: datetime | None = None
 
 
@@ -202,6 +209,7 @@ class AnalyticsSummary(BaseModel):
     open_alerts: int
     total_complaints: int
     total_videos: int
+    total_chats: int
     avg_usage_minutes: float
 
 

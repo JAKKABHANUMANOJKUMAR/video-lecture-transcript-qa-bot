@@ -5,6 +5,7 @@ venv/
 env/
 .env
 chroma_db/
+media/
 *.log
 uploads/
 *.wav

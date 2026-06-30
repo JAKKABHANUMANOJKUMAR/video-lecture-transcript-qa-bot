@@ -33,11 +33,12 @@ class Settings(BaseSettings):
     WHISPER_MODEL: str = "base"
 
     # Embeddings
-    EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+    EMBEDDING_MODEL: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
     # ChromaDB
     CHROMA_DIR: str = "chroma_db"
-    CHROMA_COLLECTION: str = "transcripts"
+    CHROMA_COLLECTION: str = "transcripts_multilingual"
+    MEDIA_DIR: str = "media"
 
     # Retrieval / chunking
     CHUNK_SIZE: int = 1000
@@ -66,6 +67,14 @@ class Settings(BaseSettings):
     @property
     def chroma_path(self) -> str:
         path = Path(self.CHROMA_DIR)
+        if not path.is_absolute():
+            path = BASE_DIR / path
+        return str(path)
+
+
+    @property
+    def media_path(self) -> str:
+        path = Path(self.MEDIA_DIR)
         if not path.is_absolute():
             path = BASE_DIR / path
         return str(path)

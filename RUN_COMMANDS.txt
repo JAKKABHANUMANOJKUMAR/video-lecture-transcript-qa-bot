@@ -1,0 +1,110 @@
+================================================================================
+ASK ORA - COMMANDS TO RUN ALL SERVICES
+================================================================================
+
+Run everything from project root:
+  C:\Users\manoj\Downloads\vl_07-06-2026
+
+
+--------------------------------------------------------------------------------
+OPTION 1 - ONE CLICK (opens 3 terminals automatically)
+--------------------------------------------------------------------------------
+
+  .\run-services.ps1
+
+  OR double-click:  run-services.bat
+
+
+--------------------------------------------------------------------------------
+OPTION 2 - MANUAL (open 3 separate PowerShell terminals)
+--------------------------------------------------------------------------------
+
+TERMINAL 1 - Backend API (port 8000)
+  cd C:\Users\manoj\Downloads\vl_07-06-2026\backend
+  .\.venv\Scripts\Activate.ps1
+  uvicorn app.main:app --reload --port 8000
+
+TERMINAL 2 - RAG Service (port 8100)
+  cd C:\Users\manoj\Downloads\vl_07-06-2026
+  .\rag\.venv\Scripts\python.exe -m uvicorn rag.app:app --reload --port 8100
+
+TERMINAL 3 - Frontend (port 5173)
+  cd C:\Users\manoj\Downloads\vl_07-06-2026\frontend
+  npm run dev
+
+
+--------------------------------------------------------------------------------
+FIRST TIME SETUP (run once)
+--------------------------------------------------------------------------------
+
+1) PostgreSQL must be running (database: video_lecture_transcript)
+
+2) Backend setup:
+  cd backend
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+  python create_db.py
+  copy .env.example .env
+  (edit .env with your PostgreSQL password)
+
+3) RAG setup:
+  cd rag
+  python -m venv .venv
+  .\.venv\Scripts\Activate.ps1
+  pip install -r requirements.txt
+  copy .env.example .env
+  (edit .env - add GROQ_API_KEY and PostgreSQL password)
+
+4) Frontend setup:
+  cd frontend
+  npm install
+  copy .env.example .env   (if exists, or use frontend\.env)
+
+5) Install ffmpeg (required for Whisper):
+  winget install Gyan.FFmpeg
+
+
+--------------------------------------------------------------------------------
+OPEN IN BROWSER
+--------------------------------------------------------------------------------
+
+  Main App:       http://localhost:5173
+  Backend Docs:   http://localhost:8000/docs
+  RAG Docs:       http://localhost:8100/docs
+  ChromaDB UI:    http://localhost:8100/viewer
+
+  Login user:     user@example.com / password
+  Login admin:    admin@example.com / password
+
+
+--------------------------------------------------------------------------------
+OPTION 3 - DOCKER (all services in one command)
+--------------------------------------------------------------------------------
+
+  copy .env.docker.example .env.docker
+  (edit .env.docker - set GROQ_API_KEY, passwords, PUBLIC_ORIGIN)
+
+  docker compose --env-file .env.docker up -d --build
+
+  Open: http://localhost
+
+
+--------------------------------------------------------------------------------
+USEFUL COMMANDS
+--------------------------------------------------------------------------------
+
+Ingest video from command line:
+  cd C:\Users\manoj\Downloads\vl_07-06-2026
+  .\rag\.venv\Scripts\python.exe -m rag.ingest "C:\path\to\video.mp4" --title "Lecture 1"
+
+Ask question from command line:
+  .\rag\.venv\Scripts\python.exe -m rag.query "What is this lecture about?"
+
+View ChromaDB chunks:
+  .\rag\.venv\Scripts\python.exe -m rag.inspect_db
+
+Stop Docker services:
+  docker compose --env-file .env.docker down
+
+================================================================================

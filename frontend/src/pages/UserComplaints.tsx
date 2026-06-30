@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Inbox,
   CircleDot,
@@ -12,12 +12,14 @@ import {
   X,
   User,
 } from 'lucide-react';
+import { api, ApiComplaint, ApiError, formatDate, titleCaseStatus, toApiPriority } from '../lib/api';
 
-type ComplaintStatus = 'Open' | 'In Progress' | 'Resolved';
+type ComplaintStatus = 'open' | 'in_progress' | 'resolved';
 type Priority = 'Low' | 'Medium' | 'High';
 
-interface Complaint {
+interface ComplaintView {
   id: string;
+  ticketId: string;
   title: string;
   category: string;
   priority: Priority;
@@ -40,46 +42,26 @@ const CATEGORIES = [
 
 const PRIORITIES: Priority[] = ['Low', 'Medium', 'High'];
 
-const INITIAL_COMPLAINTS: Complaint[] = [
-  {
-    id: 'TKT-2001',
-    title: 'Transcript missing for ML lecture',
-    category: 'Transcript Issue',
-    priority: 'High',
-    description: 'The transcript for "Machine Learning: Linear Regression" did not generate even after several hours.',
-    submittedAt: 'Jun 05, 2026',
-    status: 'In Progress',
-    adminResponse: 'We are reprocessing the video on our transcription servers.',
-    resolution: '',
-  },
-  {
-    id: 'TKT-2002',
-    title: 'Chatbot gave irrelevant answer',
-    category: 'Chatbot Response Issue',
-    priority: 'Medium',
-    description: 'When asking about Python decorators, the bot answered about Java instead.',
-    submittedAt: 'Jun 03, 2026',
-    status: 'Resolved',
-    adminResponse: 'Thanks for reporting. We retrained the retrieval index for Python content.',
-    resolution: 'Fixed retrieval mapping and verified correct answers. Closed on Jun 04, 2026.',
-  },
-  {
-    id: 'TKT-2003',
-    title: 'Video upload keeps failing',
-    category: 'Video Upload Issue',
-    priority: 'High',
-    description: 'My RAG lecture upload fails at 90% every time.',
-    submittedAt: 'Jun 06, 2026',
-    status: 'Open',
-    adminResponse: '',
-    resolution: '',
-  },
-];
+function mapComplaint(c: ApiComplaint): ComplaintView {
+  return {
+    id: c.id,
+    ticketId: c.ticket_id,
+    title: c.title,
+    category: c.category,
+    priority: (c.priority.charAt(0).toUpperCase() + c.priority.slice(1)) as Priority,
+    description: c.description,
+    submittedAt: formatDate(c.created_at),
+    status: c.status as ComplaintStatus,
+    adminResponse: c.admin_response || '',
+    resolution: c.resolved_at ? `Resolved on ${formatDate(c.resolved_at)}` : '',
+    screenshot: c.screenshot_url || undefined,
+  };
+}
 
-const statusBadge: Record<ComplaintStatus, string> = {
-  Open: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
-  'In Progress': 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400',
-  Resolved: 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
+const statusBadge: Record<string, string> = {
+  open: 'bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-400',
+  in_progress: 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-400',
+  resolved: 'bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-400',
 };
 
 const priorityBadge: Record<Priority, string> = {
@@ -97,18 +79,38 @@ const EMPTY_FORM = {
 };
 
 export const UserComplaints: React.FC = () => {
-  const [complaints, setComplaints] = useState<Complaint[]>(INITIAL_COMPLAINTS);
+  const [complaints, setComplaints] = useState<ComplaintView[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState(EMPTY_FORM);
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<Complaint | null>(null);
+  const [selected, setSelected] = useState<ComplaintView | null>(null);
   const [banner, setBanner] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const loadComplaints = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await api.listComplaints();
+      setComplaints(data.map(mapComplaint));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to load complaints.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadComplaints();
+  }, [loadComplaints]);
+
   const stats = useMemo(() => ({
     total: complaints.length,
-    open: complaints.filter((c) => c.status === 'Open').length,
-    inProgress: complaints.filter((c) => c.status === 'In Progress').length,
-    resolved: complaints.filter((c) => c.status === 'Resolved').length,
+    open: complaints.filter((c) => c.status === 'open').length,
+    inProgress: complaints.filter((c) => c.status === 'in_progress').length,
+    resolved: complaints.filter((c) => c.status === 'resolved').length,
   }), [complaints]);
 
   const filtered = useMemo(() => {
@@ -116,9 +118,9 @@ export const UserComplaints: React.FC = () => {
     const q = search.toLowerCase();
     return complaints.filter(
       (c) =>
-        c.id.toLowerCase().includes(q) ||
+        c.ticketId.toLowerCase().includes(q) ||
         c.title.toLowerCase().includes(q) ||
-        c.category.toLowerCase().includes(q)
+        c.category.toLowerCase().includes(q),
     );
   }, [complaints, search]);
 
@@ -129,25 +131,28 @@ export const UserComplaints: React.FC = () => {
     { title: 'Resolved', value: stats.resolved, icon: <CheckCircle2 className="w-6 h-6" />, accent: 'text-green-600 dark:text-green-400', bg: 'bg-green-50 dark:bg-green-500/15' },
   ];
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim() || !form.description.trim()) return;
-    const newComplaint: Complaint = {
-      id: `TKT-${2004 + complaints.length}`,
-      title: form.title.trim(),
-      category: form.category,
-      priority: form.priority,
-      description: form.description.trim(),
-      submittedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      status: 'Open',
-      adminResponse: '',
-      resolution: '',
-      screenshot: form.screenshot || undefined,
-    };
-    setComplaints((prev) => [newComplaint, ...prev]);
-    setForm(EMPTY_FORM);
-    setBanner(true);
-    setTimeout(() => setBanner(false), 2500);
+    setSubmitting(true);
+    setError('');
+    try {
+      const created = await api.createComplaint({
+        title: form.title.trim(),
+        category: form.category,
+        priority: toApiPriority(form.priority),
+        description: form.description.trim(),
+        screenshot_url: form.screenshot || null,
+      });
+      setComplaints((prev) => [mapComplaint(created), ...prev]);
+      setForm(EMPTY_FORM);
+      setBanner(true);
+      setTimeout(() => setBanner(false), 2500);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to submit complaint.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleScreenshot = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -170,6 +175,11 @@ export const UserComplaints: React.FC = () => {
       )}
 
       <div className="p-8">
+        {error && (
+          <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 dark:bg-red-500/15 dark:border-red-500/30 dark:text-red-400">
+            {error}
+          </div>
+        )}
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {summaryCards.map((card) => (
@@ -266,7 +276,8 @@ export const UserComplaints: React.FC = () => {
               <div className="flex gap-3 pt-2">
                 <button
                   type="submit"
-                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition"
+                  disabled={submitting}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-60"
                 >
                   <Send className="w-4 h-4" />
                   Submit Complaint
@@ -310,9 +321,15 @@ export const UserComplaints: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                  {filtered.map((c) => (
+                  {loading ? (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-10 text-center text-sm text-slate-400">
+                        <Loader2 className="w-6 h-6 animate-spin mx-auto text-indigo-500" />
+                      </td>
+                    </tr>
+                  ) : filtered.map((c) => (
                     <tr key={c.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
-                      <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white whitespace-nowrap">{c.id}</td>
+                      <td className="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white whitespace-nowrap">{c.ticketId}</td>
                       <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300 max-w-[160px]">
                         <span className="line-clamp-1">{c.title}</span>
                       </td>
@@ -320,7 +337,7 @@ export const UserComplaints: React.FC = () => {
                       <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">{c.submittedAt}</td>
                       <td className="px-4 py-3">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap ${statusBadge[c.status]}`}>
-                          {c.status}
+                          {titleCaseStatus(c.status)}
                         </span>
                       </td>
                       <td className="px-4 py-3">
@@ -334,7 +351,7 @@ export const UserComplaints: React.FC = () => {
                       </td>
                     </tr>
                   ))}
-                  {filtered.length === 0 && (
+                  {!loading && filtered.length === 0 && (
                     <tr>
                       <td colSpan={6} className="px-4 py-10 text-center text-sm text-slate-400">
                         No complaints found.
@@ -361,7 +378,7 @@ export const UserComplaints: React.FC = () => {
             <div className="flex items-start justify-between p-6 border-b border-slate-200 dark:border-slate-700">
               <div>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">{selected.title}</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{selected.id}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{selected.ticketId}</p>
               </div>
               <button
                 onClick={() => setSelected(null)}
@@ -384,7 +401,7 @@ export const UserComplaints: React.FC = () => {
                 <div>
                   <p className="text-xs font-medium text-slate-400 mb-1">Current Status</p>
                   <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${statusBadge[selected.status]}`}>
-                    {selected.status}
+                    {titleCaseStatus(selected.status)}
                   </span>
                 </div>
               </div>

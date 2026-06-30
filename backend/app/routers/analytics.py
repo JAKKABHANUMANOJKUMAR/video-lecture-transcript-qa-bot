@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.deps import get_current_admin
-from app.models import Alert, Complaint, User, Video
+from app.models import Alert, ChatSession, Complaint, User, Video
 from app.schemas import AnalyticsSummary
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
@@ -19,6 +19,7 @@ def summary(db: Session = Depends(get_db), _: User = Depends(get_current_admin))
     open_alerts = db.query(func.count(Alert.id)).filter(Alert.status == "open").scalar() or 0
     total_complaints = db.query(func.count(Complaint.id)).scalar() or 0
     total_videos = db.query(func.count(Video.id)).scalar() or 0
+    total_chats = db.query(func.count(ChatSession.id)).scalar() or 0
     avg_usage = db.query(func.coalesce(func.avg(User.usage_minutes), 0)).scalar() or 0
 
     return AnalyticsSummary(
@@ -29,5 +30,6 @@ def summary(db: Session = Depends(get_db), _: User = Depends(get_current_admin))
         open_alerts=open_alerts,
         total_complaints=total_complaints,
         total_videos=total_videos,
+        total_chats=total_chats,
         avg_usage_minutes=round(float(avg_usage), 1),
     )

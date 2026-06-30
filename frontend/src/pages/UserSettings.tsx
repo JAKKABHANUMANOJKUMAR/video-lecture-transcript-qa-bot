@@ -12,8 +12,6 @@ import {
   KeyRound,
   Save,
   X,
-  Monitor as Desktop,
-  Smartphone,
 } from 'lucide-react';
 import { useAuth } from '../lib/auth-context';
 import { useTheme, type Theme } from '../lib/theme-context';
@@ -69,10 +67,7 @@ const THEME_OPTIONS: { value: Theme; label: string; icon: React.ReactNode }[] = 
   { value: 'system', label: 'System Default', icon: <Monitor className="w-5 h-5" /> },
 ];
 
-const ACTIVE_SESSIONS = [
-  { id: 1, device: 'Windows · Chrome', location: 'Hyderabad, IN', current: true, icon: <Desktop className="w-4 h-4" /> },
-  { id: 2, device: 'iPhone · Safari', location: 'Hyderabad, IN', current: false, icon: <Smartphone className="w-4 h-4" /> },
-];
+const ACTIVE_SESSIONS: { id: number; device: string; location: string; current: boolean; icon: React.ReactNode }[] = [];
 
 export const UserSettings: React.FC = () => {
   const { user } = useAuth();

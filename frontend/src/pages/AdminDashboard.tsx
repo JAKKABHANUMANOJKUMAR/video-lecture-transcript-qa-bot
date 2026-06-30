@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   TrendingUp,
   Users,
@@ -9,6 +9,7 @@ import {
   ChevronDown,
   UserRound,
 } from 'lucide-react';
+import { api, ApiUser, AnalyticsSummary, formatRelative, titleCaseStatus } from '../lib/api';
 
 type ChartPeriod = 'day' | 'week' | 'month';
 
@@ -23,6 +24,26 @@ interface LineSeriesPoint {
   label: string;
   users: number;
 }
+
+const chartMaxY = (values: number[], floor = 5) => {
+  const peak = Math.max(...values, 0);
+  if (peak <= 0) return floor;
+  return Math.ceil(peak * 1.25) || floor;
+};
+
+const buildUserStatusBars = (summary: AnalyticsSummary): GroupedBarPoint[] => [
+  { label: 'Active', active: summary.active_users, returning: 0, newUsers: 0 },
+  { label: 'Inactive', active: summary.inactive_users, returning: 0, newUsers: 0 },
+  { label: 'Blocked', active: summary.blocked_users, returning: 0, newUsers: 0 },
+];
+
+const buildPlatformLine = (summary: AnalyticsSummary): LineSeriesPoint[] => [
+  { label: 'Users', users: summary.total_users },
+  { label: 'Videos', users: summary.total_videos },
+  { label: 'Chats', users: summary.total_chats },
+  { label: 'Complaints', users: summary.total_complaints },
+  { label: 'Alerts', users: summary.open_alerts },
+];
 
 const CHART_COLORS = {
   barDark: '#004a8d',
@@ -41,86 +62,12 @@ interface StatCard {
   bgColor: string;
 }
 
-interface Alert {
-  id: string;
-  alert_type: string;
-  message: string;
-  status: string;
-  created_at: string;
-}
-
 interface QuickAction {
   label: string;
   bgColor: string;
   icon: React.ReactNode;
 }
 
-const DEMO_STATS: StatCard[] = [
-  {
-    title: 'Total Users',
-    value: 1250,
-    trend: '+32 % vs Last Month',
-    trendType: 'up',
-    icon: <Users className="w-6 h-6" />,
-    bgColor: 'bg-blue-50',
-  },
-  {
-    title: 'Online Users',
-    value: 845,
-    trend: '5 Completed',
-    trendType: 'neutral',
-    icon: <Activity className="w-6 h-6" />,
-    bgColor: 'bg-green-50',
-  },
-  {
-    title: 'Avg Usage Time',
-    value: '45 min',
-    trend: '+3.2 % vs Last Week',
-    trendType: 'up',
-    icon: <Clock className="w-6 h-6" />,
-    bgColor: 'bg-yellow-50',
-  },
-  {
-    title: 'Pending Alerts',
-    value: 12,
-    trend: '4 Urgent',
-    trendType: 'down',
-    icon: <AlertCircle className="w-6 h-6" />,
-    bgColor: 'bg-red-50',
-  },
-];
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const DEMO_ALERTS: Alert[] = [
-  {
-    id: '1',
-    alert_type: 'new_user',
-    message: 'New user registered: john@example.com',
-    status: 'unresolved',
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    alert_type: 'transcript_failure',
-    message: 'Failed to generate transcript for video_123',
-    status: 'unresolved',
-    created_at: new Date(Date.now() - 3600000).toISOString(),
-  },
-  {
-    id: '3',
-    alert_type: 'system_warning',
-    message: 'System memory usage above 80%',
-    status: 'unresolved',
-    created_at: new Date(Date.now() - 7200000).toISOString(),
-  },
-  {
-    id: '4',
-    alert_type: 'complaint_resolved',
-    message: 'User complaint #45 has been resolved',
-    status: 'resolved',
-    created_at: new Date(Date.now() - 10800000).toISOString(),
-  },
-];
 
 const QUICK_ACTIONS: QuickAction[] = [
   {
@@ -151,70 +98,10 @@ const QUICK_ACTIONS: QuickAction[] = [
 ];
 
 const PERIOD_OPTIONS: { value: ChartPeriod; label: string }[] = [
-  { value: 'day', label: 'Last day' },
-  { value: 'week', label: 'Last week' },
-  { value: 'month', label: 'Last month' },
+  { value: 'day', label: 'All time' },
+  { value: 'week', label: 'All time' },
+  { value: 'month', label: 'All time' },
 ];
-
-const USERS_FLOW_SUMMARY_DATA: Record<ChartPeriod, GroupedBarPoint[]> = {
-  day: [
-    { label: '6AM', active: 12, returning: 18, newUsers: 10 },
-    { label: '9AM', active: 22, returning: 28, newUsers: 16 },
-    { label: '12PM', active: 28, returning: 32, newUsers: 20 },
-    { label: '3PM', active: 24, returning: 26, newUsers: 18 },
-    { label: '6PM', active: 30, returning: 34, newUsers: 22 },
-    { label: '9PM', active: 18, returning: 22, newUsers: 14 },
-  ],
-  week: [
-    { label: 'Mon', active: 17, returning: 24, newUsers: 17 },
-    { label: 'Tue', active: 12, returning: 21, newUsers: 13 },
-    { label: 'Wed', active: 25, returning: 18, newUsers: 16 },
-    { label: 'Thu', active: 14, returning: 21, newUsers: 14 },
-    { label: 'Fri', active: 8, returning: 24, newUsers: 13 },
-    { label: 'Sat', active: 16, returning: 21, newUsers: 17 },
-    { label: 'Sun', active: 26, returning: 22, newUsers: 17 },
-  ],
-  month: [
-    { label: 'W1', active: 38, returning: 42, newUsers: 35 },
-    { label: 'W2', active: 44, returning: 46, newUsers: 40 },
-    { label: 'W3', active: 48, returning: 45, newUsers: 42 },
-    { label: 'W4', active: 41, returning: 43, newUsers: 38 },
-  ],
-};
-
-const USERS_FLOW_LINE_DATA: Record<ChartPeriod, LineSeriesPoint[]> = {
-  day: [
-    { label: '6AM', users: 420 },
-    { label: '10AM', users: 780 },
-    { label: '2PM', users: 1050 },
-    { label: '6PM', users: 920 },
-    { label: '10PM', users: 650 },
-  ],
-  week: [
-    { label: '10AM', users: 1100 },
-    { label: '2PM', users: 1350 },
-    { label: '6PM', users: 700 },
-    { label: '10PM', users: 1150 },
-  ],
-  month: [
-    { label: 'W1', users: 3100 },
-    { label: 'W2', users: 3650 },
-    { label: 'W3', users: 4020 },
-    { label: 'W4', users: 3880 },
-  ],
-};
-
-const BAR_Y_MAX: Record<ChartPeriod, number> = {
-  day: 50,
-  week: 50,
-  month: 50,
-};
-
-const LINE_Y_MAX: Record<ChartPeriod, number> = {
-  day: 1250,
-  week: 1250,
-  month: 4500,
-};
 
 const getSmoothPath = (points: { x: number; y: number }[]) => {
   if (points.length === 0) return '';
@@ -298,28 +185,12 @@ const UsersFlowSummaryChart: React.FC<{ data: GroupedBarPoint[]; maxY: number }>
             <div key={i} className="flex flex-col items-center flex-1 min-w-0 h-full justify-end">
               <div className="flex items-end justify-center gap-1 w-full">
                 <div
-                  className="w-2.5 sm:w-3 rounded-t-sm transition-all duration-300"
+                  className="w-4 sm:w-5 rounded-t-sm transition-all duration-300"
                   style={{
                     height: barHeight(point.active),
                     backgroundColor: CHART_COLORS.barDark,
                   }}
-                  title={`Active: ${point.active}`}
-                />
-                <div
-                  className="w-2.5 sm:w-3 rounded-t-sm transition-all duration-300"
-                  style={{
-                    height: barHeight(point.returning),
-                    backgroundColor: CHART_COLORS.barTeal,
-                  }}
-                  title={`Returning: ${point.returning}`}
-                />
-                <div
-                  className="w-2.5 sm:w-3 rounded-t-sm transition-all duration-300"
-                  style={{
-                    height: barHeight(point.newUsers),
-                    backgroundColor: CHART_COLORS.barGreen,
-                  }}
-                  title={`New: ${point.newUsers}`}
+                  title={`${point.label}: ${point.active}`}
                 />
               </div>
             </div>
@@ -406,7 +277,7 @@ const UsersFlowLineChart: React.FC<{
             className="w-8 h-0.5 rounded-full"
             style={{ backgroundColor: CHART_COLORS.line }}
           />
-          <span className="text-sm font-medium text-gray-600">Users</span>
+          <span className="text-sm font-medium text-gray-600">Platform metrics</span>
         </div>
       </div>
     </div>
@@ -416,11 +287,57 @@ const UsersFlowLineChart: React.FC<{
 export const AdminDashboard: React.FC = () => {
   const [barPeriod, setBarPeriod] = useState<ChartPeriod>('week');
   const [linePeriod, setLinePeriod] = useState<ChartPeriod>('week');
-  const stats = DEMO_STATS;
-  const barChartData = USERS_FLOW_SUMMARY_DATA[barPeriod];
-  const lineChartData = USERS_FLOW_LINE_DATA[linePeriod];
-  // alerts kept for future alerts panel expansion
-  void DEMO_ALERTS;
+  const [stats, setStats] = useState<StatCard[]>([]);
+  const [recentUsers, setRecentUsers] = useState<ApiUser[]>([]);
+  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
+
+  const barChartData = summary ? buildUserStatusBars(summary) : [];
+  const lineChartData = summary ? buildPlatformLine(summary) : [];
+  const barMaxY = chartMaxY(barChartData.map((p) => p.active));
+  const lineMaxY = chartMaxY(lineChartData.map((p) => p.users), 10);
+
+  useEffect(() => {
+    Promise.all([api.analyticsSummary(), api.listUsers()])
+      .then(([analytics, users]) => {
+        setSummary(analytics);
+        setStats([
+          {
+            title: 'Total Users',
+            value: analytics.total_users,
+            trend: `${analytics.active_users} active`,
+            trendType: 'neutral',
+            icon: <Users className="w-6 h-6" />,
+            bgColor: 'bg-blue-50',
+          },
+          {
+            title: 'Active Users',
+            value: analytics.active_users,
+            trend: `${analytics.inactive_users} inactive`,
+            trendType: 'up',
+            icon: <Activity className="w-6 h-6" />,
+            bgColor: 'bg-green-50',
+          },
+          {
+            title: 'Avg Usage Time',
+            value: `${analytics.avg_usage_minutes} min`,
+            trend: `${analytics.total_videos} videos · ${analytics.total_chats} chats`,
+            trendType: 'neutral',
+            icon: <Clock className="w-6 h-6" />,
+            bgColor: 'bg-yellow-50',
+          },
+          {
+            title: 'Open Alerts',
+            value: analytics.open_alerts,
+            trend: `${analytics.total_complaints} complaints total`,
+            trendType: analytics.open_alerts > 0 ? 'down' : 'neutral',
+            icon: <AlertCircle className="w-6 h-6" />,
+            bgColor: 'bg-red-50',
+          },
+        ]);
+        setRecentUsers(users.slice(0, 8));
+      })
+      .catch(() => setStats([]));
+  }, []);
 
   return (
     <div className="bg-slate-50 dark:bg-slate-900 min-h-screen transition-colors">
@@ -494,23 +411,31 @@ export const AdminDashboard: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm">
             <ChartCardHeader
               icon={<Users className="w-5 h-5" />}
-              title="Users Flow Summary"
+              title="User Status"
               dropdownId="bar-chart-period"
               period={barPeriod}
               onPeriodChange={setBarPeriod}
             />
-            <UsersFlowSummaryChart data={barChartData} maxY={BAR_Y_MAX[barPeriod]} />
+            {barChartData.length > 0 ? (
+              <UsersFlowSummaryChart data={barChartData} maxY={barMaxY} />
+            ) : (
+              <p className="text-sm text-slate-400 text-center py-16">Loading chart data…</p>
+            )}
           </div>
 
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-100 dark:border-slate-700 shadow-sm">
             <ChartCardHeader
               icon={<UserRound className="w-5 h-5" />}
-              title="Users flow"
+              title="Platform Overview"
               dropdownId="line-chart-period"
               period={linePeriod}
               onPeriodChange={setLinePeriod}
             />
-            <UsersFlowLineChart data={lineChartData} maxY={LINE_Y_MAX[linePeriod]} />
+            {lineChartData.length > 0 ? (
+              <UsersFlowLineChart data={lineChartData} maxY={lineMaxY} />
+            ) : (
+              <p className="text-sm text-slate-400 text-center py-16">Loading chart data…</p>
+            )}
           </div>
         </div>
 
@@ -557,34 +482,36 @@ export const AdminDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-                {[
-                  { name: 'John Doe', email: 'john@example.com', login: '2 hours ago', status: 'Online' },
-                  { name: 'Jane Smith', email: 'jane@example.com', login: '5 hours ago', status: 'Offline' },
-                  { name: 'Mike Johnson', email: 'mike@example.com', login: '1 day ago', status: 'Offline' },
-                  { name: 'Sarah Williams', email: 'sarah@example.com', login: 'Just now', status: 'Online' },
-                ].map((user, i) => (
-                  <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
-                    <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">{user.name}</td>
+                {recentUsers.map((user) => (
+                  <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/40 transition">
+                    <td className="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">{user.full_name}</td>
                     <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{user.email}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{user.login}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{formatRelative(user.last_login)}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          user.status === 'Online'
+                          user.status === 'active'
                             ? 'bg-green-100 text-green-700'
-                            : 'bg-slate-100 text-slate-700'
+                            : user.status === 'blocked'
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-slate-100 text-slate-700'
                         }`}
                       >
-                        {user.status}
+                        {titleCaseStatus(user.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                        View Details
-                      </button>
+                      <span className="text-blue-600 text-sm font-medium">{titleCaseStatus(user.role)}</span>
                     </td>
                   </tr>
                 ))}
+                {recentUsers.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-8 text-center text-sm text-slate-400">
+                      No users in the database yet.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

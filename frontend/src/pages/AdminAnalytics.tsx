@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Users,
   UserCheck,
@@ -7,10 +7,9 @@ import {
   TrendingUp,
   ChevronDown,
   CalendarDays,
-  Sunrise,
   Timer,
-  Repeat,
 } from 'lucide-react';
+import { api, AnalyticsSummary } from '../lib/api';
 
 type Period = 'day' | 'week' | 'month';
 
@@ -32,134 +31,10 @@ const PERIOD_OPTIONS: { value: Period; label: string }[] = [
   { value: 'month', label: 'Last month' },
 ];
 
-const SUMMARY_CARDS = [
-  {
-    title: 'Total Users',
-    value: '1,250',
-    trend: '+32% vs last month',
-    icon: <Users className="w-6 h-6" />,
-    accent: 'text-blue-600',
-    iconBg: 'bg-blue-50',
-  },
-  {
-    title: 'Active Users',
-    value: '845',
-    trend: '+5.4% vs last week',
-    icon: <UserCheck className="w-6 h-6" />,
-    accent: 'text-green-600',
-    iconBg: 'bg-green-50',
-  },
-  {
-    title: 'Open Alerts',
-    value: '18',
-    trend: '+12% vs last week',
-    icon: <AlertCircle className="w-6 h-6" />,
-    accent: 'text-red-600',
-    iconBg: 'bg-red-50',
-  },
-  {
-    title: 'Avg Usage Time',
-    value: '45 min',
-    trend: '+3.2% vs last week',
-    icon: <Clock className="w-6 h-6" />,
-    accent: 'text-amber-600',
-    iconBg: 'bg-amber-50',
-  },
-];
-
-const USER_GROWTH: Point[] = [
-  { label: 'Jan', value: 420 },
-  { label: 'Feb', value: 560 },
-  { label: 'Mar', value: 690 },
-  { label: 'Apr', value: 880 },
-  { label: 'May', value: 1040 },
-  { label: 'Jun', value: 1250 },
-];
-
-const DAILY_ACTIVE: Point[] = [
-  { label: 'Mon', value: 620 },
-  { label: 'Tue', value: 710 },
-  { label: 'Wed', value: 845 },
-  { label: 'Thu', value: 790 },
-  { label: 'Fri', value: 910 },
-  { label: 'Sat', value: 640 },
-  { label: 'Sun', value: 700 },
-];
-
-const LOGIN_ACTIVITY: Record<Period, Point[]> = {
-  day: [
-    { label: '6AM', value: 120 },
-    { label: '9AM', value: 320 },
-    { label: '12PM', value: 480 },
-    { label: '3PM', value: 410 },
-    { label: '6PM', value: 560 },
-    { label: '9PM', value: 300 },
-  ],
-  week: [
-    { label: 'Mon', value: 1200 },
-    { label: 'Tue', value: 1450 },
-    { label: 'Wed', value: 1680 },
-    { label: 'Thu', value: 1520 },
-    { label: 'Fri', value: 1740 },
-    { label: 'Sat', value: 980 },
-    { label: 'Sun', value: 1100 },
-  ],
-  month: [
-    { label: 'W1', value: 8200 },
-    { label: 'W2', value: 9100 },
-    { label: 'W3', value: 9800 },
-    { label: 'W4', value: 9300 },
-  ],
-};
-
-const AVG_USAGE_TREND: Point[] = [
-  { label: 'Jan', value: 32 },
-  { label: 'Feb', value: 36 },
-  { label: 'Mar', value: 39 },
-  { label: 'Apr', value: 41 },
-  { label: 'May', value: 43 },
-  { label: 'Jun', value: 45 },
-];
-
 const ALERT_BREAKDOWN = [
-  { label: 'Open', value: 18, color: '#ef4444' },
-  { label: 'In Progress', value: 9, color: '#3b82f6' },
-  { label: 'Resolved', value: 142, color: '#22c55e' },
-];
-
-const INSIGHTS = [
-  {
-    title: 'Most Active Day',
-    value: 'Friday',
-    sub: '910 active users',
-    icon: <CalendarDays className="w-5 h-5" />,
-    accent: 'text-purple-600',
-    iconBg: 'bg-purple-50',
-  },
-  {
-    title: 'Peak Login Hours',
-    value: '6PM – 9PM',
-    sub: '560 logins at peak',
-    icon: <Sunrise className="w-5 h-5" />,
-    accent: 'text-amber-600',
-    iconBg: 'bg-amber-50',
-  },
-  {
-    title: 'Avg Session Duration',
-    value: '45 min',
-    sub: '+3.2% vs last week',
-    icon: <Timer className="w-5 h-5" />,
-    accent: 'text-cyan-600',
-    iconBg: 'bg-cyan-50',
-  },
-  {
-    title: 'User Retention Rate',
-    value: '78.4%',
-    sub: '30-day retention',
-    icon: <Repeat className="w-5 h-5" />,
-    accent: 'text-green-600',
-    iconBg: 'bg-green-50',
-  },
+  { label: 'Open', value: 0, color: '#ef4444' },
+  { label: 'In Progress', value: 0, color: '#3b82f6' },
+  { label: 'Resolved', value: 0, color: '#22c55e' },
 ];
 
 const CHART_HEIGHT = 220;
@@ -383,6 +258,115 @@ const DonutChart: React.FC<{ data: { label: string; value: number; color: string
 
 export const AdminAnalytics: React.FC = () => {
   const [loginPeriod, setLoginPeriod] = useState<Period>('week');
+  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
+  const [alertBreakdown, setAlertBreakdown] = useState(ALERT_BREAKDOWN);
+
+  useEffect(() => {
+    Promise.all([api.analyticsSummary(), api.listAlerts()])
+      .then(([s, alerts]) => {
+        setSummary(s);
+        const open = alerts.filter((a) => a.status === 'open').length;
+        const inProgress = alerts.filter((a) => a.status === 'in_progress').length;
+        const resolved = alerts.filter((a) => a.status === 'resolved').length;
+        setAlertBreakdown([
+          { label: 'Open', value: open, color: '#ef4444' },
+          { label: 'In Progress', value: inProgress, color: '#3b82f6' },
+          { label: 'Resolved', value: resolved, color: '#22c55e' },
+        ]);
+      })
+      .catch(() => setSummary(null));
+  }, []);
+
+  const summaryCards = useMemo(() => {
+    if (!summary) return [];
+    return [
+      {
+        title: 'Total Users',
+        value: String(summary.total_users),
+        trend: `${summary.blocked_users} blocked`,
+        icon: <Users className="w-6 h-6" />,
+        accent: 'text-blue-600',
+        iconBg: 'bg-blue-50',
+      },
+      {
+        title: 'Active Users',
+        value: String(summary.active_users),
+        trend: `${summary.inactive_users} inactive`,
+        icon: <UserCheck className="w-6 h-6" />,
+        accent: 'text-green-600',
+        iconBg: 'bg-green-50',
+      },
+      {
+        title: 'Open Alerts',
+        value: String(summary.open_alerts),
+        trend: `${summary.total_complaints} complaints`,
+        icon: <AlertCircle className="w-6 h-6" />,
+        accent: 'text-red-600',
+        iconBg: 'bg-red-50',
+      },
+      {
+        title: 'Avg Usage Time',
+        value: `${summary.avg_usage_minutes} min`,
+        trend: `${summary.total_videos} videos`,
+        icon: <Clock className="w-6 h-6" />,
+        accent: 'text-amber-600',
+        iconBg: 'bg-amber-50',
+      },
+    ];
+  }, [summary]);
+
+  const userStatusChart = useMemo(
+    () =>
+      summary
+        ? [
+            { label: 'Active', value: summary.active_users },
+            { label: 'Inactive', value: summary.inactive_users },
+            { label: 'Blocked', value: summary.blocked_users },
+          ]
+        : [],
+    [summary],
+  );
+
+  const insights = useMemo(
+    () =>
+      summary
+        ? [
+            {
+              title: 'Total Users',
+              value: String(summary.total_users),
+              sub: `${summary.active_users} currently active`,
+              icon: <Users className="w-5 h-5" />,
+              accent: 'text-blue-600',
+              iconBg: 'bg-blue-50',
+            },
+            {
+              title: 'Videos Uploaded',
+              value: String(summary.total_videos),
+              sub: 'Across all users',
+              icon: <CalendarDays className="w-5 h-5" />,
+              accent: 'text-purple-600',
+              iconBg: 'bg-purple-50',
+            },
+            {
+              title: 'Avg Usage',
+              value: `${summary.avg_usage_minutes} min`,
+              sub: 'Per user average',
+              icon: <Timer className="w-5 h-5" />,
+              accent: 'text-amber-600',
+              iconBg: 'bg-amber-50',
+            },
+            {
+              title: 'Open Alerts',
+              value: String(summary.open_alerts),
+              sub: `${summary.total_complaints} complaints filed`,
+              icon: <AlertCircle className="w-5 h-5" />,
+              accent: 'text-red-600',
+              iconBg: 'bg-red-50',
+            },
+          ]
+        : [],
+    [summary],
+  );
 
   return (
     <div className="bg-slate-50 dark:bg-slate-900 min-h-screen transition-colors">
@@ -394,7 +378,7 @@ export const AdminAnalytics: React.FC = () => {
       <div className="p-8 space-y-8">
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {SUMMARY_CARDS.map((card) => (
+          {summaryCards.map((card) => (
             <div key={card.title} className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
               <div className="flex items-start justify-between mb-4">
                 <div className={`w-12 h-12 rounded-xl ${card.iconBg} flex items-center justify-center ${card.accent}`}>
@@ -411,37 +395,56 @@ export const AdminAnalytics: React.FC = () => {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ChartCard title="User Growth Trend" subtitle="New user registrations over time">
-            <LineChart data={USER_GROWTH} color={CHART_COLORS.line} />
+          <ChartCard title="User Status Breakdown" subtitle="Live counts from the database">
+            <BarChart data={userStatusChart} color={CHART_COLORS.bar} />
           </ChartCard>
 
-          <ChartCard title="Daily Active Users" subtitle="Active users per day">
-            <LineChart data={DAILY_ACTIVE} color={CHART_COLORS.lineAlt} />
+          <ChartCard title="Platform Totals" subtitle="Videos and complaints">
+            <BarChart
+              data={
+                summary
+                  ? [
+                      { label: 'Videos', value: summary.total_videos },
+                      { label: 'Complaints', value: summary.total_complaints },
+                      { label: 'Alerts', value: summary.open_alerts },
+                    ]
+                  : []
+              }
+              color={CHART_COLORS.lineAlt}
+            />
           </ChartCard>
 
           <ChartCard
-            title="Login Activity"
-            subtitle="User logins by time period"
+            title="User Distribution"
+            subtitle="Active vs inactive vs blocked"
             action={<PeriodPill value={loginPeriod} onChange={setLoginPeriod} />}
           >
-            <BarChart data={LOGIN_ACTIVITY[loginPeriod]} color={CHART_COLORS.bar} />
+            <BarChart data={userStatusChart} color={CHART_COLORS.bar} />
           </ChartCard>
 
-          <ChartCard title="Average Usage Time Trend" subtitle="Average session duration over time (min)">
-            <LineChart data={AVG_USAGE_TREND} color={CHART_COLORS.line} valueSuffix="m" />
+          <ChartCard title="Average Usage Time" subtitle="Minutes per user (database average)">
+            <LineChart
+              data={
+                summary
+                  ? [{ label: 'Now', value: summary.avg_usage_minutes }]
+                  : []
+              }
+              color={CHART_COLORS.line}
+              valueSuffix="m"
+            />
           </ChartCard>
         </div>
 
         {/* Alert Analytics */}
         <ChartCard title="Alert Analytics" subtitle="Distribution of alerts by status">
-          <DonutChart data={ALERT_BREAKDOWN} />
+          <DonutChart data={alertBreakdown} />
         </ChartCard>
 
         {/* Insights Section */}
         <div>
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Key Insights</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {INSIGHTS.map((insight) => (
+            {insights.map((insight) => (
               <div key={insight.title} className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
                 <div className={`w-11 h-11 rounded-xl ${insight.iconBg} flex items-center justify-center ${insight.accent} mb-4`}>
                   {insight.icon}
