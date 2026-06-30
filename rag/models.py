@@ -18,6 +18,9 @@ class Transcript(Base):
     __tablename__ = "transcripts"
 
     id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    # Owner of this transcript. Every read/query is scoped to this user so one
+    # user can never access another user's transcripts.
+    user_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
     # Optional link to the backend `videos` table (kept loose to avoid coupling).
     video_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
     source_path: Mapped[str | None] = mapped_column(String(1024), nullable=True)

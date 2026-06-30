@@ -9,6 +9,9 @@ sentence-transformers>=3.0.0
 # --- LLM ---
 groq>=0.13.0
 
+# --- Auth (validate backend-issued JWTs to scope data per user) ---
+python-jose[cryptography]>=3.3.0
+
 # --- Database (shared PostgreSQL backend) ---
 sqlalchemy>=2.0.36
 psycopg[binary]>=3.2.0

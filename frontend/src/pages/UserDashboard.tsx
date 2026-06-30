@@ -136,7 +136,7 @@ const ProcessingProgress: React.FC<{ progress: IngestProgress }> = ({ progress }
 
 export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, onPersist }) => {
   const [sessionId, setSessionId] = useState(() => initialSession?.id ?? makeId());
-  const [stage, setStage] = useState<Stage>(initialSession ? 'workspace' : 'welcome');
+  const [stage, setStage] = useState<Stage>(initialSession ? 'workspace' : 'compose');
   const [input, setInput] = useState('');
   const [workspaceInput, setWorkspaceInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>(initialSession?.messages ?? []);
@@ -250,7 +250,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
   const reset = () => {
     syncedRef.current = false;
     setSessionId(makeId());
-    setStage('welcome');
+    setStage('compose');
     setInput('');
     setWorkspaceInput('');
     setMessages([]);
@@ -421,30 +421,6 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
             <h1 className="mt-4 text-3xl font-extrabold text-indigo-500 tracking-tight">Ask Ora</h1>
           </button>
 
-          {/* Action buttons */}
-          <div className="mt-6 flex items-center gap-3">
-            <button
-              onClick={() => {
-                setStage('compose');
-                setInput('Generate notes');
-              }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition text-sm font-medium text-slate-700 dark:text-slate-200"
-            >
-              <FileText className="w-4 h-4 text-sky-500" />
-              To Generate Note
-            </button>
-            <button
-              onClick={() => {
-                setStage('compose');
-                setInput('I need assistance');
-              }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm hover:shadow-md transition text-sm font-medium text-slate-700 dark:text-slate-200"
-            >
-              <Sparkles className="w-4 h-4 text-amber-400 fill-amber-300" />
-              For Assistance
-            </button>
-          </div>
-
           {/* Compose text box */}
           {stage === 'compose' && (
             <div className="w-full max-w-2xl mt-16 animate-slide-in">
@@ -496,6 +472,24 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                   </button>
                 </div>
               </div>
+              <p className="mt-3 text-center text-xs text-slate-400 dark:text-slate-500">
+                Try{' '}
+                <button
+                  type="button"
+                  onClick={() => setInput('Generate notes')}
+                  className="underline decoration-dotted underline-offset-2 hover:text-slate-600 dark:hover:text-slate-300 transition"
+                >
+                  Generate notes
+                </button>{' '}
+                or{' '}
+                <button
+                  type="button"
+                  onClick={() => setInput('I need assistance')}
+                  className="underline decoration-dotted underline-offset-2 hover:text-slate-600 dark:hover:text-slate-300 transition"
+                >
+                  Assistance
+                </button>
+              </p>
             </div>
           )}
         </div>

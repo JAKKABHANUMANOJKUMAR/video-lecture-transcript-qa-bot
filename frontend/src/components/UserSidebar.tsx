@@ -24,7 +24,15 @@ export const UserSidebar: React.FC<SidebarProps> = ({
   isOpen,
   onToggle,
 }) => {
-  const { signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
+
+  const displayName = user?.fullName || profile?.fullName || 'User';
+  const initials = (user?.fullName || profile?.fullName || user?.email || 'U')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
 
   const menuItems = [
     { id: 'chat', label: 'new chat', icon: MessageSquare },
@@ -85,8 +93,26 @@ export const UserSidebar: React.FC<SidebarProps> = ({
           </nav>
         </div>
 
-        {/* Logout Button */}
-        <div className="absolute bottom-6 left-6 right-6">
+        {/* User details + Logout */}
+        <div className="absolute bottom-6 left-6 right-6 space-y-3">
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-700">
+            <div className="w-10 h-10 shrink-0 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm">{initials}</span>
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                {displayName}
+              </p>
+              {user?.email && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+              )}
+              {profile?.role && (
+                <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wide text-green-700 bg-green-100 dark:text-green-300 dark:bg-green-500/20">
+                  {profile.role}
+                </span>
+              )}
+            </div>
+          </div>
           <button
             onClick={signOut}
             className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg font-medium transition"
