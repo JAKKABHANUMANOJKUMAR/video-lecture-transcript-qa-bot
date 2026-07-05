@@ -27,6 +27,7 @@ from rag.pipeline.embeddings import LocalEmbeddingFunction
 from rag.pipeline.ingestion import ingest_video
 from rag.pipeline.progress import progress_store
 from rag.pipeline.rag_chain import answer_question
+from rag.pipeline.url_download import detect_source, download_video, extract_title_from_url
 from rag.pipeline.vectorstore import query as vector_query
 
 app = FastAPI(title="Ask Ora RAG Service", version="1.0.0")
@@ -50,6 +51,12 @@ class QueryRequest(BaseModel):
 
 class IngestJobResponse(BaseModel):
     job_id: str
+
+
+class IngestUrlRequest(BaseModel):
+    url: str
+    title: str | None = None
+    video_id: str | None = None
 
 
 class IngestStatusResponse(BaseModel):
@@ -426,6 +433,64 @@ async def ingest(
         progress_store.fail(job_id, str(exc))
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
+    return IngestJobResponse(job_id=job_id)
+
+
+def _run_url_ingest_job(job_id: str, url: str, title: str | None, video_id: str | None) -> None:
+    downloaded_path: str | None = None
+    try:
+        progress_store.update(job_id, 5, "downloading", "Downloading video from URL…")
+        downloaded_path, detected_title = download_video(
+            url,
+            on_progress=lambda pct, msg: progress_store.update(
+                job_id, min(5 + int(pct * 0.10), 15), "downloading", msg
+            ),
+        )
+        final_title = title or detected_title
+        progress_store.update(job_id, 15, "processing", "Download complete — starting pipeline…")
+
+        ingest_path = downloaded_path
+        if video_id:
+            ingest_path = _persist_upload(downloaded_path, video_id)
+
+        result = ingest_video(
+            ingest_path,
+            title=final_title,
+            video_id=video_id,
+            on_progress=progress_store.callback(job_id),
+        )
+        if not video_id:
+            _persist_upload(downloaded_path, result.transcript_id)
+        progress_store.complete(
+            job_id,
+            {
+                "transcript_id": result.transcript_id,
+                "language": result.language,
+                "is_english": result.is_english,
+                "duration_seconds": result.duration_seconds,
+                "num_chunks": result.num_chunks,
+                "media_key": result.media_key,
+            },
+        )
+    except Exception as exc:
+        progress_store.fail(job_id, str(exc))
+    finally:
+        if downloaded_path:
+            Path(downloaded_path).unlink(missing_ok=True)
+
+
+@app.post("/ingest/url", response_model=IngestJobResponse)
+async def ingest_url(req: IngestUrlRequest, background_tasks: BackgroundTasks):
+    """Accept a YouTube or Google Drive URL and start background processing."""
+    source = detect_source(req.url)
+    if source == "unknown":
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported URL. Please provide a YouTube or Google Drive link.",
+        )
+
+    job_id = progress_store.create()
+    background_tasks.add_task(_run_url_ingest_job, job_id, req.url, req.title, req.video_id)
     return IngestJobResponse(job_id=job_id)
 
 

@@ -11,6 +11,8 @@ import {
   Languages,
   Clock,
   BookOpen,
+  Link,
+  X,
 } from 'lucide-react';
 import { rag, RagError, mediaUrl, type IngestProgress, type QuerySource } from '../lib/rag';
 import { api } from '../lib/api';
@@ -102,6 +104,7 @@ const formatTimestamp = (seconds: number | null | undefined) => {
 
 
 const STAGE_LABELS: Record<string, string> = {
+  downloading: 'Downloading',
   uploading: 'Uploading',
   processing: 'Processing',
   loading_model: 'Loading model',
@@ -163,6 +166,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     stage: 'uploading',
     message: 'Starting…',
   });
+  const [showUrlModal, setShowUrlModal] = useState(false);
+  const [urlInput, setUrlInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const blobUrlRef = useRef<string | null>(null);
@@ -353,6 +358,83 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     }
   };
 
+  const handleUrlSubmit = async () => {
+    const url = urlInput.trim();
+    if (!url) return;
+    setShowUrlModal(false);
+    setUrlInput('');
+
+    const isYouTube = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)/.test(url);
+    const isGDrive = /drive\.google\.com\//.test(url);
+    if (!isYouTube && !isGDrive) {
+      appendMessage('bot', 'Please provide a valid YouTube or Google Drive link.');
+      return;
+    }
+
+    const label = isYouTube ? 'YouTube video' : 'Google Drive video';
+    setVideoName(label);
+    setStage('workspace');
+    setVideoUrl(null);
+    appendMessage('user', `Shared link: ${url}`);
+    setProcessing(true);
+    setIngestProgress({ percent: 0, stage: 'downloading', message: `Downloading ${label}…` });
+
+    let videoId: string | undefined;
+    try {
+      const video = await api.createVideo({
+        title: label,
+        size_mb: 0,
+        status: 'processing',
+      });
+      videoId = video.id;
+      setVideoId(video.id);
+      setMediaKey(video.id);
+    } catch {
+      /* library record optional */
+    }
+
+    try {
+      const res = await rag.ingestUrlWithProgress(url, setIngestProgress, undefined, videoId);
+      const finalTitle = res.media_key ? label : label;
+      if (videoId) {
+        await api.updateVideo(videoId, {
+          title: finalTitle,
+          status: 'processed',
+          duration_seconds: Math.round(res.duration_seconds),
+        });
+      }
+      const key = res.media_key ?? videoId ?? res.transcript_id;
+      setMediaKey(key);
+      setVideoUrl(mediaUrl(key));
+      setVideoName(finalTitle);
+      setIngestProgress({ percent: 100, stage: 'complete', message: 'Video processed and ready.' });
+      setTranscriptId(res.transcript_id);
+      setTranscript({
+        id: res.transcript_id,
+        language: res.language,
+        durationSeconds: res.duration_seconds,
+        numChunks: res.num_chunks,
+      });
+      appendMessage(
+        'bot',
+        `I've downloaded, transcribed, and indexed the ${label} (language: ${res.language}, length: ${formatDuration(
+          res.duration_seconds,
+        )}, ${res.num_chunks} sections). Ask me anything about this video!`,
+      );
+    } catch (err) {
+      if (videoId) {
+        await api.updateVideo(videoId, { status: 'failed' }).catch(() => {});
+      }
+      const msg =
+        err instanceof RagError
+          ? err.message
+          : 'Something went wrong while processing the video.';
+      appendMessage('bot', `Sorry, I couldn't process that video. ${msg}`);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const ask = async (question: string) => {
     const text = question.trim();
     if (!text || typing) return;
@@ -402,6 +484,49 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
           className="hidden"
           onChange={handleVideoSelected}
         />
+
+        {showUrlModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Paste Video Link</h3>
+                <button
+                  onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
+                  className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                >
+                  <X className="w-5 h-5 text-slate-400" />
+                </button>
+              </div>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                Paste a YouTube or Google Drive link to automatically download, transcribe, and index the video.
+              </p>
+              <input
+                type="url"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleUrlSubmit(); }}
+                placeholder="https://www.youtube.com/watch?v=... or drive.google.com/..."
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-indigo-400"
+                autoFocus
+              />
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleUrlSubmit}
+                  disabled={!urlInput.trim()}
+                  className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Process Video
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="absolute top-6 right-8">
           <ResetButton onClick={reset} />
         </div>
@@ -447,6 +572,14 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                     >
                       <Video className="w-4 h-4" />
                       Upload Video
+                    </button>
+                    <button
+                      onClick={() => setShowUrlModal(true)}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-500/20 dark:text-emerald-300 hover:bg-emerald-100 transition"
+                      title="Paste a YouTube or Google Drive link"
+                    >
+                      <Link className="w-4 h-4" />
+                      Paste Link
                     </button>
                     {INPUT_CHIPS.map((chip) => {
                       const Icon = chip.icon;
@@ -507,6 +640,50 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
         className="hidden"
         onChange={handleVideoSelected}
       />
+
+      {showUrlModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Paste Video Link</h3>
+              <button
+                onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
+                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+              >
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+              Paste a YouTube or Google Drive link to automatically download, transcribe, and index the video.
+            </p>
+            <input
+              type="url"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleUrlSubmit(); }}
+              placeholder="https://www.youtube.com/watch?v=... or drive.google.com/..."
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-indigo-400"
+              autoFocus
+            />
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUrlSubmit}
+                disabled={!urlInput.trim()}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Process Video
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Left: Ora answers */}
       <div className="flex flex-col h-full overflow-hidden border-r border-slate-200 dark:border-slate-700">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
@@ -572,13 +749,22 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                   : 'Upload a video, then ask questions. Answers appear on this side.'}
               </p>
               {!transcript && !processing && (
-                <button
-                  onClick={openFilePicker}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition"
-                >
-                  <Video className="w-4 h-4" />
-                  Upload Video
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={openFilePicker}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition"
+                  >
+                    <Video className="w-4 h-4" />
+                    Upload Video
+                  </button>
+                  <button
+                    onClick={() => setShowUrlModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition"
+                  >
+                    <Link className="w-4 h-4" />
+                    Paste Link
+                  </button>
+                </div>
               )}
             </div>
           ) : (
@@ -676,6 +862,14 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
               >
                 <Video className="w-3.5 h-3.5" />
                 Upload Video
+              </button>
+              <button
+                onClick={() => setShowUrlModal(true)}
+                className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-500/20 dark:text-emerald-300 hover:bg-emerald-100 transition"
+                title="Paste a YouTube or Google Drive link"
+              >
+                <Link className="w-3.5 h-3.5" />
+                Paste Link
               </button>
               {INPUT_CHIPS.map((chip) => {
                 const Icon = chip.icon;

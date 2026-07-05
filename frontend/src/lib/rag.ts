@@ -153,6 +153,26 @@ async function pollIngestJob(
   }
 }
 
+async function submitUrlIngestJob(
+  url: string,
+  title: string | undefined,
+  videoId: string | undefined,
+): Promise<string> {
+  let res: Response;
+  try {
+    res = await fetch(`${RAG_URL}/ingest/url`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, title: title || null, video_id: videoId || null }),
+    });
+  } catch {
+    throw new RagError('Cannot reach the RAG service. Is it running on port 8100?', 0);
+  }
+  if (!res.ok) throw new RagError(await parseError(res), res.status);
+  const data = (await res.json()) as { job_id: string };
+  return data.job_id;
+}
+
 export const rag = {
   ingestWithProgress: async (
     file: File,
@@ -173,6 +193,25 @@ export const rag = {
     return pollIngestJob(jobId, (serverProgress) => {
       onProgress({
         percent: Math.max(15, serverProgress.percent),
+        stage: serverProgress.stage,
+        message: serverProgress.message,
+      });
+    });
+  },
+
+  ingestUrlWithProgress: async (
+    url: string,
+    onProgress: (progress: IngestProgress) => void,
+    title?: string,
+    videoId?: string,
+  ): Promise<IngestResponse> => {
+    onProgress({ percent: 2, stage: 'downloading', message: 'Submitting URL for download…' });
+
+    const jobId = await submitUrlIngestJob(url, title, videoId);
+
+    return pollIngestJob(jobId, (serverProgress) => {
+      onProgress({
+        percent: Math.max(2, serverProgress.percent),
         stage: serverProgress.stage,
         message: serverProgress.message,
       });
