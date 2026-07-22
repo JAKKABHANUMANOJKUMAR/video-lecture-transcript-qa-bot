@@ -38,7 +38,7 @@ from rag.pipeline.rag_chain import answer_question
 from rag.pipeline.url_download import detect_source, download_video, extract_title_from_url
 from rag.pipeline.vectorstore import query as vector_query
 
-app = FastAPI(title="Ask Ora RAG Service", version="1.0.0")
+app = FastAPI(title="Lekta RAG Service", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -198,7 +198,7 @@ def chroma_viewer():
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ChromaDB Vector Viewer — Ask Ora</title>
+  <title>ChromaDB Vector Viewer — Lekta</title>
   <style>
     * { box-sizing: border-box; }
     body { font-family: system-ui, sans-serif; margin: 0; background: #0f172a; color: #e2e8f0; }

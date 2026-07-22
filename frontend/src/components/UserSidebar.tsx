@@ -64,7 +64,7 @@ export const UserSidebar: React.FC<SidebarProps> = ({
             <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-lg">AO</span>
             </div>
-            <span className="text-xl font-bold text-slate-900 dark:text-white">Ask Ora</span>
+            <span className="text-xl font-bold text-slate-900 dark:text-white">Lekta</span>
           </div>
 
           {/* Navigation */}

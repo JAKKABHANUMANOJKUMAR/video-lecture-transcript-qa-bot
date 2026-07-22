@@ -104,7 +104,7 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold text-center text-slate-900 mb-2">Ask Ora</h1>
+          <h1 className="text-3xl font-bold text-center text-slate-900 mb-2">Lekta</h1>
           <p className="text-center text-slate-500 mb-6">Video Lecture Transcript Q&A</p>
 
           {/* Tabs */}
