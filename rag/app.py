@@ -49,6 +49,23 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+def _ensure_schema() -> None:
+    """Create RAG tables and apply schema patches before serving requests.
+
+    Without this, a request that touches a newer column (e.g. the URL-dedup
+    check on ``source_url``) can reach the DB before ``init_db()`` has run,
+    failing with "column does not exist" on databases created by an older
+    version. Best-effort: a DB hiccup shouldn't stop the service from starting.
+    """
+    from rag.database import init_db
+
+    try:
+        init_db()
+    except Exception as exc:  # pragma: no cover - startup best effort
+        print(f"[rag] startup schema init failed: {exc}")
+
+
 class QueryRequest(BaseModel):
     question: str
     video_id: str | None = None
