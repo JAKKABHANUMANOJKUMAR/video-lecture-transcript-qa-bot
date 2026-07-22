@@ -24,6 +24,12 @@ class Transcript(Base):
     # Optional link to the backend `videos` table (kept loose to avoid coupling).
     video_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
     source_path: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    # Original URL for link-based ingests (YouTube / Google Drive) — powers
+    # deep links back to the source and duplicate-ingest detection.
+    source_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    # sha256 of the media file — lets us reuse an existing transcript instead of
+    # re-transcribing the same video.
+    content_hash: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
     title: Mapped[str | None] = mapped_column(String(512), nullable=True)
 
     language: Mapped[str] = mapped_column(String(16), default="unknown")  # detected language code

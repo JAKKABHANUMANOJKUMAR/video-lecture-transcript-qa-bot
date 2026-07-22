@@ -14,6 +14,7 @@ import {
   History,
 } from 'lucide-react';
 import { api, ApiError, ApiVideo, formatDate, formatDuration, formatRelative, titleCaseStatus } from '../lib/api';
+import { rag } from '../lib/rag';
 
 const SUBJECT_GRADIENTS: Record<string, string> = {
   python: 'from-blue-500 to-sky-400',
@@ -107,8 +108,18 @@ export const UserLibrary: React.FC<UserLibraryProps> = ({ onOpenChat }) => {
   );
 
   const deleteVideo = async (id: string) => {
+    if (
+      !window.confirm(
+        'Delete this video, its transcript, and all indexed data? This cannot be undone.',
+      )
+    ) {
+      return;
+    }
     try {
       await api.deleteVideo(id);
+      // Best-effort cleanup of the RAG-side transcript, vectors, and media.
+      // Never block the delete if the RAG service is unavailable.
+      await rag.deleteVideo(id).catch(() => {});
       setVideos((prev) => prev.filter((v) => v.id !== id));
       setSelected((cur) => (cur?.id === id ? null : cur));
     } catch (err) {
