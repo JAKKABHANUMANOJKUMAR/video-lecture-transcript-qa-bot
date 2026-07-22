@@ -5,9 +5,17 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from functools import lru_cache
 
+from sqlalchemy import or_
+
 from rag.config import settings
 from rag.database import SessionLocal
 from rag.models import Transcript
+from rag.pipeline.formatting import (
+    dedupe_key,
+    format_timestamp,
+    similarity_from_distance,
+    youtube_deep_link,
+)
 from rag.pipeline.vectorstore import query as vector_query
 
 SYSTEM_PROMPT = (
@@ -17,6 +25,11 @@ SYSTEM_PROMPT = (
     "Be concise, accurate, and cite relevant details from the context. "
     "When excerpts include timestamps or lecture titles, you may reference them. "
     "Always answer in the same language as the user's question."
+)
+
+_NO_INFO = (
+    "I don't have enough information from the lecture to answer that. "
+    "Try rephrasing, or upload a video that covers this topic."
 )
 
 
@@ -37,32 +50,46 @@ def _get_client():
     return Groq(api_key=settings.GROQ_API_KEY)
 
 
-def _format_timestamp(seconds: float | None) -> str:
-    if seconds is None:
-        return "0:00"
-    total = max(0, int(seconds))
-    m, s = divmod(total, 60)
-    return f"{m}:{s:02d}"
-
-
-def _similarity_from_distance(distance: float | None) -> float:
-    if distance is None:
-        return 0.0
-    return round(max(0.0, min(1.0, 1.0 - float(distance))), 4)
-
-
-def _load_transcript_titles(transcript_ids: set[str]) -> dict[str, str]:
+def _load_transcript_meta(transcript_ids: set[str]) -> dict[str, dict]:
+    """Fetch title + source URL for the transcripts referenced by the hits."""
     if not transcript_ids:
         return {}
     db = SessionLocal()
     try:
         rows = db.query(Transcript).filter(Transcript.id.in_(transcript_ids)).all()
-        return {row.id: (row.title or "Untitled lecture") for row in rows}
+        return {
+            row.id: {
+                "title": row.title or "Untitled lecture",
+                "source_url": row.source_url,
+            }
+            for row in rows
+        }
     finally:
         db.close()
 
 
-def enrich_hit(hit: dict, titles: dict[str, str]) -> dict:
+def _user_scope(user_id: str | None) -> tuple[set[str], set[str]] | None:
+    """Transcript/video ids a user may read: their own plus unowned (global).
+
+    Returns ``None`` for anonymous callers (no scoping — legacy/CLI behaviour).
+    """
+    if user_id is None:
+        return None
+    db = SessionLocal()
+    try:
+        rows = (
+            db.query(Transcript.id, Transcript.video_id)
+            .filter(or_(Transcript.user_id == user_id, Transcript.user_id.is_(None)))
+            .all()
+        )
+    finally:
+        db.close()
+    transcript_ids = {r[0] for r in rows}
+    video_ids = {r[1] for r in rows if r[1]}
+    return transcript_ids, video_ids
+
+
+def enrich_hit(hit: dict, meta_by_id: dict[str, dict]) -> dict:
     meta = dict(hit.get("metadata") or {})
     transcript_id = meta.get("transcript_id") or ""
     start = meta.get("start_seconds")
@@ -76,26 +103,47 @@ def enrich_hit(hit: dict, titles: dict[str, str]) -> dict:
     except (TypeError, ValueError):
         end_f = None
 
-    lecture_title = meta.get("lecture_title") or titles.get(transcript_id, "Untitled lecture")
+    tmeta = meta_by_id.get(transcript_id, {})
+    lecture_title = meta.get("lecture_title") or tmeta.get("title") or "Untitled lecture"
+    source_url = tmeta.get("source_url")
     distance = hit.get("distance")
 
     return {
         "text": hit.get("text", ""),
         "metadata": meta,
         "distance": distance,
-        "similarity": _similarity_from_distance(distance),
+        "similarity": similarity_from_distance(distance),
         "lecture_title": lecture_title,
         "transcript_id": transcript_id,
         "video_id": meta.get("video_id") or None,
         "chunk_index": meta.get("chunk_index"),
         "start_seconds": start_f,
         "end_seconds": end_f,
+        "source_url": source_url,
+        "deep_link": youtube_deep_link(source_url, start_f),
         "timestamp_label": (
-            f"{_format_timestamp(start_f)}–{_format_timestamp(end_f)}"
+            f"{format_timestamp(start_f)}–{format_timestamp(end_f)}"
             if start_f is not None and end_f is not None
-            else _format_timestamp(start_f)
+            else format_timestamp(start_f)
         ),
     }
+
+
+def _dedupe(enriched: list[dict]) -> list[dict]:
+    """Collapse bilingual (original+english) hits for the same lecture moment.
+
+    Hits arrive distance-sorted (best first), so keeping the first occurrence of
+    each (transcript, start, end) keeps the most relevant variant.
+    """
+    seen: set[tuple] = set()
+    out: list[dict] = []
+    for hit in enriched:
+        key = dedupe_key(hit["transcript_id"], hit["start_seconds"], hit["end_seconds"])
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(hit)
+    return out
 
 
 def _build_context(hits: list[dict]) -> str:
@@ -114,6 +162,7 @@ def answer_question(
     video_id: str | None = None,
     transcript_id: str | None = None,
     search_all: bool = False,
+    user_id: str | None = None,
 ) -> RagAnswer:
     """Retrieve relevant chunks and generate a grounded answer with Groq."""
     if not search_all and not transcript_id and not video_id:
@@ -122,15 +171,25 @@ def answer_question(
             sources=[],
         )
 
-    scope_transcript = None if search_all else transcript_id
-    scope_video = None if search_all else video_id
+    scope = _user_scope(user_id)  # None => anonymous (no per-user filtering)
 
-    hits = vector_query(
-        question,
-        top_k=top_k,
-        video_id=scope_video,
-        transcript_id=scope_transcript,
-    )
+    if search_all:
+        transcript_ids = sorted(scope[0]) if scope is not None else None
+        hits = vector_query(question, top_k=top_k, transcript_ids=transcript_ids)
+    elif transcript_id:
+        if scope is not None and transcript_id not in scope[0]:
+            return RagAnswer(
+                answer="You don't have access to this lecture, or it no longer exists.",
+                sources=[],
+            )
+        hits = vector_query(question, top_k=top_k, transcript_id=transcript_id)
+    else:  # video_id scope
+        if scope is not None and video_id not in scope[1]:
+            return RagAnswer(
+                answer="You don't have access to this lecture, or it no longer exists.",
+                sources=[],
+            )
+        hits = vector_query(question, top_k=top_k, video_id=video_id)
 
     if not hits:
         return RagAnswer(
@@ -139,15 +198,25 @@ def answer_question(
             sources=[],
         )
 
-    transcript_ids = {
+    transcript_ids_seen = {
         h.get("metadata", {}).get("transcript_id")
         for h in hits
         if h.get("metadata", {}).get("transcript_id")
     }
-    titles = _load_transcript_titles(transcript_ids)
-    enriched = [enrich_hit(h, titles) for h in hits]
+    meta_by_id = _load_transcript_meta(transcript_ids_seen)
+    enriched = _dedupe([enrich_hit(h, meta_by_id) for h in hits])
 
-    context = _build_context(enriched)
+    threshold = settings.RETRIEVAL_MIN_SIMILARITY
+    if threshold > 0:
+        relevant = [h for h in enriched if h["similarity"] >= threshold]
+    else:
+        relevant = enriched
+
+    if not relevant:
+        # Nothing cleared the relevance bar — don't hallucinate an answer.
+        return RagAnswer(answer=_NO_INFO, sources=[])
+
+    context = _build_context(relevant)
     scope_note = (
         "You may draw from multiple lectures in the knowledge base."
         if search_all
@@ -171,4 +240,4 @@ def answer_question(
     )
     answer_text = completion.choices[0].message.content.strip()
 
-    return RagAnswer(answer=answer_text, sources=enriched)
+    return RagAnswer(answer=answer_text, sources=relevant)

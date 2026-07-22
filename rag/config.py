@@ -25,12 +25,19 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_DB: str = "video_lecture_transcript"
 
+    # Security — MUST match the backend so RAG can validate the same JWTs and
+    # scope every transcript / query to the authenticated user.
+    SECRET_KEY: str = "change-me"
+    ALGORITHM: str = "HS256"
+
     # Groq LLM
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
 
     # Whisper
     WHISPER_MODEL: str = "base"
+    # Opt-in word-level timestamps (slower, more precise citation boundaries).
+    WHISPER_WORD_TIMESTAMPS: bool = False
 
     # Embeddings
     EMBEDDING_MODEL: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
@@ -44,6 +51,10 @@ class Settings(BaseSettings):
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 150
     TOP_K: int = 4
+    # Drop retrieved chunks whose cosine similarity is below this before
+    # answering. 0.0 = keep everything (legacy). Raise (e.g. 0.2) to make the
+    # assistant say "not enough information" instead of answering from noise.
+    RETRIEVAL_MIN_SIMILARITY: float = 0.0
 
     @property
     def database_url(self) -> str:

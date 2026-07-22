@@ -36,6 +36,7 @@ def add_timed_chunks(
     *,
     variant: str = "primary",
     lecture_title: str | None = None,
+    user_id: str | None = None,
     start_index: int = 0,
 ) -> int:
     """Embed and store timed chunks. Returns the number of chunks added."""
@@ -49,6 +50,7 @@ def add_timed_chunks(
         {
             "transcript_id": transcript_id,
             "video_id": video_id or "",
+            "user_id": user_id or "",
             "chunk_index": start_index + i,
             "language": language,
             "variant": variant,
@@ -88,15 +90,35 @@ def query(
     top_k: int | None = None,
     video_id: str | None = None,
     transcript_id: str | None = None,
+    transcript_ids: list[str] | None = None,
 ) -> list[dict]:
-    """Similarity search. Optionally scope to a single video or transcript."""
+    """Similarity search.
+
+    Scope options (combined with AND):
+      * ``transcript_id`` — a single transcript.
+      * ``video_id`` — a single backend video.
+      * ``transcript_ids`` — restrict to a set of transcripts (used to scope a
+        "search all lectures" query to the ones a user is allowed to see).
+    """
     collection = get_collection()
 
-    where: dict | None = None
+    conditions: list[dict] = []
     if transcript_id:
-        where = {"transcript_id": transcript_id}
+        conditions.append({"transcript_id": transcript_id})
     elif video_id:
-        where = {"video_id": video_id}
+        conditions.append({"video_id": video_id})
+    if transcript_ids is not None:
+        # Empty list => the caller owns nothing; short-circuit to no results.
+        if not transcript_ids:
+            return []
+        conditions.append({"transcript_id": {"$in": transcript_ids}})
+
+    if not conditions:
+        where: dict | None = None
+    elif len(conditions) == 1:
+        where = conditions[0]
+    else:
+        where = {"$and": conditions}
 
     result = collection.query(
         query_texts=[question],

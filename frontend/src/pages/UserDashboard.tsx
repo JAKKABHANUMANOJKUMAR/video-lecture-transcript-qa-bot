@@ -13,6 +13,10 @@ import {
   BookOpen,
   Link,
   X,
+  Play,
+  ExternalLink,
+  Quote,
+  Download,
 } from 'lucide-react';
 import { rag, RagError, mediaUrl, type IngestProgress, type QuerySource } from '../lib/rag';
 import { api } from '../lib/api';
@@ -94,15 +98,6 @@ const formatDuration = (seconds: number) => {
   return `${m}m ${s}s`;
 };
 
-const formatTimestamp = (seconds: number | null | undefined) => {
-  if (seconds == null) return '0:00';
-  const total = Math.max(0, Math.floor(seconds));
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-};
-
-
 const STAGE_LABELS: Record<string, string> = {
   downloading: 'Downloading',
   uploading: 'Uploading',
@@ -135,6 +130,35 @@ const ProcessingProgress: React.FC<{ progress: IngestProgress }> = ({ progress }
     </div>
     <p className="text-sm text-slate-500 dark:text-slate-400 text-center">{progress.message}</p>
   </div>
+);
+
+const SourceChip: React.FC<{ source: QuerySource; onJump: () => void }> = ({ source, onJump }) => (
+  <span className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
+    <button
+      onClick={onJump}
+      title={source.text ? source.text.slice(0, 220) : 'Jump to this moment'}
+      className="flex items-center gap-1.5 px-2 py-1 text-xs hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition"
+    >
+      <Play className="w-3 h-3 text-indigo-500 fill-indigo-500" />
+      <span className="font-semibold text-indigo-600 dark:text-indigo-400 tabular-nums">
+        {source.timestamp_label}
+      </span>
+      <span className="max-w-[10rem] truncate text-slate-500 dark:text-slate-400">
+        {source.lecture_title}
+      </span>
+    </button>
+    {source.deep_link && (
+      <a
+        href={source.deep_link}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Open at this moment on YouTube"
+        className="flex items-center px-1.5 py-1.5 border-l border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 transition"
+      >
+        <ExternalLink className="w-3 h-3" />
+      </a>
+    )}
+  </span>
 );
 
 export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, onPersist }) => {
@@ -170,6 +194,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
   const [urlInput, setUrlInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const pendingSeekRef = useRef<number | null>(null);
   const blobUrlRef = useRef<string | null>(null);
   const answersEndRef = useRef<HTMLDivElement>(null);
   const questionsEndRef = useRef<HTMLDivElement>(null);
@@ -284,6 +309,66 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     sources?: QuerySource[],
   ) => {
     setMessages((prev) => [...prev, { id: makeId(), role, content, sources }]);
+  };
+
+  // Jump the video player to the exact moment a cited source came from. If the
+  // citation belongs to a different lecture (e.g. "search all lectures"), load
+  // that lecture's media first and seek once its metadata is ready.
+  const jumpToSource = (source: QuerySource) => {
+    const start = source.start_seconds ?? 0;
+    const sourceKey = source.video_id ?? source.transcript_id ?? null;
+    const targetUrl = mediaUrl(sourceKey);
+    if (!targetUrl || !sourceKey) return;
+
+    if (sourceKey !== mediaKey) {
+      pendingSeekRef.current = start;
+      setMediaKey(sourceKey);
+      setVideoUrl(targetUrl);
+      return;
+    }
+
+    const video = videoRef.current;
+    if (video) {
+      try {
+        video.currentTime = start;
+        void video.play().catch(() => {});
+        video.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch {
+        /* ignore */
+      }
+    }
+  };
+
+  const handleVideoMetadata = () => {
+    if (pendingSeekRef.current != null && videoRef.current) {
+      videoRef.current.currentTime = pendingSeekRef.current;
+      void videoRef.current.play().catch(() => {});
+      pendingSeekRef.current = null;
+    }
+  };
+
+  const downloadTranscript = async () => {
+    if (!transcriptId) return;
+    try {
+      const detail = await rag.getTranscript(transcriptId);
+      const text = detail.english_text || detail.original_text || '';
+      if (!text) {
+        appendMessage('bot', 'This transcript has no text to download.');
+        return;
+      }
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `${(detail.title || 'transcript').replace(/[^\w.-]+/g, '_')}.txt`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      const msg = err instanceof RagError ? err.message : 'Could not fetch the transcript.';
+      appendMessage('bot', `Sorry, I couldn't download the transcript. ${msg}`);
+    }
   };
 
   const handleVideoSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -701,6 +786,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
               ref={videoRef}
               src={videoUrl}
               controls
+              onLoadedMetadata={handleVideoMetadata}
               className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-black max-h-52 object-contain"
             />
           </div>
@@ -726,6 +812,13 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
             <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400">
               <CheckCircle2 className="w-3 h-3" /> {transcript.numChunks} sections indexed
             </span>
+            <button
+              onClick={downloadTranscript}
+              title="Download the full transcript as a text file"
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+            >
+              <Download className="w-3 h-3" /> Transcript
+            </button>
           </div>
         )}
 
@@ -769,10 +862,26 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
             </div>
           ) : (
             botMessages.map((m) => (
-              <div key={m.id} className="flex justify-start">
+              <div key={m.id} className="flex flex-col items-start gap-2">
                 <div className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100">
                   <div className="whitespace-pre-wrap">{m.content}</div>
                 </div>
+                {m.sources && m.sources.length > 0 && (
+                  <div className="max-w-[90%] w-full">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 mb-1.5">
+                      <Quote className="w-3 h-3" /> Sources · click a timestamp to jump
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {m.sources.map((s, i) => (
+                        <SourceChip
+                          key={`${m.id}-src-${i}`}
+                          source={s}
+                          onJump={() => jumpToSource(s)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           )}

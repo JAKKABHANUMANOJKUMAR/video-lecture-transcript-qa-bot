@@ -17,14 +17,22 @@ import tempfile
 from pathlib import Path
 
 import chromadb
-from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, Query, UploadFile
+from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 
+from rag.auth import get_optional_user_id
 from rag.config import settings
+from rag.database import SessionLocal
+from rag.models import Transcript
 from rag.pipeline.embeddings import LocalEmbeddingFunction
-from rag.pipeline.ingestion import ingest_video
+from rag.pipeline.ingestion import (
+    delete_by_video,
+    delete_transcript_everywhere,
+    find_reusable_transcript,
+    ingest_video,
+)
 from rag.pipeline.progress import progress_store
 from rag.pipeline.rag_chain import answer_question
 from rag.pipeline.url_download import detect_source, download_video, extract_title_from_url
@@ -78,7 +86,13 @@ def _persist_upload(src_path: str, media_key: str) -> str:
     return str(dest)
 
 
-def _run_ingest_job(job_id: str, path: str, title: str | None, video_id: str | None) -> None:
+def _run_ingest_job(
+    job_id: str,
+    path: str,
+    title: str | None,
+    video_id: str | None,
+    user_id: str | None = None,
+) -> None:
     ingest_path = path
     try:
         progress_store.update(job_id, 15, "processing", "File received — starting pipeline…")
@@ -88,6 +102,7 @@ def _run_ingest_job(job_id: str, path: str, title: str | None, video_id: str | N
             ingest_path,
             title=title,
             video_id=video_id,
+            user_id=user_id,
             on_progress=progress_store.callback(job_id),
         )
         if not video_id:
@@ -417,6 +432,7 @@ async def ingest(
     file: UploadFile = File(...),
     title: str | None = Form(default=None),
     video_id: str | None = Form(default=None),
+    user_id: str | None = Depends(get_optional_user_id),
 ):
     """Upload a video and start background processing. Poll GET /ingest/status/{job_id}."""
     suffix = Path(file.filename or "upload").suffix or ".mp4"
@@ -426,7 +442,7 @@ async def ingest(
         shutil.copyfileobj(file.file, tmp)
         tmp.close()
         background_tasks.add_task(
-            _run_ingest_job, job_id, tmp.name, title or file.filename, video_id
+            _run_ingest_job, job_id, tmp.name, title or file.filename, video_id, user_id
         )
     except Exception as exc:
         Path(tmp.name).unlink(missing_ok=True)
@@ -436,9 +452,40 @@ async def ingest(
     return IngestJobResponse(job_id=job_id)
 
 
-def _run_url_ingest_job(job_id: str, url: str, title: str | None, video_id: str | None) -> None:
+def _complete_from_transcript(job_id: str, transcript: Transcript, num_chunks: int) -> None:
+    progress_store.complete(
+        job_id,
+        {
+            "transcript_id": transcript.id,
+            "language": transcript.language,
+            "is_english": transcript.is_english,
+            "duration_seconds": float(transcript.duration_seconds or 0),
+            "num_chunks": num_chunks,
+            "media_key": transcript.video_id or transcript.id,
+        },
+    )
+
+
+def _run_url_ingest_job(
+    job_id: str,
+    url: str,
+    title: str | None,
+    video_id: str | None,
+    user_id: str | None = None,
+) -> None:
     downloaded_path: str | None = None
     try:
+        # Skip the (slow) download entirely if this URL was already ingested.
+        db = SessionLocal()
+        try:
+            existing = find_reusable_transcript(db, user_id=user_id, source_url=url)
+            if existing is not None:
+                num_chunks = len(existing.chunks)
+                _complete_from_transcript(job_id, existing, num_chunks)
+                return
+        finally:
+            db.close()
+
         progress_store.update(job_id, 5, "downloading", "Downloading video from URL…")
         downloaded_path, detected_title = download_video(
             url,
@@ -457,6 +504,8 @@ def _run_url_ingest_job(job_id: str, url: str, title: str | None, video_id: str 
             ingest_path,
             title=final_title,
             video_id=video_id,
+            user_id=user_id,
+            source_url=url,
             on_progress=progress_store.callback(job_id),
         )
         if not video_id:
@@ -480,7 +529,11 @@ def _run_url_ingest_job(job_id: str, url: str, title: str | None, video_id: str 
 
 
 @app.post("/ingest/url", response_model=IngestJobResponse)
-async def ingest_url(req: IngestUrlRequest, background_tasks: BackgroundTasks):
+async def ingest_url(
+    req: IngestUrlRequest,
+    background_tasks: BackgroundTasks,
+    user_id: str | None = Depends(get_optional_user_id),
+):
     """Accept a YouTube or Google Drive URL and start background processing."""
     source = detect_source(req.url)
     if source == "unknown":
@@ -490,7 +543,9 @@ async def ingest_url(req: IngestUrlRequest, background_tasks: BackgroundTasks):
         )
 
     job_id = progress_store.create()
-    background_tasks.add_task(_run_url_ingest_job, job_id, req.url, req.title, req.video_id)
+    background_tasks.add_task(
+        _run_url_ingest_job, job_id, req.url, req.title, req.video_id, user_id
+    )
     return IngestJobResponse(job_id=job_id)
 
 
@@ -511,7 +566,7 @@ def ingest_status(job_id: str):
 
 
 @app.post("/query")
-def query(req: QueryRequest):
+def query(req: QueryRequest, user_id: str | None = Depends(get_optional_user_id)):
     if not req.question.strip():
         raise HTTPException(status_code=400, detail="Question must not be empty")
     try:
@@ -521,6 +576,7 @@ def query(req: QueryRequest):
             video_id=req.video_id,
             transcript_id=req.transcript_id,
             search_all=req.search_all,
+            user_id=user_id,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
@@ -528,4 +584,79 @@ def query(req: QueryRequest):
     return {
         "answer": result.answer,
         "sources": result.sources,
+    }
+
+
+@app.get("/transcript/{transcript_id}")
+def get_transcript(transcript_id: str, user_id: str | None = Depends(get_optional_user_id)):
+    """Return the full transcript text (original + English) for viewing/download."""
+    db = SessionLocal()
+    try:
+        t = db.query(Transcript).filter(Transcript.id == transcript_id).first()
+        if t is None:
+            raise HTTPException(status_code=404, detail="Transcript not found")
+        if user_id is not None and t.user_id is not None and t.user_id != user_id:
+            raise HTTPException(status_code=403, detail="Not your transcript")
+        return {
+            "transcript_id": t.id,
+            "title": t.title,
+            "language": t.language,
+            "is_english": t.is_english,
+            "duration_seconds": t.duration_seconds,
+            "original_text": t.original_text,
+            "english_text": t.english_text,
+            "source_url": t.source_url,
+        }
+    finally:
+        db.close()
+
+
+def _delete_media_files(*media_keys: str | None) -> None:
+    media_dir = Path(settings.media_path)
+    if not media_dir.exists():
+        return
+    for key in media_keys:
+        if not key:
+            continue
+        for path in media_dir.glob(f"{key}.*"):
+            path.unlink(missing_ok=True)
+
+
+@app.delete("/transcript/{transcript_id}")
+def delete_transcript_endpoint(
+    transcript_id: str, user_id: str | None = Depends(get_optional_user_id)
+):
+    """Delete a transcript's DB rows, vectors, and stored media file."""
+    # Capture the video_id (media key) before the row is removed.
+    db = SessionLocal()
+    try:
+        t = db.query(Transcript).filter(Transcript.id == transcript_id).first()
+        video_id = t.video_id if t else None
+    finally:
+        db.close()
+
+    deleted = delete_transcript_everywhere(transcript_id, user_id=user_id)
+    if not deleted:
+        raise HTTPException(
+            status_code=404, detail="Transcript not found or not accessible"
+        )
+    _delete_media_files(transcript_id, video_id)
+    return {"detail": "Transcript deleted", "transcript_id": transcript_id}
+
+
+@app.delete("/video/{video_id}")
+def delete_video_endpoint(
+    video_id: str, user_id: str | None = Depends(get_optional_user_id)
+):
+    """Delete all RAG data (transcripts, vectors, media) linked to a video.
+
+    Called alongside the backend's own video-record delete so nothing is left
+    orphaned. Idempotent — succeeds even if the video was never ingested.
+    """
+    removed = delete_by_video(video_id, user_id=user_id)
+    _delete_media_files(video_id, *removed)
+    return {
+        "detail": "Video data deleted",
+        "video_id": video_id,
+        "transcripts_removed": len(removed),
     }

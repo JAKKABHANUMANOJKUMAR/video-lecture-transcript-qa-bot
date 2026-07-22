@@ -1,3 +1,5 @@
+import { tokenStore } from './api';
+
 // Empty string = same origin (single-server Docker / nginx gateway)
 const RAG_URL =
   import.meta.env.VITE_RAG_API_URL !== undefined
@@ -5,6 +7,13 @@ const RAG_URL =
     : import.meta.env.DEV
       ? 'http://localhost:8100'
       : '';
+
+// The RAG service validates the same JWT the backend issues, so it can scope
+// every ingest/query to the signed-in user.
+function authHeaders(base: Record<string, string> = {}): Record<string, string> {
+  const token = tokenStore.get();
+  return token ? { ...base, Authorization: `Bearer ${token}` } : base;
+}
 
 export class RagError extends Error {
   status: number;
@@ -40,12 +49,25 @@ export interface QuerySource {
   chunk_index?: number;
   start_seconds: number | null;
   end_seconds: number | null;
+  source_url?: string | null;
+  deep_link?: string | null;
   timestamp_label: string;
 }
 
 export interface QueryResponse {
   answer: string;
   sources: QuerySource[];
+}
+
+export interface TranscriptDetail {
+  transcript_id: string;
+  title: string | null;
+  language: string;
+  is_english: boolean;
+  duration_seconds: number;
+  original_text: string;
+  english_text: string;
+  source_url: string | null;
 }
 
 export function mediaUrl(mediaKey: string | null | undefined): string | null {
@@ -77,6 +99,8 @@ function uploadIngestJob(
 
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `${RAG_URL}/ingest`);
+    const token = tokenStore.get();
+    if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
     xhr.upload.onprogress = (event) => {
       if (!event.lengthComputable) return;
@@ -162,7 +186,7 @@ async function submitUrlIngestJob(
   try {
     res = await fetch(`${RAG_URL}/ingest/url`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: authHeaders({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ url, title: title || null, video_id: videoId || null }),
     });
   } catch {
@@ -235,7 +259,7 @@ export const rag = {
     try {
       res = await fetch(`${RAG_URL}/query`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({
           question,
           transcript_id: options?.transcriptId ?? null,
@@ -249,5 +273,45 @@ export const rag = {
     }
     if (!res.ok) throw new RagError(await parseError(res), res.status);
     return (await res.json()) as QueryResponse;
+  },
+
+  getTranscript: async (transcriptId: string): Promise<TranscriptDetail> => {
+    let res: Response;
+    try {
+      res = await fetch(`${RAG_URL}/transcript/${encodeURIComponent(transcriptId)}`, {
+        headers: authHeaders(),
+      });
+    } catch {
+      throw new RagError('Cannot reach the RAG service. Is it running on port 8100?', 0);
+    }
+    if (!res.ok) throw new RagError(await parseError(res), res.status);
+    return (await res.json()) as TranscriptDetail;
+  },
+
+  deleteTranscript: async (transcriptId: string): Promise<void> => {
+    let res: Response;
+    try {
+      res = await fetch(`${RAG_URL}/transcript/${encodeURIComponent(transcriptId)}`, {
+        method: 'DELETE',
+        headers: authHeaders(),
+      });
+    } catch {
+      throw new RagError('Cannot reach the RAG service. Is it running on port 8100?', 0);
+    }
+    if (!res.ok) throw new RagError(await parseError(res), res.status);
+  },
+
+  // Remove all RAG data (transcript, vectors, media) tied to a backend video.
+  deleteVideo: async (videoId: string): Promise<void> => {
+    let res: Response;
+    try {
+      res = await fetch(`${RAG_URL}/video/${encodeURIComponent(videoId)}`, {
+        method: 'DELETE',
+        headers: authHeaders(),
+      });
+    } catch {
+      throw new RagError('Cannot reach the RAG service. Is it running on port 8100?', 0);
+    }
+    if (!res.ok) throw new RagError(await parseError(res), res.status);
   },
 };

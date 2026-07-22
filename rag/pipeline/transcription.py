@@ -42,6 +42,8 @@ def _run_whisper(model, audio, *, task: str, language: str | None = None) -> dic
     kwargs: dict = {"task": task, "fp16": False, "verbose": False}
     if language and language != "unknown":
         kwargs["language"] = language
+    if settings.WHISPER_WORD_TIMESTAMPS:
+        kwargs["word_timestamps"] = True
     return model.transcribe(audio, **kwargs)
 
 
