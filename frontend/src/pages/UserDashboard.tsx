@@ -60,6 +60,15 @@ const INPUT_CHIPS = [
   { id: 'assistance', label: 'Assistance', icon: Sparkles },
 ];
 
+// Full prompts sent to the RAG service when an action chip is clicked. The
+// user's message bubble shows a short label instead of this whole prompt.
+const ACTION_PROMPTS: Record<string, string> = {
+  notes:
+    'Generate clear, well-structured study notes for this lecture. Use short headings and bullet points covering the key topics, important definitions, any formulas or examples, and the main takeaways. Base everything only on the lecture content.',
+  assistance:
+    'Give me a short overview of what this lecture covers, then suggest 3–5 useful questions I could ask about it. Base it only on the lecture content.',
+};
+
 const makeId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
     ? crypto.randomUUID()
@@ -520,12 +529,12 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     }
   };
 
-  const ask = async (question: string) => {
+  const ask = async (question: string, displayText?: string, topK?: number) => {
     const text = question.trim();
     if (!text || typing) return;
 
     setStage('workspace');
-    appendMessage('user', text);
+    appendMessage('user', displayText ?? text);
     setTyping(true);
 
     try {
@@ -533,6 +542,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
         transcriptId: searchAllLectures ? null : transcriptId,
         videoId: searchAllLectures ? null : videoId,
         searchAll: searchAllLectures,
+        topK,
       });
       appendMessage('bot', res.answer, res.sources);
     } catch (err) {
@@ -556,6 +566,17 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     if (!text) return;
     setWorkspaceInput('');
     ask(text);
+  };
+
+  // Run an action chip (Generate Notes / Assistance): send its full prompt to
+  // the RAG service while showing a short label in the user's message column.
+  const runAction = (chipId: string) => {
+    if (typing) return;
+    const prompt = ACTION_PROMPTS[chipId];
+    if (!prompt) return;
+    setActiveChip(chipId);
+    // Notes should span the whole lecture, so pull more chunks than a normal Q&A.
+    ask(prompt, chipId === 'notes' ? 'Generate notes' : 'I need assistance', chipId === 'notes' ? 12 : undefined);
   };
 
   // ---------- Welcome + Compose (shared centered layout) ----------
@@ -671,8 +692,10 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                       return (
                         <button
                           key={chip.id}
-                          onClick={() => setInput((prev) => prev || chip.label)}
-                          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+                          onClick={() => runAction(chip.id)}
+                          disabled={typing || !transcript}
+                          title={!transcript ? 'Upload or ingest a video first' : chip.label}
+                          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <Icon className="w-4 h-4" />
                           {chip.label}
@@ -694,7 +717,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                 Try{' '}
                 <button
                   type="button"
-                  onClick={() => setInput('Generate notes')}
+                  onClick={() => runAction('notes')}
                   className="underline decoration-dotted underline-offset-2 hover:text-slate-600 dark:hover:text-slate-300 transition"
                 >
                   Generate notes
@@ -702,7 +725,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                 or{' '}
                 <button
                   type="button"
-                  onClick={() => setInput('I need assistance')}
+                  onClick={() => runAction('assistance')}
                   className="underline decoration-dotted underline-offset-2 hover:text-slate-600 dark:hover:text-slate-300 transition"
                 >
                   Assistance
@@ -986,8 +1009,10 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                 return (
                   <button
                     key={chip.id}
-                    onClick={() => setActiveChip(chip.id)}
-                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium transition ${
+                    onClick={() => runAction(chip.id)}
+                    disabled={typing || !transcript}
+                    title={!transcript ? 'Upload or ingest a video first' : `Ask Lekta to ${chip.label.toLowerCase()}`}
+                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium transition disabled:opacity-40 disabled:cursor-not-allowed ${
                       isActive
                         ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/20 dark:text-indigo-300'
                         : 'text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
