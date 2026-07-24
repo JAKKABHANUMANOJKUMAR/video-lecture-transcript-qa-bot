@@ -19,7 +19,7 @@ from rag.pipeline.formatting import (
 from rag.pipeline.vectorstore import query as vector_query
 
 SYSTEM_PROMPT = (
-    "You are Ask Ora, an assistant that answers questions about video lectures "
+    "You are Lekta, an assistant that answers questions about video lectures "
     "using ONLY the provided transcript excerpts. If the answer is not contained "
     "in the excerpts, say you don't have enough information from the lecture. "
     "Be concise, accurate, and cite relevant details from the context. "

@@ -65,6 +65,13 @@ def _download_youtube(
     url: str,
     on_progress: Callable[[int, str], None] | None = None,
 ) -> tuple[str, str]:
+    # Rebuild a canonical watch URL from the captured 11-char video id so
+    # noisy input (a stray "Shared link:" label, ?si= tracking params, extra
+    # whitespace) can't reach yt-dlp and get rejected as "not a valid URL".
+    match = _YOUTUBE_RE.search(url)
+    if match:
+        url = f"https://www.youtube.com/watch?v={match.group(1)}"
+
     tmp_dir = tempfile.mkdtemp(prefix="askora_yt_")
     out_template = str(Path(tmp_dir) / "%(title)s.%(ext)s")
 

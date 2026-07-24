@@ -38,7 +38,7 @@ from rag.pipeline.rag_chain import answer_question
 from rag.pipeline.url_download import detect_source, download_video, extract_title_from_url
 from rag.pipeline.vectorstore import query as vector_query
 
-app = FastAPI(title="Ask Ora RAG Service", version="1.0.0")
+app = FastAPI(title="Lekta RAG Service", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -47,6 +47,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def _ensure_schema() -> None:
+    """Create RAG tables and apply schema patches before serving requests.
+
+    Without this, a request that touches a newer column (e.g. the URL-dedup
+    check on ``source_url``) can reach the DB before ``init_db()`` has run,
+    failing with "column does not exist" on databases created by an older
+    version. Best-effort: a DB hiccup shouldn't stop the service from starting.
+    """
+    from rag.database import init_db
+
+    try:
+        init_db()
+    except Exception as exc:  # pragma: no cover - startup best effort
+        print(f"[rag] startup schema init failed: {exc}")
 
 
 class QueryRequest(BaseModel):
@@ -198,7 +215,7 @@ def chroma_viewer():
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ChromaDB Vector Viewer — Ask Ora</title>
+  <title>ChromaDB Vector Viewer — Lekta</title>
   <style>
     * { box-sizing: border-box; }
     body { font-family: system-ui, sans-serif; margin: 0; background: #0f172a; color: #e2e8f0; }
