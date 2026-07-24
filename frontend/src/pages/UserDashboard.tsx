@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Quote,
   Download,
+  Pencil,
 } from 'lucide-react';
 import { rag, RagError, mediaUrl, type IngestProgress, type QuerySource } from '../lib/rag';
 import { api } from '../lib/api';
@@ -28,6 +29,11 @@ export interface ChatMessage {
   role: 'user' | 'bot';
   content: string;
   sources?: QuerySource[];
+  // Set on editable user questions: the text to (re)send to the RAG service.
+  // Absent on non-question messages (uploads, shared links, action chips).
+  query?: string;
+  // Set on a bot answer while it is being regenerated after an edit.
+  pending?: boolean;
 }
 
 export interface TranscriptInfo {
@@ -178,6 +184,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
   const [messages, setMessages] = useState<ChatMessage[]>(initialSession?.messages ?? []);
   const [typing, setTyping] = useState(false);
   const [activeChip, setActiveChip] = useState('notes');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
   const [videoName, setVideoName] = useState(initialSession?.videoName ?? '');
   const [videoId, setVideoId] = useState<string | null>(initialSession?.videoId ?? null);
   const [mediaKey, setMediaKey] = useState<string | null>(
@@ -211,6 +219,9 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
 
   const userMessages = messages.filter((m) => m.role === 'user');
   const botMessages = messages.filter((m) => m.role === 'bot');
+  // A middle answer is being regenerated after an edit (shows an inline spinner
+  // on that answer, so suppress the bottom "typing" indicator).
+  const isRegenerating = messages.some((m) => m.role === 'bot' && m.pending);
 
   useEffect(() => {
     answersEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -316,8 +327,9 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     role: ChatMessage['role'],
     content: string,
     sources?: QuerySource[],
+    query?: string,
   ) => {
-    setMessages((prev) => [...prev, { id: makeId(), role, content, sources }]);
+    setMessages((prev) => [...prev, { id: makeId(), role, content, sources, query }]);
   };
 
   // Jump the video player to the exact moment a cited source came from. If the
@@ -534,7 +546,9 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     if (!text || typing) return;
 
     setStage('workspace');
-    appendMessage('user', displayText ?? text);
+    // Mark plain typed questions (no display label) as editable by storing the
+    // query; action/upload messages pass a displayText and stay non-editable.
+    appendMessage('user', displayText ?? text, undefined, displayText ? undefined : text);
     setTyping(true);
 
     try {
@@ -577,6 +591,79 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     setActiveChip(chipId);
     // Notes should span the whole lecture, so pull more chunks than a normal Q&A.
     ask(prompt, chipId === 'notes' ? 'Generate notes' : 'I need assistance', chipId === 'notes' ? 12 : undefined);
+  };
+
+  // ---------- Edit a previous question (ChatGPT-style) ----------
+  const startEdit = (m: ChatMessage) => {
+    if (typing) return; // pause: don't allow editing while an answer is generating
+    setEditingId(m.id);
+    setEditText(m.content);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditText('');
+  };
+
+  // Re-query and replace the answer that follows a given question, in place.
+  const regenerateAnswer = async (userId: string, question: string) => {
+    setTyping(true);
+    const applyAnswer = (payload: Partial<ChatMessage>) =>
+      setMessages((prev) => {
+        const idx = prev.findIndex((x) => x.id === userId);
+        if (idx === -1) return prev;
+        const next = [...prev];
+        const botIdx = next.findIndex((x, i) => i > idx && x.role === 'bot');
+        if (botIdx !== -1) {
+          next[botIdx] = { ...next[botIdx], ...payload, pending: false };
+        } else {
+          next.splice(idx + 1, 0, {
+            id: makeId(),
+            role: 'bot',
+            content: payload.content ?? '',
+            sources: payload.sources,
+            pending: false,
+          });
+        }
+        return next;
+      });
+
+    try {
+      const res = await rag.query(question, {
+        transcriptId: searchAllLectures ? null : transcriptId,
+        videoId: searchAllLectures ? null : videoId,
+        searchAll: searchAllLectures,
+      });
+      applyAnswer({ content: res.answer, sources: res.sources });
+    } catch (err) {
+      const msg = err instanceof RagError ? err.message : 'Something went wrong while answering.';
+      applyAnswer({ content: `Sorry, I ran into a problem. ${msg}`, sources: undefined });
+    } finally {
+      setTyping(false);
+    }
+  };
+
+  const saveEdit = (m: ChatMessage) => {
+    const newText = editText.trim();
+    setEditingId(null);
+    setEditText('');
+    if (!newText || newText === m.content) return;
+
+    // Replace the question in place (same message, no new bubble) and mark its
+    // paired answer as regenerating.
+    setMessages((prev) => {
+      const idx = prev.findIndex((x) => x.id === m.id);
+      if (idx === -1) return prev;
+      const next = [...prev];
+      next[idx] = { ...next[idx], content: newText, query: newText };
+      const botIdx = next.findIndex((x, i) => i > idx && x.role === 'bot');
+      if (botIdx !== -1) {
+        next[botIdx] = { ...next[botIdx], content: '', sources: undefined, pending: true };
+      }
+      return next;
+    });
+
+    regenerateAnswer(m.id, newText);
   };
 
   // ---------- Welcome + Compose (shared centered layout) ----------
@@ -887,9 +974,15 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
             botMessages.map((m) => (
               <div key={m.id} className="flex flex-col items-start gap-2">
                 <div className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                  <div className="whitespace-pre-wrap">{m.content}</div>
+                  {m.pending ? (
+                    <span className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Regenerating…
+                    </span>
+                  ) : (
+                    <div className="whitespace-pre-wrap">{m.content}</div>
+                  )}
                 </div>
-                {m.sources && m.sources.length > 0 && (
+                {!m.pending && m.sources && m.sources.length > 0 && (
                   <div className="max-w-[90%] w-full">
                     <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 mb-1.5">
                       <Quote className="w-3 h-3" /> Sources · click a timestamp to jump
@@ -909,7 +1002,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
             ))
           )}
 
-          {typing && (
+          {typing && !isRegenerating && (
             <div className="flex items-center gap-2">
               <LektaLogo size={20} />
               <div className="flex gap-1 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-full">
@@ -950,10 +1043,56 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
             </div>
           ) : (
             userMessages.map((m) => (
-              <div key={m.id} className="flex justify-end">
-                <div className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap bg-indigo-100 dark:bg-indigo-500/20 text-slate-800 dark:text-slate-100">
-                  {m.content}
-                </div>
+              <div key={m.id} className="flex justify-end group">
+                {editingId === m.id ? (
+                  <div className="w-[92%] rounded-2xl border border-indigo-300 dark:border-indigo-500/40 bg-indigo-50 dark:bg-indigo-500/10 p-2">
+                    <textarea
+                      value={editText}
+                      onChange={(e) => setEditText(e.target.value)}
+                      autoFocus
+                      rows={2}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          saveEdit(m);
+                        }
+                        if (e.key === 'Escape') cancelEdit();
+                      }}
+                      className="w-full resize-none bg-transparent text-sm text-slate-800 dark:text-slate-100 outline-none px-1 py-0.5"
+                    />
+                    <div className="flex items-center justify-end gap-2 mt-1">
+                      <button
+                        onClick={cancelEdit}
+                        className="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => saveEdit(m)}
+                        disabled={!editText.trim()}
+                        className="px-2.5 py-1 rounded-lg text-xs font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                      >
+                        Save &amp; regenerate
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-start gap-1.5">
+                    {m.query !== undefined && (
+                      <button
+                        onClick={() => startEdit(m)}
+                        disabled={typing}
+                        title="Edit & regenerate"
+                        className="mt-1 p-1 rounded-md text-slate-400 hover:text-indigo-500 hover:bg-slate-100 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition disabled:opacity-0 disabled:cursor-not-allowed"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                    <div className="max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap bg-indigo-100 dark:bg-indigo-500/20 text-slate-800 dark:text-slate-100">
+                      {m.content}
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           )}
