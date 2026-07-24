@@ -13,7 +13,10 @@ body,
 #root {
   height: 100%;
   width: 100%;
+  /* One shared typographic base for both the user and admin UIs. */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -31,7 +34,7 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition;
+    @apply px-4 py-2 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition;
   }
 
   .btn-secondary {

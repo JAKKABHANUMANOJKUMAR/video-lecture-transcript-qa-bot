@@ -735,7 +735,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
             title="Lekta"
           >
             <LektaLogo size={72} className="transition-transform group-hover:scale-105" />
-            <div className="mt-2 w-16 h-0.5 bg-slate-900 dark:bg-slate-200 rounded-full" />
+            <div className="mt-2 w-16 h-0.5 bg-teal-500 rounded-full" />
             <h1 className="mt-4 text-3xl font-extrabold text-indigo-500 tracking-tight">Lekta</h1>
           </button>
 

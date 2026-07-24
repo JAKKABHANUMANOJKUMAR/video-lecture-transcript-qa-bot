@@ -12,39 +12,16 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'askora-theme';
 
-const getSystemPrefersDark = () =>
-  typeof window !== 'undefined' &&
-  window.matchMedia &&
-  window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-const resolveIsDark = (theme: Theme) =>
-  theme === 'dark' || (theme === 'system' && getSystemPrefersDark());
-
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'light';
-    return (localStorage.getItem(STORAGE_KEY) as Theme) || 'light';
-  });
-
-  const [isDark, setIsDark] = useState<boolean>(() => resolveIsDark(theme));
+  // Light-only UI: the app always renders in light mode. The theme value is kept
+  // for API stability (components may still call useTheme), but isDark is always
+  // false and the `dark` class is never applied, so every `dark:` utility is inert.
+  const [theme, setThemeState] = useState<Theme>('light');
+  const isDark = false;
 
   useEffect(() => {
-    const dark = resolveIsDark(theme);
-    setIsDark(dark);
-    const root = document.documentElement;
-    root.classList.toggle('dark', dark);
-    localStorage.setItem(STORAGE_KEY, theme);
-
-    if (theme === 'system' && window.matchMedia) {
-      const mq = window.matchMedia('(prefers-color-scheme: dark)');
-      const handler = () => {
-        const next = mq.matches;
-        setIsDark(next);
-        root.classList.toggle('dark', next);
-      };
-      mq.addEventListener('change', handler);
-      return () => mq.removeEventListener('change', handler);
-    }
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem(STORAGE_KEY, 'light');
   }, [theme]);
 
   const setTheme = (next: Theme) => setThemeState(next);
