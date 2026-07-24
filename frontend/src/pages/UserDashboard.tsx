@@ -3,7 +3,6 @@ import {
   Send,
   FileText,
   Sparkles,
-  AudioLines,
   RotateCw,
   Video,
   CheckCircle2,
@@ -21,6 +20,7 @@ import {
 } from 'lucide-react';
 import { rag, RagError, mediaUrl, type IngestProgress, type QuerySource } from '../lib/rag';
 import { api } from '../lib/api';
+import { LektaLogo } from '../components/LektaLogo';
 
 type Stage = 'welcome' | 'compose' | 'workspace';
 
@@ -79,23 +79,6 @@ const makeId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-
-const LektaLogo: React.FC<{ size?: number; className?: string }> = ({ size = 64, className = '' }) => (
-  <div className={`relative ${className}`} style={{ width: size, height: size }}>
-    <div className="w-full h-full rounded-2xl bg-gradient-to-br from-amber-300 via-yellow-400 to-amber-500 flex items-center justify-center shadow-sm">
-      <div
-        className="rounded-full bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center"
-        style={{ width: size * 0.72, height: size * 0.72 }}
-      >
-        <AudioLines className="text-white" style={{ width: size * 0.4, height: size * 0.4 }} />
-      </div>
-    </div>
-    <Sparkles
-      className="absolute -top-1 -right-1 text-amber-500 fill-amber-400"
-      style={{ width: size * 0.28, height: size * 0.28 }}
-    />
-  </div>
-);
 
 const ResetButton: React.FC<{ onClick: () => void }> = ({ onClick }) => (
   <button

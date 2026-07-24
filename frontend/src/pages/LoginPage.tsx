@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../lib/auth-context';
 import { Lock, Mail, AlertCircle, User as UserIcon } from 'lucide-react';
+import { LektaLogo } from '../components/LektaLogo';
 
 type Mode = 'signin' | 'signup';
 
@@ -99,9 +100,7 @@ export const LoginPage: React.FC = () => {
         <div className="bg-white rounded-lg shadow-xl p-8">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-teal-400 to-teal-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-2xl font-bold">L</span>
-            </div>
+            <LektaLogo size={64} />
           </div>
 
           <h1 className="text-3xl font-bold text-center text-slate-900 mb-2">Lekta</h1>
