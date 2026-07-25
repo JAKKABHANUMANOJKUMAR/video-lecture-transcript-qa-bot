@@ -212,3 +212,52 @@ user question is followed immediately by its assistant answer, in order.
 **Q:** Display the conversation in ChatGPT-style (Question → Answer …) and implement it to the project.
 
 **A:** Rewrote this `CONVERSATION_QA.md` to cover the full conversation through now in Question → Answer order.
+
+---
+
+### 31. Commit & push the Q&A log
+**Q:** commit & push
+
+**A:** Committed `1d96360` ("Update CONVERSATION_QA.md with full ChatGPT-style Q&A log", +130/−106) and pushed (`7d82c57..1d96360`).
+
+---
+
+### 32. Run the project
+**Q:** run the project
+
+**A:** The previous session's servers had stopped; Postgres was still up. Relaunched backend (:8000), RAG (:8100), and frontend (:5173); all verified healthy.
+
+---
+
+### 33. What happened?
+**Q:** what happened?
+
+**A:** The frontend (Vite) had exited on its own — backend and RAG stayed healthy (the backend log even showed the logged-in `auth/me` + `chats` calls). Restarted the frontend; back to HTTP 200 on 5173.
+
+---
+
+### 34. Run the project
+**Q:** run the project
+
+**A:** Only the frontend was down again (backend/RAG/Postgres still up), so I restarted just the frontend.
+
+---
+
+### 35. What happened
+**Q:** what happened
+
+**A:** Diagnosed the recurring blank page: repeated restarts left stray Vite processes holding 5173/5174, so each new server "port-walked" to 5175 — and since the backend/RAG CORS allowlist only permits `localhost:5173`, requests from `:5175` were silently blocked. Killed the stray processes and started one clean instance back on 5173.
+
+---
+
+### 36. Add a managed preview config
+**Q:** Add .claude/launch.json
+
+**A:** Added a managed preview config for the frontend (`npm --prefix frontend run dev -- --strictPort`, port 5173) so it runs as a single managed server and fails loudly instead of drifting ports. Validated live — it launched on 5173 and served the Lekta app.
+
+---
+
+### 37. Display + implement this Q&A
+**Q:** Display the conversation in ChatGPT-style (Question → Answer) and implement this feature to my project.
+
+**A:** Appended entries 31–37 to this `CONVERSATION_QA.md`, keeping the full Question → Answer log current.
