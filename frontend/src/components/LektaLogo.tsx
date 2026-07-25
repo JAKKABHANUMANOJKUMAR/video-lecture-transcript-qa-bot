@@ -24,7 +24,7 @@ export const LektaLogo: React.FC<LektaLogoProps> = ({ size = 64, className = '' 
           <polygon points="27,18 27,54 55,36" />
         </clipPath>
       </defs>
-      <rect width="72" height="72" rx="18" fill="#0d9488" />
+      <rect width="72" height="72" rx="18" fill="#0f766e" />
       <g clipPath={`url(#${clipId})`} fill="#ffffff">
         <rect x="25" y="8" width="5" height="56" />
         <rect x="32" y="8" width="5" height="56" />
