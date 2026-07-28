@@ -2,6 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
+/* =============================================================================
+   LEKTA DESIGN SYSTEM v1 — theme tokens
+   Values are space-separated RGB triplets so Tailwind's `rgb(var(--x) /
+   <alpha-value>)` role tokens support opacity modifiers (e.g. bg-surface/60).
+   Component code must never reference these directly — use the Tailwind role
+   tokens (bg-surface, text-content-muted, border-line, …) so both themes and
+   any future palette swap are a one-file change.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --c-canvas: 246 248 248;
+  --c-surface: 255 255 255;
+  --c-surface-sunk: 237 241 240;
+
+  --c-border: 227 233 232;
+  --c-border-strong: 201 211 209;
+
+  --c-text: 15 27 26;
+  --c-text-body: 62 78 76;
+  --c-text-muted: 90 107 106;
+  --c-text-disabled: 148 165 163;
+
+  --c-accent: 15 118 110;
+  --c-accent-hover: 17 94 89;
+  --c-accent-soft: 234 244 242;
+  --c-accent-ink: 19 78 74;
+
+  --c-success: 23 128 61;
+  --c-success-soft: 231 244 236;
+  --c-success-ink: 17 94 46;
+
+  --c-warning: 180 83 9;
+  --c-warning-soft: 252 240 228;
+  --c-warning-ink: 138 63 7;
+
+  --c-danger: 190 18 60;
+  --c-danger-soft: 252 233 238;
+  --c-danger-ink: 154 14 48;
+
+  --c-info: 67 56 202;
+  --c-info-soft: 236 235 251;
+  --c-info-ink: 54 44 163;
+}
+
+/* Dark is re-tokenized, not inverted: the accent lightens so it still reads as
+   the brand against a dark ground, and every soft/ink pair is re-derived to
+   hold contrast rather than being flipped mechanically. */
+.dark {
+  color-scheme: dark;
+
+  --c-canvas: 12 20 19;
+  --c-surface: 20 31 30;
+  --c-surface-sunk: 27 40 39;
+
+  --c-border: 38 52 51;
+  --c-border-strong: 53 70 68;
+
+  --c-text: 232 239 238;
+  --c-text-body: 195 208 206;
+  --c-text-muted: 147 165 162;
+  --c-text-disabled: 95 115 112;
+
+  --c-accent: 63 163 150;
+  --c-accent-hover: 85 184 170;
+  --c-accent-soft: 21 48 45;
+  --c-accent-ink: 143 211 200;
+
+  --c-success: 62 158 99;
+  --c-success-soft: 20 41 29;
+  --c-success-ink: 127 203 155;
+
+  --c-warning: 208 138 62;
+  --c-warning-soft: 43 31 17;
+  --c-warning-ink: 235 180 116;
+
+  --c-danger: 217 82 111;
+  --c-danger-soft: 43 18 24;
+  --c-danger-ink: 240 154 172;
+
+  --c-info: 123 114 232;
+  --c-info-soft: 25 23 52;
+  --c-info-ink: 173 167 245;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -13,8 +99,7 @@ body,
 #root {
   height: 100%;
   width: 100%;
-  /* One shared typographic base for both the user and admin UIs. */
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Roboto', sans-serif;
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -22,55 +107,72 @@ body,
 }
 
 body {
-  background: #eef2f6;
-  color: #1f2937;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  background: rgb(var(--c-canvas));
+  color: rgb(var(--c-text-body));
+  transition: background-color 0.2s cubic-bezier(0.2, 0.6, 0.3, 1),
+              color 0.2s cubic-bezier(0.2, 0.6, 0.3, 1);
 }
 
-.dark body {
-  background: #0f172a;
-  color: #e2e8f0;
+/* Inter's default figures are proportional, so timestamps and counts jitter as
+   they tick. Headings get the tightening that makes the scale feel deliberate. */
+h1, h2, h3, h4 {
+  color: rgb(var(--c-text));
+  text-wrap: balance;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+  /* The app previously had zero focus-visible styles across 6,626 lines. This
+     is the floor: every interactive element gets a visible ring unless it
+     opts out with its own focus-visible treatment. */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::placeholder {
+    color: rgb(var(--c-text-disabled));
+  }
+
+  ::selection {
+    background: rgb(var(--c-accent) / 0.18);
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply px-4 py-2 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition;
+    @apply inline-flex items-center gap-2 px-4 py-2 min-h-[38px] rounded-md
+           bg-accent text-white font-medium shadow-e1
+           transition-colors duration-200 hover:bg-accent-hover
+           disabled:bg-surface-sunk disabled:text-content-disabled
+           disabled:shadow-none disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition;
+    @apply inline-flex items-center gap-2 px-4 py-2 min-h-[38px] rounded-md
+           bg-surface text-content-body font-medium border border-line-strong
+           transition-colors duration-200 hover:bg-surface-sunk
+           disabled:text-content-disabled disabled:cursor-not-allowed;
   }
 
   .card {
-    @apply bg-white rounded-lg border border-slate-200 shadow-sm;
+    @apply bg-surface rounded-lg border border-line shadow-e1;
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+/* Motion is opt-out, not opt-in. Anything decorative collapses; anything that
+   communicates progress keeps a single frame so it still reads as "working". */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-in;
-}
-
-.animate-slide-in {
-  animation: slideInUp 0.4s ease-out;
-}
-

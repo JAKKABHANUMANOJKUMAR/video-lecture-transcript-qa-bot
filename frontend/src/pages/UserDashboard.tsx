@@ -5,10 +5,7 @@ import {
   Sparkles,
   RotateCw,
   Video,
-  CheckCircle2,
   Loader2,
-  Languages,
-  Clock,
   BookOpen,
   Link,
   X,
@@ -17,10 +14,35 @@ import {
   Quote,
   Download,
   Pencil,
+  Check,
+  Copy,
+  RefreshCw,
 } from 'lucide-react';
 import { rag, RagError, mediaUrl, type IngestProgress, type QuerySource } from '../lib/rag';
 import { api } from '../lib/api';
 import { LektaLogo } from '../components/LektaLogo';
+import { Button, IconButton, Badge, EmptyState, ErrorBlock } from '../components/ui';
+import { Markdown } from '../components/Markdown';
+
+const CopyButton: React.FC<{ text: string }> = ({ text }) => {
+  const [copied, setCopied] = useState(false);
+  return (
+    <IconButton
+      icon={copied ? Check : Copy}
+      label={copied ? 'Copied' : 'Copy answer'}
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          // Clipboard permission can be denied; still confirm so the control
+          // never looks unresponsive.
+        }
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1600);
+      }}
+    />
+  );
+};
 
 type Stage = 'welcome' | 'compose' | 'workspace';
 
@@ -34,6 +56,10 @@ export interface ChatMessage {
   query?: string;
   // Set on a bot answer while it is being regenerated after an edit.
   pending?: boolean;
+  // Failures used to be appended as ordinary bot messages, so they rendered in
+  // the same grey bubble as a real answer with no way to retry. Flagged now so
+  // the thread can give them their own treatment.
+  isError?: boolean;
 }
 
 export interface TranscriptInfo {
@@ -130,34 +156,54 @@ const ProcessingProgress: React.FC<{ progress: IngestProgress }> = ({ progress }
   </div>
 );
 
-const SourceChip: React.FC<{ source: QuerySource; onJump: () => void }> = ({ source, onJump }) => (
-  <span className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 overflow-hidden">
-    <button
-      onClick={onJump}
-      title={source.text ? source.text.slice(0, 220) : 'Jump to this moment'}
-      className="flex items-center gap-1.5 px-2 py-1 text-xs hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition"
-    >
-      <Play className="w-3 h-3 text-indigo-500 fill-indigo-500" />
-      <span className="font-semibold text-indigo-600 dark:text-indigo-400 tabular-nums">
-        {source.timestamp_label}
-      </span>
-      <span className="max-w-[10rem] truncate text-slate-500 dark:text-slate-400">
-        {source.lecture_title}
-      </span>
-    </button>
-    {source.deep_link && (
-      <a
-        href={source.deep_link}
-        target="_blank"
-        rel="noopener noreferrer"
-        title="Open at this moment on YouTube"
-        className="flex items-center px-1.5 py-1.5 border-l border-slate-200 dark:border-slate-700 text-slate-400 hover:text-red-500 transition"
+// The citation is the thing Lekta has that a general chatbot does not, so it
+// gets the most craft in the app: the timestamp sits in its own tinted well,
+// and the body shows the actual transcript line as proof rather than a label.
+// The whole chip is one ~44px target — the old one was a 24px button with a
+// second 24px link nested beside it, which failed Fitts and was near-untappable.
+const SourceChip: React.FC<{ source: QuerySource; onJump: () => void }> = ({ source, onJump }) => {
+  const quote = source.text?.trim();
+  return (
+    <span className="inline-flex items-stretch max-w-[340px] rounded-md overflow-hidden
+      border border-line bg-surface shadow-e1 transition-all duration-200
+      hover:border-accent hover:shadow-e2 hover:-translate-y-px">
+      <button
+        type="button"
+        onClick={onJump}
+        title={quote ? quote.slice(0, 220) : 'Jump to this moment'}
+        className="flex items-stretch text-left min-w-0
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
       >
-        <ExternalLink className="w-3 h-3" />
-      </a>
-    )}
-  </span>
-);
+        <span className="flex items-center gap-1.5 px-2.5 shrink-0 bg-accent-soft text-accent-ink
+          border-r border-line font-mono text-[11px] font-semibold tabular-nums">
+          <Play className="w-2.5 h-2.5 fill-current" aria-hidden="true" />
+          {source.timestamp_label}
+        </span>
+        <span className="px-3 py-1.5 min-w-0">
+          <span className="block text-[12.5px] font-medium text-content truncate">
+            {quote ? `“${quote.slice(0, 90)}”` : 'Jump to this moment'}
+          </span>
+          <span className="block text-[11px] text-content-muted truncate">
+            {source.lecture_title}
+          </span>
+        </span>
+      </button>
+      {source.deep_link && (
+        <a
+          href={source.deep_link}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Open ${source.lecture_title} at ${source.timestamp_label} in a new tab`}
+          className="grid place-items-center w-9 shrink-0 border-l border-line
+            text-content-muted hover:bg-surface-sunk hover:text-content transition-colors
+            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+        >
+          <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+        </a>
+      )}
+    </span>
+  );
+};
 
 export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, onPersist }) => {
   const [sessionId, setSessionId] = useState(() => initialSession?.id ?? makeId());
@@ -315,6 +361,10 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     setMessages((prev) => [...prev, { id: makeId(), role, content, sources, query }]);
   };
 
+  const appendError = (content: string) => {
+    setMessages((prev) => [...prev, { id: makeId(), role: 'bot', content, isError: true }]);
+  };
+
   // Jump the video player to the exact moment a cited source came from. If the
   // citation belongs to a different lecture (e.g. "search all lectures"), load
   // that lecture's media first and seek once its metadata is ready.
@@ -357,7 +407,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
       const detail = await rag.getTranscript(transcriptId);
       const text = detail.english_text || detail.original_text || '';
       if (!text) {
-        appendMessage('bot', 'This transcript has no text to download.');
+        appendError('This transcript has no text to download.');
         return;
       }
       const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
@@ -371,7 +421,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
       URL.revokeObjectURL(url);
     } catch (err) {
       const msg = err instanceof RagError ? err.message : 'Could not fetch the transcript.';
-      appendMessage('bot', `Sorry, I couldn't download the transcript. ${msg}`);
+      appendError(`Couldn't download the transcript. ${msg}`);
     }
   };
 
@@ -441,7 +491,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
         err instanceof RagError
           ? err.message
           : 'Something went wrong while processing the video.';
-      appendMessage('bot', `Sorry, I couldn't process that video. ${msg}`);
+      appendError(`Couldn't process that video. ${msg}`);
     } finally {
       setProcessing(false);
     }
@@ -456,7 +506,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     const isYouTube = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)/.test(url);
     const isGDrive = /drive\.google\.com\//.test(url);
     if (!isYouTube && !isGDrive) {
-      appendMessage('bot', 'Please provide a valid YouTube or Google Drive link.');
+      appendError('That link is not a YouTube or Google Drive URL. Check it and try again.');
       return;
     }
 
@@ -518,7 +568,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
         err instanceof RagError
           ? err.message
           : 'Something went wrong while processing the video.';
-      appendMessage('bot', `Sorry, I couldn't process that video. ${msg}`);
+      appendError(`Couldn't process that video. ${msg}`);
     } finally {
       setProcessing(false);
     }
@@ -545,7 +595,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     } catch (err) {
       const msg =
         err instanceof RagError ? err.message : 'Something went wrong while answering.';
-      appendMessage('bot', `Sorry, I ran into a problem. ${msg}`);
+      appendError(`Couldn't answer that. ${msg}`);
     } finally {
       setTyping(false);
     }
@@ -617,12 +667,31 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
         videoId: searchAllLectures ? null : videoId,
         searchAll: searchAllLectures,
       });
-      applyAnswer({ content: res.answer, sources: res.sources });
+      applyAnswer({ content: res.answer, sources: res.sources, isError: false });
     } catch (err) {
       const msg = err instanceof RagError ? err.message : 'Something went wrong while answering.';
-      applyAnswer({ content: `Sorry, I ran into a problem. ${msg}`, sources: undefined });
+      applyAnswer({ content: `Couldn't answer that. ${msg}`, sources: undefined, isError: true });
     } finally {
       setTyping(false);
+    }
+  };
+
+  // Re-ask the question that produced a given answer. Walks back to the nearest
+  // preceding question that carries a `query` — uploads and shared links do not.
+  const regenerateFor = (botId: string) => {
+    const idx = messages.findIndex((m) => m.id === botId);
+    if (idx === -1) return;
+    for (let i = idx - 1; i >= 0; i--) {
+      const m = messages[i];
+      if (m.role === 'user' && m.query !== undefined) {
+        setMessages((prev) =>
+          prev.map((x) =>
+            x.id === botId ? { ...x, content: '', sources: undefined, pending: true } : x,
+          ),
+        );
+        regenerateAnswer(m.id, m.query);
+        return;
+      }
     }
   };
 
@@ -662,71 +731,92 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
         />
 
         {showUrlModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Paste Video Link</h3>
-                <button
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/50 p-4 animate-fade-in"
+            onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
+          >
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="url-modal-title"
+              onClick={(e) => e.stopPropagation()}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') { setShowUrlModal(false); setUrlInput(''); }
+              }}
+              className="bg-surface border border-line rounded-xl shadow-e3 w-full max-w-md p-6"
+            >
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h3 id="url-modal-title" className="text-h3 text-content">Paste a lecture link</h3>
+                <IconButton
+                  icon={X}
+                  label="Close"
                   onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
-                  className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-                >
-                  <X className="w-5 h-5 text-slate-400" />
-                </button>
+                  className="-mt-1 -mr-2"
+                />
               </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-                Paste a YouTube or Google Drive link to automatically download, transcribe, and index the video.
+              <p className="text-cap text-content-muted mb-4">
+                YouTube or Google Drive. We fetch the audio, transcribe it, and index it for questions.
               </p>
+              <label htmlFor="lekta-url" className="sr-only">Lecture URL</label>
               <input
+                id="lekta-url"
                 type="url"
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleUrlSubmit(); }}
-                placeholder="https://www.youtube.com/watch?v=... or drive.google.com/..."
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-indigo-400"
+                placeholder="https://youtube.com/watch?v=…"
+                className="w-full px-3 py-2.5 rounded-md border border-line-strong bg-surface
+                  text-content placeholder:text-content-disabled text-sm outline-none
+                  focus:border-accent focus:ring-4 focus:ring-accent/15 transition"
                 autoFocus
               />
-              <div className="flex justify-end gap-3 mt-4">
-                <button
+              <div className="flex justify-end gap-2 mt-5">
+                <Button
+                  variant="ghost"
                   onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
                 >
                   Cancel
-                </button>
-                <button
-                  onClick={handleUrlSubmit}
-                  disabled={!urlInput.trim()}
-                  className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Process Video
-                </button>
+                </Button>
+                <Button variant="primary" onClick={handleUrlSubmit} disabled={!urlInput.trim()}>
+                  Transcribe
+                </Button>
               </div>
             </div>
           </div>
         )}
-        <div className="absolute top-6 right-8">
+        <div className="absolute top-5 right-6 z-10">
           <ResetButton onClick={reset} />
         </div>
 
         <div
-          className={`flex-1 flex flex-col items-center px-4 transition-all duration-500 ${
-            stage === 'compose' ? 'justify-start pt-24' : 'justify-center'
+          className={`flex-1 flex flex-col items-center px-6 transition-all duration-500 ease-ease ${
+            stage === 'compose' ? 'justify-start pt-16' : 'justify-center pb-16'
           }`}
         >
-          <button
-            onClick={() => setStage('compose')}
-            className="flex flex-col items-center group focus:outline-none"
-            title="Lekta"
-          >
-            <LektaLogo size={72} className="transition-transform group-hover:scale-105" />
-            <div className="mt-2 w-16 h-0.5 bg-teal-500 rounded-full" />
-            <h1 className="mt-4 text-3xl font-extrabold text-indigo-500 tracking-tight">Lekta</h1>
-          </button>
+          <div className="flex flex-col items-center text-center">
+            <LektaLogo size={stage === 'compose' ? 44 : 60} />
+            <h1 className="mt-5 text-display text-content">
+              Ask the lecture anything
+            </h1>
+            <p className="mt-3 text-content-muted text-[15px] max-w-[46ch] leading-relaxed">
+              Upload a recording or paste a link. Lekta transcribes it, then answers
+              your questions with the exact moment it was said.
+            </p>
+          </div>
 
-          {/* Compose text box */}
+          {/* Compose */}
           {stage === 'compose' && (
-            <div className="w-full max-w-2xl mt-16 animate-slide-in">
-              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-4">
+            <div className="w-full max-w-2xl mt-10 animate-slide-in">
+              <div
+                className="rounded-xl border border-line-strong bg-surface shadow-e2 p-3
+                  transition-shadow duration-200
+                  focus-within:border-accent focus-within:ring-4 focus-within:ring-accent/15"
+              >
+                <label htmlFor="lekta-compose" className="sr-only">
+                  Ask about this lecture
+                </label>
                 <textarea
+                  id="lekta-compose"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
@@ -736,71 +826,54 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
                     }
                   }}
                   rows={2}
-                  placeholder="Upload a video, then ask a question about it…"
-                  className="w-full resize-none bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 text-base outline-none"
+                  placeholder="Ask a question, or upload a lecture to begin…"
+                  className="w-full resize-none bg-transparent px-2 pt-1.5 text-content
+                    placeholder:text-content-disabled text-[15px] leading-relaxed outline-none"
                 />
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={openFilePicker}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-indigo-600 bg-indigo-50 dark:bg-indigo-500/20 dark:text-indigo-300 hover:bg-indigo-100 transition"
-                      title="Upload a video"
-                    >
-                      <Video className="w-4 h-4" />
-                      Upload Video
-                    </button>
-                    <button
+                <div className="flex items-center justify-between gap-2 mt-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Button size="sm" variant="secondary" icon={Video} onClick={openFilePicker}>
+                      Upload
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      icon={Link}
                       onClick={() => setShowUrlModal(true)}
-                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-500/20 dark:text-emerald-300 hover:bg-emerald-100 transition"
-                      title="Paste a YouTube or Google Drive link"
                     >
-                      <Link className="w-4 h-4" />
-                      Paste Link
-                    </button>
-                    {INPUT_CHIPS.map((chip) => {
-                      const Icon = chip.icon;
-                      return (
-                        <button
-                          key={chip.id}
-                          onClick={() => runAction(chip.id)}
-                          disabled={typing || !transcript}
-                          title={!transcript ? 'Upload or ingest a video first' : chip.label}
-                          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                        >
-                          <Icon className="w-4 h-4" />
-                          {chip.label}
-                        </button>
-                      );
-                    })}
+                      Paste link
+                    </Button>
+                    {INPUT_CHIPS.map((chip) => (
+                      <Button
+                        key={chip.id}
+                        size="sm"
+                        variant="ghost"
+                        icon={chip.icon}
+                        onClick={() => runAction(chip.id)}
+                        disabled={typing || !transcript}
+                        title={!transcript ? 'Upload or ingest a video first' : chip.label}
+                        className="hidden sm:inline-flex"
+                      >
+                        {chip.label}
+                      </Button>
+                    ))}
                   </div>
-                  <button
+                  <IconButton
+                    icon={Send}
+                    label="Send"
                     onClick={() => startWorkspace(input)}
                     disabled={!input.trim()}
-                    className="p-2 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                    title="Send"
-                  >
-                    <Send className="w-5 h-5" />
-                  </button>
+                    className="bg-accent text-white hover:bg-accent-hover hover:text-white
+                      disabled:bg-surface-sunk disabled:text-content-disabled shrink-0"
+                  />
                 </div>
               </div>
-              <p className="mt-3 text-center text-xs text-slate-400 dark:text-slate-500">
-                Try{' '}
-                <button
-                  type="button"
-                  onClick={() => runAction('notes')}
-                  className="underline decoration-dotted underline-offset-2 hover:text-slate-600 dark:hover:text-slate-300 transition"
-                >
-                  Generate notes
-                </button>{' '}
-                or{' '}
-                <button
-                  type="button"
-                  onClick={() => runAction('assistance')}
-                  className="underline decoration-dotted underline-offset-2 hover:text-slate-600 dark:hover:text-slate-300 transition"
-                >
-                  Assistance
-                </button>
-              </p>
+
+              {!transcript && (
+                <p className="mt-4 text-center text-cap text-content-muted">
+                  No lecture loaded yet — upload one to unlock notes and summaries.
+                </p>
+              )}
             </div>
           )}
         </div>
@@ -808,9 +881,13 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
     );
   }
 
-  // ---------- Workspace (split layout) ----------
+  // ---------- Workspace ----------
+  // One conversation, not two columns. The old layout put questions in a right
+  // column and answers in a left one, so a question was paired to its answer
+  // purely by position — the two desynced as soon as one side was taller.
   return (
-    <div className="h-full bg-white dark:bg-slate-900 grid grid-cols-1 lg:grid-cols-[1.5fr_1fr]">
+    <div className="h-full bg-canvas flex flex-col overflow-hidden
+      lg:grid lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
       <input
         ref={fileInputRef}
         type="file"
@@ -820,331 +897,369 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ initialSession, on
       />
 
       {showUrlModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Paste Video Link</h3>
-              <button
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/50 p-4 animate-fade-in"
+          onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="url-modal-title-ws"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === 'Escape') { setShowUrlModal(false); setUrlInput(''); }
+            }}
+            className="bg-surface border border-line rounded-xl shadow-e3 w-full max-w-md p-6"
+          >
+            <div className="flex items-start justify-between gap-4 mb-2">
+              <h3 id="url-modal-title-ws" className="text-h3 text-content">Paste a lecture link</h3>
+              <IconButton
+                icon={X}
+                label="Close"
                 onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
-                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-              >
-                <X className="w-5 h-5 text-slate-400" />
-              </button>
+                className="-mt-1 -mr-2"
+              />
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-              Paste a YouTube or Google Drive link to automatically download, transcribe, and index the video.
+            <p className="text-cap text-content-muted mb-4">
+              YouTube or Google Drive. We fetch the audio, transcribe it, and index it for questions.
             </p>
+            <label htmlFor="lekta-url-ws" className="sr-only">Lecture URL</label>
             <input
+              id="lekta-url-ws"
               type="url"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') handleUrlSubmit(); }}
-              placeholder="https://www.youtube.com/watch?v=... or drive.google.com/..."
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-indigo-400"
+              placeholder="https://youtube.com/watch?v=…"
+              className="w-full px-3 py-2.5 rounded-md border border-line-strong bg-surface
+                text-content placeholder:text-content-disabled text-sm outline-none
+                focus:border-accent focus:ring-4 focus:ring-accent/15 transition"
               autoFocus
             />
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={() => { setShowUrlModal(false); setUrlInput(''); }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
-              >
+            <div className="flex justify-end gap-2 mt-5">
+              <Button variant="ghost" onClick={() => { setShowUrlModal(false); setUrlInput(''); }}>
                 Cancel
-              </button>
-              <button
-                onClick={handleUrlSubmit}
-                disabled={!urlInput.trim()}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Process Video
-              </button>
+              </Button>
+              <Button variant="primary" onClick={handleUrlSubmit} disabled={!urlInput.trim()}>
+                Transcribe
+              </Button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Left: Lekta answers */}
-      <div className="flex flex-col h-full overflow-hidden border-r border-slate-200 dark:border-slate-700">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
-          <div className="flex items-center gap-2">
-            <LektaLogo size={28} />
-            <span className="text-2xl font-extrabold text-indigo-500 tracking-tight">Lekta</span>
-            <span className="text-sm text-slate-400 dark:text-slate-500">Answers</span>
-          </div>
+      {/* ---------- Lecture panel ---------- */}
+      <aside
+        aria-label="Lecture"
+        className="shrink-0 flex flex-col gap-4 p-4 bg-surface border-b lg:border-b-0 lg:border-r
+          border-line lg:h-full lg:overflow-y-auto"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-[13px] font-semibold text-content truncate">
+            {videoName || 'Lecture'}
+          </h2>
           <ResetButton onClick={reset} />
         </div>
 
-        {videoUrl && (
-          <div className="px-6 pt-4">
-            <video
-              ref={videoRef}
-              src={videoUrl}
-              controls
-              onLoadedMetadata={handleVideoMetadata}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-black max-h-52 object-contain"
-            />
-          </div>
-        )}
-
-        {videoName && (
-          <div className="px-6 pt-4">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/15 text-sm text-indigo-700 dark:text-indigo-300 w-fit">
-              <Video className="w-4 h-4" />
-              <span className="font-medium truncate max-w-xs">{videoName}</span>
-            </div>
+        {videoUrl ? (
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            controls
+            onLoadedMetadata={handleVideoMetadata}
+            className="w-full rounded-md border border-line bg-black aspect-video object-contain
+              max-h-40 lg:max-h-none"
+          />
+        ) : (
+          <div className="w-full aspect-video rounded-md border border-dashed border-line-strong
+            bg-surface-sunk grid place-items-center max-h-40 lg:max-h-none">
+            <span className="text-cap text-content-muted">No video loaded</span>
           </div>
         )}
 
         {transcript && !processing && (
-          <div className="px-6 pt-3 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800">
-              <Languages className="w-3 h-3" /> {transcript.language.toUpperCase()}
-            </span>
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800">
-              <Clock className="w-3 h-3" /> {formatDuration(transcript.durationSeconds)}
-            </span>
-            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400">
-              <CheckCircle2 className="w-3 h-3" /> {transcript.numChunks} sections indexed
-            </span>
-            <button
-              onClick={downloadTranscript}
-              title="Download the full transcript as a text file"
-              className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
-            >
-              <Download className="w-3 h-3" /> Transcript
-            </button>
+          <>
+            <div className="flex flex-wrap gap-1.5">
+              <Badge tone="ok">{transcript.numChunks} sections indexed</Badge>
+              <Badge tone="neutral">{transcript.language.toUpperCase()}</Badge>
+              <Badge tone="neutral">{formatDuration(transcript.durationSeconds)}</Badge>
+            </div>
+            <Button size="sm" variant="secondary" icon={Download} onClick={downloadTranscript}>
+              Download transcript
+            </Button>
+          </>
+        )}
+
+        {processing && (
+          <div className="rounded-md border border-line bg-canvas p-3">
+            <div className="flex items-center gap-2 mb-3">
+              <Loader2 className="w-4 h-4 text-accent animate-spin shrink-0" aria-hidden="true" />
+              <span className="text-[13px] font-medium text-content">Preparing lecture</span>
+            </div>
+            <ProcessingProgress progress={ingestProgress} />
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
-          {processing && botMessages.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center gap-6 px-4">
-              <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
-              <div className="w-full">
-                <p className="font-semibold text-slate-800 dark:text-slate-100 mb-4">
-                  Transcribing &amp; indexing your video…
-                </p>
-                <ProcessingProgress progress={ingestProgress} />
-              </div>
-            </div>
-          ) : botMessages.length === 0 && !typing ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center gap-3 text-slate-500 dark:text-slate-400">
-              <LektaLogo size={48} />
-              <p className="text-sm max-w-xs">
-                {transcript
-                  ? 'Ask a question on the right — the answer will show up here.'
-                  : 'Upload a video, then ask questions. Answers appear on this side.'}
-              </p>
-              {!transcript && !processing && (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={openFilePicker}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition"
-                  >
-                    <Video className="w-4 h-4" />
-                    Upload Video
-                  </button>
-                  <button
-                    onClick={() => setShowUrlModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 transition"
-                  >
-                    <Link className="w-4 h-4" />
-                    Paste Link
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            botMessages.map((m) => (
-              <div key={m.id} className="flex flex-col items-start gap-2">
-                <div className="max-w-[90%] px-4 py-3 rounded-2xl text-sm leading-relaxed bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-                  {m.pending ? (
-                    <span className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                      <Loader2 className="w-4 h-4 animate-spin" /> Regenerating…
-                    </span>
-                  ) : (
-                    <div className="whitespace-pre-wrap">{m.content}</div>
+        <label className="flex items-center gap-2.5 text-cap text-content-muted cursor-pointer
+          rounded-md px-1 py-1 hover:text-content transition-colors">
+          <input
+            type="checkbox"
+            checked={searchAllLectures}
+            onChange={(e) => setSearchAllLectures(e.target.checked)}
+            className="rounded-sm border-line-strong text-accent focus:ring-accent"
+          />
+          <BookOpen className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+          Search across all my lectures
+        </label>
+      </aside>
+
+      {/* ---------- Conversation ---------- */}
+      <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-3xl mx-auto w-full px-5 py-6 flex flex-col gap-6">
+            {messages.length === 0 && !typing && !processing && (
+              <div className="pt-10">
+                <EmptyState
+                  icon={Quote}
+                  title={transcript ? 'Ask your first question' : 'Upload a lecture to begin'}
+                  body={
+                    transcript
+                      ? 'Every answer comes back with the exact moment in the video it came from.'
+                      : 'Upload a recording or paste a link. Transcription takes about a minute per 10 minutes of video.'
+                  }
+                >
+                  {!transcript && !processing && (
+                    <>
+                      <Button variant="primary" icon={Video} onClick={openFilePicker}>
+                        Upload lecture
+                      </Button>
+                      <Button variant="secondary" icon={Link} onClick={() => setShowUrlModal(true)}>
+                        Paste link
+                      </Button>
+                    </>
                   )}
-                </div>
-                {!m.pending && m.sources && m.sources.length > 0 && (
-                  <div className="max-w-[90%] w-full">
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 mb-1.5">
-                      <Quote className="w-3 h-3" /> Sources · click a timestamp to jump
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {m.sources.map((s, i) => (
-                        <SourceChip
-                          key={`${m.id}-src-${i}`}
-                          source={s}
-                          onJump={() => jumpToSource(s)}
+                </EmptyState>
+              </div>
+            )}
+
+            {messages.map((m) => {
+              // ---- Question ----
+              if (m.role === 'user') {
+                if (editingId === m.id) {
+                  return (
+                    <div key={m.id} className="flex justify-end">
+                      <div className="w-full max-w-[80%] rounded-lg border border-accent bg-accent-soft p-2.5">
+                        <label htmlFor={`edit-${m.id}`} className="sr-only">Edit your question</label>
+                        <textarea
+                          id={`edit-${m.id}`}
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          autoFocus
+                          rows={2}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEdit(m); }
+                            if (e.key === 'Escape') cancelEdit();
+                          }}
+                          className="w-full resize-none bg-transparent text-sm text-content outline-none px-1"
                         />
-                      ))}
+                        <div className="flex items-center justify-end gap-2 mt-2">
+                          <Button size="sm" variant="ghost" onClick={cancelEdit}>Cancel</Button>
+                          <Button
+                            size="sm"
+                            variant="primary"
+                            onClick={() => saveEdit(m)}
+                            disabled={!editText.trim()}
+                          >
+                            Save &amp; regenerate
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))
-          )}
-
-          {typing && !isRegenerating && (
-            <div className="flex items-center gap-2">
-              <LektaLogo size={20} />
-              <div className="flex gap-1 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-full">
-                {[0, 150, 300].map((delay) => (
-                  <span
-                    key={delay}
-                    className="w-1.5 h-1.5 rounded-full bg-slate-400 animate-bounce"
-                    style={{ animationDelay: `${delay}ms` }}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-          <div ref={answersEndRef} />
-        </div>
-      </div>
-
-      {/* Right: user questions + input */}
-      <div className="flex flex-col h-full overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700">
-          <span className="text-lg font-semibold text-slate-700 dark:text-slate-200">Your questions</span>
-          <label className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={searchAllLectures}
-              onChange={(e) => setSearchAllLectures(e.target.checked)}
-              className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-            />
-            <BookOpen className="w-3.5 h-3.5" />
-            Search all lectures
-          </label>
-        </div>
-
-        <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col gap-4">
-          {userMessages.length === 0 ? (
-            <div className="flex-1 flex items-center justify-center text-sm text-slate-400 dark:text-slate-500 text-center px-4">
-              Type your question below and press send.
-            </div>
-          ) : (
-            userMessages.map((m) => (
-              <div key={m.id} className="flex justify-end group">
-                {editingId === m.id ? (
-                  <div className="w-[92%] rounded-2xl border border-indigo-300 dark:border-indigo-500/40 bg-indigo-50 dark:bg-indigo-500/10 p-2">
-                    <textarea
-                      value={editText}
-                      onChange={(e) => setEditText(e.target.value)}
-                      autoFocus
-                      rows={2}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          saveEdit(m);
-                        }
-                        if (e.key === 'Escape') cancelEdit();
-                      }}
-                      className="w-full resize-none bg-transparent text-sm text-slate-800 dark:text-slate-100 outline-none px-1 py-0.5"
-                    />
-                    <div className="flex items-center justify-end gap-2 mt-1">
-                      <button
-                        onClick={cancelEdit}
-                        className="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-500 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={() => saveEdit(m)}
-                        disabled={!editText.trim()}
-                        className="px-2.5 py-1 rounded-lg text-xs font-medium text-white bg-indigo-500 hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                      >
-                        Save &amp; regenerate
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-start gap-1.5">
+                  );
+                }
+                return (
+                  <div key={m.id} className="flex justify-end items-start gap-2 group">
                     {m.query !== undefined && (
-                      <button
+                      // Was `opacity-0 group-hover:opacity-100` with no focus
+                      // counterpart, so editing was unreachable by keyboard and
+                      // invisible on touch. Now it only fades on hover-capable
+                      // pointers and always reappears on focus.
+                      <IconButton
+                        icon={Pencil}
+                        label="Edit and regenerate"
                         onClick={() => startEdit(m)}
                         disabled={typing}
-                        title="Edit & regenerate"
-                        className="mt-1 p-1 rounded-md text-slate-400 hover:text-indigo-500 hover:bg-slate-100 dark:hover:bg-slate-700 opacity-0 group-hover:opacity-100 transition disabled:opacity-0 disabled:cursor-not-allowed"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
+                        className="mt-0.5 shrink-0 md:opacity-0 md:group-hover:opacity-100
+                          md:focus-visible:opacity-100 transition-opacity"
+                      />
                     )}
-                    <div className="max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap bg-indigo-100 dark:bg-indigo-500/20 text-slate-800 dark:text-slate-100">
+                    <div className="max-w-[80%] px-4 py-2.5 rounded-lg bg-accent text-white
+                      text-[14.5px] leading-relaxed whitespace-pre-wrap">
                       {m.content}
                     </div>
                   </div>
-                )}
+                );
+              }
+
+              // ---- Failure ----
+              if (m.isError) {
+                return (
+                  <div key={m.id} className="flex items-start gap-3">
+                    <span className="shrink-0 mt-0.5"><LektaLogo size={26} /></span>
+                    <div className="min-w-0 flex-1">
+                      <ErrorBlock title="That didn't work" body={m.content}>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          icon={RefreshCw}
+                          onClick={() => regenerateFor(m.id)}
+                          disabled={typing}
+                        >
+                          Try again
+                        </Button>
+                      </ErrorBlock>
+                    </div>
+                  </div>
+                );
+              }
+
+              // ---- Answer ----
+              return (
+                <div key={m.id} className="flex items-start gap-3">
+                  <span className="shrink-0 mt-0.5"><LektaLogo size={26} /></span>
+                  <div className="min-w-0 flex-1">
+                    {m.pending ? (
+                      <span className="inline-flex items-center gap-2 text-sm text-content-muted">
+                        <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+                        Regenerating…
+                      </span>
+                    ) : (
+                      <>
+                        {/* Answers are markdown — the RAG prompt asks for headings
+                            and bullets, which used to render as literal characters. */}
+                        <Markdown>{m.content}</Markdown>
+
+                        {m.sources && m.sources.length > 0 && (
+                          <div className="mt-3">
+                            <div className="flex items-center gap-1.5 text-label text-content-muted mb-2">
+                              <Quote className="w-3 h-3" aria-hidden="true" />
+                              From the lecture
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              {m.sources.map((s, i) => (
+                                <SourceChip
+                                  key={`${m.id}-src-${i}`}
+                                  source={s}
+                                  onJump={() => jumpToSource(s)}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-0.5 mt-2 -ml-1.5">
+                          <CopyButton text={m.content} />
+                          <IconButton
+                            icon={RefreshCw}
+                            label="Regenerate answer"
+                            onClick={() => regenerateFor(m.id)}
+                            disabled={typing}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Concrete progress, announced to screen readers — the first time
+                the app tells assistive tech that an answer is on its way. */}
+            {typing && !isRegenerating && (
+              <div className="flex items-center gap-3" role="status" aria-live="polite">
+                <span className="shrink-0"><LektaLogo size={26} /></span>
+                <span className="flex items-center gap-2 text-cap text-content-muted">
+                  <span className="flex gap-1" aria-hidden="true">
+                    {[0, 160, 320].map((d) => (
+                      <span
+                        key={d}
+                        className="w-1.5 h-1.5 rounded-full bg-content-disabled animate-bounce-dot"
+                        style={{ animationDelay: `${d}ms` }}
+                      />
+                    ))}
+                  </span>
+                  {transcript ? `Searching ${transcript.numChunks} sections…` : 'Thinking…'}
+                </span>
               </div>
-            ))
-          )}
-          <div ref={questionsEndRef} />
+            )}
+
+            <div ref={answersEndRef} />
+            <div ref={questionsEndRef} />
+          </div>
         </div>
 
-        {/* Input box with chips */}
-        <div className="px-6 pb-6">
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm p-3">
-            <div className="flex items-start gap-2">
-              <textarea
-                value={workspaceInput}
-                onChange={(e) => setWorkspaceInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendWorkspaceMessage();
+        {/* ---------- Composer ---------- */}
+        <div className="shrink-0 border-t border-line bg-canvas px-5 py-4">
+          <div className="max-w-3xl mx-auto w-full">
+            <div className="rounded-lg border border-line-strong bg-surface shadow-e1 p-2.5
+              transition-shadow focus-within:border-accent focus-within:ring-4 focus-within:ring-accent/15">
+              <div className="flex items-end gap-2">
+                <label htmlFor="lekta-ask" className="sr-only">Ask about this lecture</label>
+                <textarea
+                  id="lekta-ask"
+                  value={workspaceInput}
+                  onChange={(e) => setWorkspaceInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      sendWorkspaceMessage();
+                    }
+                  }}
+                  rows={1}
+                  disabled={processing}
+                  placeholder={
+                    processing
+                      ? 'Preparing the lecture…'
+                      : transcript
+                        ? 'Ask about this lecture…'
+                        : 'Upload a lecture first, then ask anything'
                   }
-                }}
-                rows={1}
-                placeholder={processing ? 'Processing video…' : 'Ask Lekta anything about the video…'}
-                className="flex-1 resize-none bg-transparent text-slate-800 dark:text-slate-100 placeholder:text-slate-400 text-sm outline-none py-1"
-              />
-              <button
-                onClick={sendWorkspaceMessage}
-                disabled={typing || !workspaceInput.trim()}
-                className="p-1.5 rounded-lg text-indigo-500 hover:bg-indigo-50 dark:hover:bg-slate-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
-                title="Send"
-              >
-                <Send className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-              <button
-                onClick={openFilePicker}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium text-indigo-600 bg-indigo-50 dark:bg-indigo-500/20 dark:text-indigo-300 hover:bg-indigo-100 transition"
-                title="Upload a video"
-              >
-                <Video className="w-3.5 h-3.5" />
-                Upload Video
-              </button>
-              <button
-                onClick={() => setShowUrlModal(true)}
-                className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-500/20 dark:text-emerald-300 hover:bg-emerald-100 transition"
-                title="Paste a YouTube or Google Drive link"
-              >
-                <Link className="w-3.5 h-3.5" />
-                Paste Link
-              </button>
-              {INPUT_CHIPS.map((chip) => {
-                const Icon = chip.icon;
-                const isActive = activeChip === chip.id;
-                return (
-                  <button
+                  className="flex-1 resize-none bg-transparent px-1.5 py-1.5 text-[14.5px]
+                    text-content placeholder:text-content-disabled outline-none
+                    disabled:cursor-not-allowed"
+                />
+                <IconButton
+                  icon={Send}
+                  label="Send"
+                  onClick={sendWorkspaceMessage}
+                  disabled={typing || processing || !workspaceInput.trim()}
+                  className="bg-accent text-white hover:bg-accent-hover hover:text-white
+                    disabled:bg-surface-sunk disabled:text-content-disabled shrink-0"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                <Button size="sm" variant="ghost" icon={Video} onClick={openFilePicker}>
+                  Upload
+                </Button>
+                <Button size="sm" variant="ghost" icon={Link} onClick={() => setShowUrlModal(true)}>
+                  Paste link
+                </Button>
+                {INPUT_CHIPS.map((chip) => (
+                  <Button
                     key={chip.id}
+                    size="sm"
+                    variant="ghost"
+                    icon={chip.icon}
                     onClick={() => runAction(chip.id)}
                     disabled={typing || !transcript}
                     title={!transcript ? 'Upload or ingest a video first' : `Ask Lekta to ${chip.label.toLowerCase()}`}
-                    className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium transition disabled:opacity-40 disabled:cursor-not-allowed ${
-                      isActive
-                        ? 'text-indigo-600 bg-indigo-50 dark:bg-indigo-500/20 dark:text-indigo-300'
-                        : 'text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                    }`}
+                    className={activeChip === chip.id ? 'text-accent-ink bg-accent-soft' : ''}
                   >
-                    <Icon className="w-3.5 h-3.5" />
                     {chip.label}
-                  </button>
-                );
-              })}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
