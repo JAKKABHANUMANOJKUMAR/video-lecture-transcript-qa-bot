@@ -1,4 +1,5 @@
 import React from 'react';
+import { LektaLogo } from './LektaLogo';
 import {
   MessageSquare,
   BookOpen,
@@ -61,9 +62,7 @@ export const UserSidebar: React.FC<SidebarProps> = ({
         <div className="p-6">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-lg">AO</span>
-            </div>
+            <LektaLogo size={40} />
             <span className="text-xl font-bold text-slate-900 dark:text-white">Lekta</span>
           </div>
 
@@ -81,7 +80,7 @@ export const UserSidebar: React.FC<SidebarProps> = ({
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition capitalize ${
                     isActive
-                      ? 'bg-slate-900 dark:bg-indigo-500 text-white'
+                      ? 'bg-teal-600 text-white'
                       : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700'
                   }`}
                 >
