@@ -3,9 +3,33 @@
 from rag.pipeline.formatting import (
     dedupe_key,
     format_timestamp,
+    safe_filename,
     similarity_from_distance,
     youtube_deep_link,
 )
+
+
+def test_safe_filename_strips_characters_windows_rejects():
+    assert (
+        safe_filename("What is Retrieval-Augmented Generation (RAG)?", "x")
+        == "What is Retrieval-Augmented Generation (RAG)"
+    )
+    assert safe_filename('Week 3: intro/outro <notes>', "x") == "Week 3 introoutro notes"
+
+
+def test_safe_filename_falls_back_when_nothing_usable_remains():
+    assert safe_filename(None, "media-id") == "media-id"
+    assert safe_filename("", "media-id") == "media-id"
+    assert safe_filename("???", "media-id") == "media-id"
+    assert safe_filename("   ", "media-id") == "media-id"
+
+
+def test_safe_filename_collapses_whitespace_and_trims_dots():
+    assert safe_filename("  Lecture   one .. ", "x") == "Lecture one"
+
+
+def test_safe_filename_is_length_capped():
+    assert len(safe_filename("a" * 400, "x")) == 120
 
 
 def test_format_timestamp_basic():

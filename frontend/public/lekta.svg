@@ -2,7 +2,7 @@
   <defs>
     <clipPath id="pw"><polygon points="27,18 27,54 55,36"/></clipPath>
   </defs>
-  <rect width="72" height="72" rx="18" fill="#0f766e"/>
+  <rect width="72" height="72" rx="18" fill="#6E6AE8"/>
   <g clip-path="url(#pw)" fill="#ffffff">
     <rect x="25" y="8" width="5" height="56"/>
     <rect x="32" y="8" width="5" height="56"/>

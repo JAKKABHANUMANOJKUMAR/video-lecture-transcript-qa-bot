@@ -16,7 +16,13 @@ from rag.pipeline.formatting import (
     similarity_from_distance,
     youtube_deep_link,
 )
+from rag.pipeline.timespec import TimeWindow, parse_time_window
+from rag.pipeline.vectorstore import get_time_range
 from rag.pipeline.vectorstore import query as vector_query
+
+# A wide window ("explain the first 20 minutes") can cover a lot of transcript;
+# cap what reaches the prompt so it can't blow the context budget.
+MAX_TIME_RANGE_CHUNKS = 12
 
 SYSTEM_PROMPT = (
     "You are Lekta, an assistant that answers questions about video lectures "
@@ -89,6 +95,23 @@ def _user_scope(user_id: str | None) -> tuple[set[str], set[str]] | None:
     return transcript_ids, video_ids
 
 
+def _scope_duration(transcript_id: str | None, video_id: str | None) -> float | None:
+    """Length of the lecture in scope — needed to resolve "the last 2 minutes"."""
+    db = SessionLocal()
+    try:
+        rows = db.query(Transcript.duration_seconds)
+        if transcript_id:
+            rows = rows.filter(Transcript.id == transcript_id)
+        else:
+            rows = rows.filter(Transcript.video_id == video_id)
+        row = rows.first()
+    finally:
+        db.close()
+    if not row or not row[0]:
+        return None
+    return float(row[0])
+
+
 def enrich_hit(hit: dict, meta_by_id: dict[str, dict]) -> dict:
     meta = dict(hit.get("metadata") or {})
     transcript_id = meta.get("transcript_id") or ""
@@ -155,6 +178,82 @@ def _build_context(hits: list[dict]) -> str:
     return "\n\n".join(blocks)
 
 
+def _generate(user_prompt: str) -> str:
+    client = _get_client()
+    completion = client.chat.completions.create(
+        model=settings.GROQ_MODEL,
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt},
+        ],
+        temperature=0.2,
+    )
+    return completion.choices[0].message.content.strip()
+
+
+def _answer_time_window(
+    question: str,
+    window: TimeWindow,
+    *,
+    duration: float | None,
+    transcript_id: str | None,
+    video_id: str | None,
+) -> RagAnswer | None:
+    """Answer from what was actually said during ``window``.
+
+    Returns ``None`` when the window yields nothing, so the caller can fall back
+    to ordinary semantic retrieval.
+    """
+    if duration and window.start >= duration:
+        return RagAnswer(
+            answer=(
+                f"That moment is past the end of this lecture — it only runs "
+                f"{format_timestamp(duration)}. Ask about a time within that range."
+            ),
+            sources=[],
+        )
+
+    hits = get_time_range(
+        window.start, window.end, transcript_id=transcript_id, video_id=video_id
+    )
+    if not hits:
+        return None
+
+    transcript_ids_seen = {
+        h.get("metadata", {}).get("transcript_id")
+        for h in hits
+        if h.get("metadata", {}).get("transcript_id")
+    }
+    meta_by_id = _load_transcript_meta(transcript_ids_seen)
+    enriched = _dedupe([enrich_hit(h, meta_by_id) for h in hits])
+    if not enriched:
+        return None
+
+    truncated = len(enriched) > MAX_TIME_RANGE_CHUNKS
+    enriched = enriched[:MAX_TIME_RANGE_CHUNKS]
+
+    # No similarity threshold here: these chunks were selected by the clock, and
+    # they carry no distance to compare against it.
+    context = _build_context(enriched)
+    cutoff_note = (
+        f" The excerpts stop at {format_timestamp(enriched[-1]['end_seconds'])}; "
+        "say so if the window continues beyond them."
+        if truncated
+        else ""
+    )
+    user_prompt = (
+        f"Transcript of this lecture covering {window.label}:\n\n{context}\n\n"
+        f"Question: {question}\n\n"
+        f"The excerpts above are what was said during {window.label}, in chronological "
+        "order — they are not ranked by relevance, so use all of them and follow their "
+        "order. Explain what the lecturer covers in this part of the lecture, referring "
+        f"to timestamps where it helps.{cutoff_note} "
+        "Reply in the same language as the question."
+    )
+
+    return RagAnswer(answer=_generate(user_prompt), sources=enriched)
+
+
 def answer_question(
     question: str,
     *,
@@ -176,20 +275,37 @@ def answer_question(
     if search_all:
         transcript_ids = sorted(scope[0]) if scope is not None else None
         hits = vector_query(question, top_k=top_k, transcript_ids=transcript_ids)
-    elif transcript_id:
-        if scope is not None and transcript_id not in scope[0]:
+    else:
+        if transcript_id:
+            allowed = scope is None or transcript_id in scope[0]
+        else:
+            allowed = scope is None or video_id in scope[1]
+        if not allowed:
             return RagAnswer(
                 answer="You don't have access to this lecture, or it no longer exists.",
                 sources=[],
             )
-        hits = vector_query(question, top_k=top_k, transcript_id=transcript_id)
-    else:  # video_id scope
-        if scope is not None and video_id not in scope[1]:
-            return RagAnswer(
-                answer="You don't have access to this lecture, or it no longer exists.",
-                sources=[],
+
+        # A question about a moment ("explain 5:00–9:00") is answered from the
+        # clock rather than from embedding similarity. Only attempted with a
+        # single lecture in scope — a timestamp means nothing across a library.
+        duration = _scope_duration(transcript_id, video_id)
+        window = parse_time_window(question, duration_seconds=duration)
+        if window is not None:
+            timed = _answer_time_window(
+                question,
+                window,
+                duration=duration,
+                transcript_id=transcript_id,
+                video_id=video_id,
             )
-        hits = vector_query(question, top_k=top_k, video_id=video_id)
+            if timed is not None:
+                return timed
+
+        if transcript_id:
+            hits = vector_query(question, top_k=top_k, transcript_id=transcript_id)
+        else:
+            hits = vector_query(question, top_k=top_k, video_id=video_id)
 
     if not hits:
         return RagAnswer(
@@ -229,15 +345,4 @@ def answer_question(
         "Reply in the same language as the question."
     )
 
-    client = _get_client()
-    completion = client.chat.completions.create(
-        model=settings.GROQ_MODEL,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt},
-        ],
-        temperature=0.2,
-    )
-    answer_text = completion.choices[0].message.content.strip()
-
-    return RagAnswer(answer=answer_text, sources=relevant)
+    return RagAnswer(answer=_generate(user_prompt), sources=relevant)

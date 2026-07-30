@@ -22,7 +22,9 @@ CREATE TABLE IF NOT EXISTS users (
     status          VARCHAR(20)  NOT NULL DEFAULT 'active',   -- active | inactive | blocked
     auth_provider   VARCHAR(20)  NOT NULL DEFAULT 'local',    -- local | google
     avatar_url      VARCHAR(512),
-    usage_minutes   INTEGER      NOT NULL DEFAULT 0,
+    -- NOTE: no usage_minutes column. Usage is derived at query time from the
+    -- user's videos (see the column_property in app/models.py), so there is no
+    -- stored counter to drift out of date.
     last_login      TIMESTAMPTZ,
     created_at      TIMESTAMPTZ  NOT NULL DEFAULT now(),
     updated_at      TIMESTAMPTZ  NOT NULL DEFAULT now()

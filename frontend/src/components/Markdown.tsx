@@ -104,17 +104,17 @@ function inline(text: string): React.ReactNode[] {
       return (
         <code
           key={k}
-          className="font-mono text-[0.86em] bg-surface-sunk text-accent-ink px-1.5 py-0.5 rounded-sm"
+          className="font-mono text-[0.86em] bg-canvas-deep text-accent-deep px-1.5 py-0.5 rounded-sm"
         >
           {part.slice(1, -1)}
         </code>
       );
     }
     if (/^\*\*[^*]+\*\*$/.test(part)) {
-      return <strong key={k} className="font-semibold text-content">{part.slice(2, -2)}</strong>;
+      return <strong key={k} className="font-semibold text-ink">{part.slice(2, -2)}</strong>;
     }
     if (/^__[^_]+__$/.test(part)) {
-      return <strong key={k} className="font-semibold text-content">{part.slice(2, -2)}</strong>;
+      return <strong key={k} className="font-semibold text-ink">{part.slice(2, -2)}</strong>;
     }
     if (/^\*[^*\n]+\*$/.test(part)) {
       return <em key={k}>{part.slice(1, -1)}</em>;
@@ -138,15 +138,15 @@ const CodeBlock: React.FC<{ lang: string; code: string }> = ({ lang, code }) => 
   };
 
   return (
-    <div className="rounded-md overflow-hidden border border-line bg-ink-900 dark:bg-ink-950 my-3">
+    <div className="rounded-chip overflow-hidden border border-line bg-ink my-3">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/10">
-        <span className="font-mono text-[10.5px] uppercase tracking-wider text-ink-400">
+        <span className="font-mono text-[10.5px] uppercase tracking-wider text-white/50">
           {lang || 'code'}
         </span>
         <button
           type="button"
           onClick={copy}
-          className="inline-flex items-center gap-1.5 text-[11px] text-ink-400 hover:text-white
+          className="inline-flex items-center gap-1.5 text-[11px] text-white/50 hover:text-white
             px-1.5 py-0.5 rounded-sm transition-colors
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
@@ -155,7 +155,7 @@ const CodeBlock: React.FC<{ lang: string; code: string }> = ({ lang, code }) => 
         </button>
       </div>
       <pre className="overflow-x-auto p-3">
-        <code className="font-mono text-[12.5px] leading-relaxed text-ink-100 whitespace-pre">
+        <code className="font-mono text-[12.5px] leading-relaxed text-white/90 whitespace-pre">
           {code}
         </code>
       </pre>
@@ -179,7 +179,7 @@ export const Markdown: React.FC<{ children: string; className?: string }> = ({
   const blocks = parse(children);
 
   return (
-    <div className={`text-[14.5px] leading-relaxed text-content-body ${className}`}>
+    <div className={`text-[14.5px] leading-relaxed text-ink ${className}`}>
       {blocks.map((b, i) => {
         switch (b.kind) {
           case 'h': {
@@ -187,7 +187,7 @@ export const Markdown: React.FC<{ children: string; className?: string }> = ({
             return (
               <Tag
                 key={i}
-                className={`font-semibold text-content first:mt-0 mb-1.5 ${HEADING_SIZE[b.level]}`}
+                className={`font-semibold text-ink first:mt-0 mb-1.5 ${HEADING_SIZE[b.level]}`}
               >
                 {inline(b.text)}
               </Tag>
@@ -195,13 +195,13 @@ export const Markdown: React.FC<{ children: string; className?: string }> = ({
           }
           case 'ul':
             return (
-              <ul key={i} className="list-disc pl-5 my-2 flex flex-col gap-1 marker:text-content-disabled">
+              <ul key={i} className="list-disc pl-5 my-2 flex flex-col gap-1 marker:text-ink-3">
                 {b.items.map((it, k) => <li key={k}>{inline(it)}</li>)}
               </ul>
             );
           case 'ol':
             return (
-              <ol key={i} className="list-decimal pl-5 my-2 flex flex-col gap-1 marker:text-content-muted">
+              <ol key={i} className="list-decimal pl-5 my-2 flex flex-col gap-1 marker:text-ink-2">
                 {b.items.map((it, k) => <li key={k}>{inline(it)}</li>)}
               </ol>
             );
@@ -211,7 +211,7 @@ export const Markdown: React.FC<{ children: string; className?: string }> = ({
             return (
               <blockquote
                 key={i}
-                className="border-l-2 border-accent pl-3 my-3 text-content-muted italic"
+                className="border-l-2 border-accent pl-3 my-3 text-ink-2 italic"
               >
                 {inline(b.text)}
               </blockquote>

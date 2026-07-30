@@ -136,6 +136,63 @@ def query(
     return hits
 
 
+# When the same moment exists in several language variants, feed the LLM the
+# most readable one. Ordering is by start time, so this only breaks ties.
+_VARIANT_RANK = {"primary": 0, "english": 1, "original": 2}
+
+
+def _meta_float(meta: dict, key: str) -> float:
+    try:
+        return float(meta.get(key))
+    except (TypeError, ValueError):
+        return 0.0
+
+
+def get_time_range(
+    start_seconds: float,
+    end_seconds: float,
+    *,
+    transcript_id: str | None = None,
+    video_id: str | None = None,
+) -> list[dict]:
+    """Every chunk overlapping ``[start_seconds, end_seconds]``, oldest first.
+
+    Unlike :func:`query` this ignores embeddings entirely: when the question is
+    about a moment ("explain 5:00–9:00"), the clock *is* the relevance signal,
+    and similarity search would rank the window's chunks by the wrong criterion.
+    """
+    collection = get_collection()
+
+    # Overlap, not containment: a chunk straddling either edge of the window is
+    # still part of what was said during it.
+    conditions: list[dict] = [
+        {"start_seconds": {"$lte": float(end_seconds)}},
+        {"end_seconds": {"$gte": float(start_seconds)}},
+    ]
+    if transcript_id:
+        conditions.append({"transcript_id": transcript_id})
+    elif video_id:
+        conditions.append({"video_id": video_id})
+
+    result = collection.get(where={"$and": conditions}, include=["documents", "metadatas"])
+
+    documents = result.get("documents") or []
+    metadatas = result.get("metadatas") or []
+
+    hits = [
+        {"text": doc, "metadata": meta or {}, "distance": None}
+        for doc, meta in zip(documents, metadatas)
+    ]
+    hits.sort(
+        key=lambda h: (
+            _meta_float(h["metadata"], "start_seconds"),
+            _VARIANT_RANK.get(h["metadata"].get("variant"), 3),
+            h["metadata"].get("chunk_index") or 0,
+        )
+    )
+    return hits
+
+
 def delete_transcript(transcript_id: str) -> None:
     collection = get_collection()
     collection.delete(where={"transcript_id": transcript_id})

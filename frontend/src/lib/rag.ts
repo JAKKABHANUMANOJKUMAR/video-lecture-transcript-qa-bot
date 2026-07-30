@@ -30,6 +30,18 @@ export interface IngestResponse {
   duration_seconds: number;
   num_chunks: number;
   media_key?: string | null;
+  /** Real name of the source — a YouTube video title or a Drive filename. */
+  title?: string | null;
+}
+
+/** Shape of GET /api/chroma/stats — the vector store's own account of itself. */
+export interface ChromaStats {
+  path: string;
+  collection: string;
+  count: number;
+  transcripts: number;
+  embedding_model: string;
+  vector_dimensions: number;
 }
 
 export interface IngestProgress {
@@ -73,6 +85,16 @@ export interface TranscriptDetail {
 export function mediaUrl(mediaKey: string | null | undefined): string | null {
   if (!mediaKey) return null;
   return `${RAG_URL}/media/${encodeURIComponent(mediaKey)}`;
+}
+
+/**
+ * Same file, but served as a named attachment. The `download` attribute is
+ * ignored cross-origin (5173 → 8100), so the server sets Content-Disposition
+ * instead — which also keeps large videos out of browser memory.
+ */
+export function mediaDownloadUrl(mediaKey: string | null | undefined): string | null {
+  const url = mediaUrl(mediaKey);
+  return url ? `${url}?download=1` : null;
 }
 
 async function parseError(res: Response): Promise<string> {
@@ -288,6 +310,20 @@ export const rag = {
     return (await res.json()) as TranscriptDetail;
   },
 
+  // The Library tracks videos, not transcripts — this bridges the two.
+  getTranscriptByVideo: async (videoId: string): Promise<TranscriptDetail> => {
+    let res: Response;
+    try {
+      res = await fetch(`${RAG_URL}/transcript/by-video/${encodeURIComponent(videoId)}`, {
+        headers: authHeaders(),
+      });
+    } catch {
+      throw new RagError('Cannot reach the RAG service. Is it running on port 8100?', 0);
+    }
+    if (!res.ok) throw new RagError(await parseError(res), res.status);
+    return (await res.json()) as TranscriptDetail;
+  },
+
   deleteTranscript: async (transcriptId: string): Promise<void> => {
     let res: Response;
     try {
@@ -313,5 +349,30 @@ export const rag = {
       throw new RagError('Cannot reach the RAG service. Is it running on port 8100?', 0);
     }
     if (!res.ok) throw new RagError(await parseError(res), res.status);
+  },
+
+  // Where the RAG service lives — shown on the admin Settings screen so an
+  // operator can see which host the browser is actually talking to.
+  baseUrl: (): string => RAG_URL || window.location.origin,
+
+  // Admin diagnostics: is the service up, and what is in the vector store?
+  health: async (): Promise<boolean> => {
+    try {
+      const res = await fetch(`${RAG_URL}/health`);
+      return res.ok;
+    } catch {
+      return false;
+    }
+  },
+
+  chromaStats: async (): Promise<ChromaStats> => {
+    let res: Response;
+    try {
+      res = await fetch(`${RAG_URL}/api/chroma/stats`);
+    } catch {
+      throw new RagError('Cannot reach the RAG service. Is it running on port 8100?', 0);
+    }
+    if (!res.ok) throw new RagError(await parseError(res), res.status);
+    return (await res.json()) as ChromaStats;
   },
 };

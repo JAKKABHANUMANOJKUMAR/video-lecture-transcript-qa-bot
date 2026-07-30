@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -11,6 +12,15 @@ from app.schemas import Token, UserLogin, UserPublic, UserSignup
 from app.security import create_access_token, hash_password, verify_password
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+# PostgreSQL unique_violation. Anything else is a real bug and must stay loud —
+# a stale NOT NULL column once turned every signup into an opaque 500, and a
+# blanket "email already exists" would have hidden it.
+_UNIQUE_VIOLATION = "23505"
+
+
+def _is_duplicate_email(exc: IntegrityError) -> bool:
+    return getattr(getattr(exc, "orig", None), "sqlstate", None) == _UNIQUE_VIOLATION
 
 
 def _issue_token(user: User) -> Token:
@@ -39,7 +49,18 @@ def signup(payload: UserSignup, db: Session = Depends(get_db)):
         last_login=datetime.now(timezone.utc),
     )
     db.add(user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        # The check above loses to a concurrent signup for the same address; the
+        # unique index is what actually decides, so report its verdict.
+        if _is_duplicate_email(exc):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="An account with this email already exists",
+            ) from exc
+        raise
     db.refresh(user)
     return _issue_token(user)
 

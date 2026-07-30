@@ -3,176 +3,178 @@
 @tailwind utilities;
 
 /* =============================================================================
-   LEKTA DESIGN SYSTEM v1 — theme tokens
-   Values are space-separated RGB triplets so Tailwind's `rgb(var(--x) /
-   <alpha-value>)` role tokens support opacity modifiers (e.g. bg-surface/60).
-   Component code must never reference these directly — use the Tailwind role
-   tokens (bg-surface, text-content-muted, border-line, …) so both themes and
-   any future palette swap are a one-file change.
+   LEKTA DESIGN SYSTEM v4 — Air palette
+   Monochrome discipline plus two blues: a Haze page, Whiteout cards, Ink type,
+   Signal Blue for links and Twilight Blue as the one cool tone. Values are
+   space-separated RGB triplets so Tailwind's `rgb(var(--x) / <alpha-value>)`
+   role tokens support opacity modifiers. Component code must never reference
+   these directly — use the Tailwind role tokens (bg-surface, text-ink-2,
+   border-line, …) so a palette swap stays a one-file change.
+
+   Source palette (all six used verbatim):
+     Whiteout #ffffff · Haze #f5f5f5 · Ink #1b1b1b
+     Black Void #000000 · Twilight Blue #426188 · Signal Blue #2b7fff
+
+   The reference is a dark theme — it puts Haze cards on a black sky. This is
+   the same six values read the other way up: Haze becomes the page and
+   Whiteout the cards, so "text on light: #1b1b1b" (the reference's own light-
+   surface rule) governs type throughout.
+
+   Air carries no elevation, so a 1px hairline is the ONLY thing separating a
+   card from the page — the line tokens do work that shadows used to.
+
+   DERIVED values are marked below. The source palette carries no mid-tone text
+   grays and no warning/danger hues, so those are derived: the grays as neutral
+   steps of Ink (no hue introduced), and warn/danger kept muted and reserved for
+   state only — never decoration. See the note above each block.
    ========================================================================== */
 
 :root {
   color-scheme: light;
 
-  --c-canvas: 246 248 248;
-  --c-surface: 255 255 255;
-  --c-surface-sunk: 237 241 240;
+  /* Paper. Haze is the page; Whiteout is every card, panel and field on it. */
+  --c-canvas: 245 245 245;        /* #f5f5f5 Haze */
+  --c-canvas-deep: 235 235 235;   /* #ebebeb DERIVED — hover wash, wells */
+  --c-surface: 255 255 255;       /* #ffffff Whiteout */
 
-  --c-border: 227 233 232;
-  --c-border-strong: 201 211 209;
+  /* Hairlines. #e5e5e5 is the reference's own input border — black at 10% —
+     resolved against Whiteout; -strong is the same idea at 16%. */
+  --c-line: 229 229 229;          /* #e5e5e5 DERIVED = rgba(0,0,0,.10) */
+  --c-line-strong: 214 214 214;   /* #d6d6d6 DERIVED = rgba(0,0,0,.16) */
 
-  --c-text: 15 27 26;
-  --c-text-body: 62 78 76;
-  --c-text-muted: 90 107 106;
-  --c-text-disabled: 148 165 163;
+  /* Ink. #1b1b1b is "text on light" verbatim; the two lighter steps are DERIVED
+     neutral grays (pure, no hue) that clear WCAG AA against Haze — the harder
+     of the two surfaces: #4a4a4a ≈ 8.0:1, #6e6e6e ≈ 4.7:1. */
+  --c-ink: 27 27 27;              /* #1b1b1b Ink */
+  --c-ink-2: 74 74 74;            /* #4a4a4a DERIVED secondary */
+  --c-ink-3: 110 110 110;         /* #6e6e6e DERIVED tertiary  */
 
-  --c-accent: 15 118 110;
-  --c-accent-hover: 17 94 89;
-  --c-accent-soft: 234 244 242;
-  --c-accent-ink: 19 78 74;
+  /* Black Void — navigation borders, link underlines, the deepest contrast
+     layer on white (tooltips, code blocks, the video letterbox). Not a button
+     fill: Air has no solid coloured buttons. */
+  --c-ink-black: 0 0 0;           /* #000000 Black Void */
 
-  --c-success: 23 128 61;
-  --c-success-soft: 231 244 236;
-  --c-success-ink: 17 94 46;
+  /* Signal Blue, the one saturated accent. The reference restricts it to links,
+     tags and short emphasised phrases — never a CTA fill or a large surface.
+     -deep is DERIVED because #2b7fff is only 3.8:1 on white: it carries accent
+     *text*, while the base value is for icons, borders and active states.
+     -soft/-tint are DERIVED steps of the same hue, not new colors. */
+  --c-accent: 43 127 255;         /* #2b7fff Signal Blue */
+  --c-accent-deep: 21 96 216;     /* #1560d8 DERIVED — 5.7:1 on Whiteout */
+  --c-accent-soft: 168 201 255;   /* #a8c9ff DERIVED focus ring */
+  --c-accent-tint: 238 244 255;   /* #eef4ff DERIVED ~6% wash   */
 
-  --c-warning: 180 83 9;
-  --c-warning-soft: 252 240 228;
-  --c-warning-ink: 138 63 7;
+  /* Tone families behind Tag/StatusBadge/meters. Air is monochrome plus two
+     blues, so the pastel families collapse: peach to neutral, sky to Twilight
+     Blue, and mint — the old brand green — to Signal Blue. butter and rose stay
+     chromatic ONLY because they encode state and Air ships no warning or danger
+     hue: a warning or a destructive action must not read as ordinary text. */
+  --c-peach: 214 214 214;   --c-peach-tint: 235 235 235;  --c-peach-ink: 74 74 74;
+  --c-mint: 43 127 255;     --c-mint-tint: 238 244 255;   --c-mint-ink: 21 96 216;
+  --c-sky: 66 97 136;       --c-sky-tint: 236 239 243;    --c-sky-ink: 55 81 114;
+  --c-butter: 201 162 39;   --c-butter-tint: 247 242 230; --c-butter-ink: 125 97 23;
+  --c-rose: 180 35 24;      --c-rose-tint: 253 240 238;   --c-rose-ink: 155 30 20;
 
-  --c-danger: 190 18 60;
-  --c-danger-soft: 252 233 238;
-  --c-danger-ink: 154 14 48;
+  /* Semantic status. ok rides Signal Blue and info Twilight Blue — the palette's
+     only two chromatic values; warn and danger are the DERIVED state hues above
+     and never appear as decoration. */
+  --c-ok: 43 127 255;       --c-ok-tint: 238 244 255;
+  --c-warn: 125 97 23;      --c-warn-tint: 247 242 230;
+  --c-danger: 180 35 24;    --c-danger-tint: 253 240 238;
+  --c-info: 66 97 136;      --c-info-tint: 236 239 243;
 
-  --c-info: 67 56 202;
-  --c-info-soft: 236 235 251;
-  --c-info-ink: 54 44 163;
-}
-
-/* Dark is re-tokenized, not inverted: the accent lightens so it still reads as
-   the brand against a dark ground, and every soft/ink pair is re-derived to
-   hold contrast rather than being flipped mechanically. */
-.dark {
-  color-scheme: dark;
-
-  --c-canvas: 12 20 19;
-  --c-surface: 20 31 30;
-  --c-surface-sunk: 27 40 39;
-
-  --c-border: 38 52 51;
-  --c-border-strong: 53 70 68;
-
-  --c-text: 232 239 238;
-  --c-text-body: 195 208 206;
-  --c-text-muted: 147 165 162;
-  --c-text-disabled: 95 115 112;
-
-  --c-accent: 63 163 150;
-  --c-accent-hover: 85 184 170;
-  --c-accent-soft: 21 48 45;
-  --c-accent-ink: 143 211 200;
-
-  --c-success: 62 158 99;
-  --c-success-soft: 20 41 29;
-  --c-success-ink: 127 203 155;
-
-  --c-warning: 208 138 62;
-  --c-warning-soft: 43 31 17;
-  --c-warning-ink: 235 180 116;
-
-  --c-danger: 217 82 111;
-  --c-danger-soft: 43 18 24;
-  --c-danger-ink: 240 154 172;
-
-  --c-info: 123 114 232;
-  --c-info-soft: 25 23 52;
-  --c-info-ink: 173 167 245;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-  width: 100%;
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', 'Roboto', sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  background: rgb(var(--c-canvas));
-  color: rgb(var(--c-text-body));
-  transition: background-color 0.2s cubic-bezier(0.2, 0.6, 0.3, 1),
-              color 0.2s cubic-bezier(0.2, 0.6, 0.3, 1);
-}
-
-/* Inter's default figures are proportional, so timestamps and counts jitter as
-   they tick. Headings get the tightening that makes the scale feel deliberate. */
-h1, h2, h3, h4 {
-  color: rgb(var(--c-text));
-  text-wrap: balance;
-}
-
-.tabular {
-  font-variant-numeric: tabular-nums;
+  /* Chart mark neutral. DERIVED, and deliberately DARKER than the accent rather
+     than lighter: Signal Blue's luminance is that of a ~#868686 gray, so any
+     mid-gray collapses into it once hue is removed. #3a3a3a holds 3.0:1 against
+     the accent (distinct under colour-vision deficiency) and 10.4:1 against the
+     Haze page. Bars only — never text. */
+  --c-mark-neutral: 58 58 58;     /* #3a3a3a */
 }
 
 @layer base {
-  /* The app previously had zero focus-visible styles across 6,626 lines. This
-     is the floor: every interactive element gets a visible ring unless it
-     opts out with its own focus-visible treatment. */
-  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
-    outline: 2px solid rgb(var(--c-accent));
-    outline-offset: 2px;
-    border-radius: 4px;
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
-  ::placeholder {
-    color: rgb(var(--c-text-disabled));
+  body {
+    @apply bg-canvas font-sans text-body text-ink;
   }
 
   ::selection {
-    background: rgb(var(--c-accent) / 0.18);
+    background: rgb(var(--c-accent-soft));
+    color: rgb(var(--c-ink));
+  }
+
+  /* Keyboard focus is always visible, never a browser default outline. Matches
+     the button radius so the ring hugs the control it belongs to. */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgb(var(--c-accent-soft));
+    border-radius: 8px;
+  }
+
+  /* Quiet scrollbars that match the paper. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--c-line-strong)) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: rgb(var(--c-line-strong));
+    border-radius: 999px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
   }
 }
 
 @layer components {
-  .btn-primary {
-    @apply inline-flex items-center gap-2 px-4 py-2 min-h-[38px] rounded-md
-           bg-accent text-white font-medium shadow-e1
-           transition-colors duration-200 hover:bg-accent-hover
-           disabled:bg-surface-sunk disabled:text-content-disabled
-           disabled:shadow-none disabled:cursor-not-allowed;
+  /* Glass panel — the dock, command bar, floating chrome. */
+  .glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
-  .btn-secondary {
-    @apply inline-flex items-center gap-2 px-4 py-2 min-h-[38px] rounded-md
-           bg-surface text-content-body font-medium border border-line-strong
-           transition-colors duration-200 hover:bg-surface-sunk
-           disabled:text-content-disabled disabled:cursor-not-allowed;
-  }
-
-  .card {
-    @apply bg-surface rounded-lg border border-line shadow-e1;
+  /* Shimmer skeleton block. Size it with w-/h- utilities. The gradient here is
+     a loading animation, not decorative depth — Air's no-gradient rule is about
+     the latter, which is why the ambient aurora blobs were removed in v4. */
+  .skeleton {
+    @apply animate-shimmer rounded-chip;
+    background: linear-gradient(
+      100deg,
+      rgb(var(--c-canvas-deep)) 40%,
+      rgb(var(--c-surface)) 50%,
+      rgb(var(--c-canvas-deep)) 60%
+    );
+    background-size: 200% 100%;
   }
 }
 
-/* Motion is opt-out, not opt-in. Anything decorative collapses; anything that
-   communicates progress keeps a single frame so it still reads as "working". */
+@layer utilities {
+  /* Fraunces gets its optical size + a touch of softness. */
+  .font-display {
+    font-optical-sizing: auto;
+    font-feature-settings: 'ss01' on;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Respect users who opt out of motion — collapse to simple states. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
-    animation-duration: 0.001ms !important;
+    animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

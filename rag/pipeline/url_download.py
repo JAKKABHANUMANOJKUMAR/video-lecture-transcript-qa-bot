@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import re
+import shutil
 import tempfile
 from pathlib import Path
 from typing import Callable
@@ -15,18 +17,59 @@ _YOUTUBE_RE = re.compile(
     r"(?:https?://)?(?:www\.|m\.)?(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/shorts/)([\w-]{11})"
 )
 
-_GDRIVE_RE = re.compile(
-    r"(?:https?://)?drive\.google\.com/(?:file/d/|open\?id=|uc\?id=)([\w-]+)"
+# Drive links reach us in several shapes: the Share dialog's
+# ``/file/d/<id>/view?usp=sharing``, the older ``open?id=``/``uc?id=``, the
+# ``docs.google.com`` alias, and ``drive.usercontent.google.com/download?id=``.
+_GDRIVE_HOST_RE = re.compile(
+    r"(?:https?://)?(?:drive|docs|drive\.usercontent)\.google\.com/", re.I
 )
+_GDRIVE_ID_RE = re.compile(r"(?:/file/d/|[?&]id=)([\w-]{10,})")
+_GDRIVE_FOLDER_RE = re.compile(r"drive\.google\.com/drive/(?:u/\d+/)?folders/", re.I)
+
+# Prefixes used for the temp dirs we download into, so cleanup can recognise them.
+_TMP_PREFIXES = ("askora_yt_", "askora_gd_")
+
+# Drive happily shares things that aren't lectures. Catching these here gives a
+# useful message instead of a cryptic ffmpeg decode failure deep in Whisper.
+_NON_MEDIA_SUFFIXES = {
+    ".pdf", ".doc", ".docx", ".txt", ".rtf", ".odt",
+    ".ppt", ".pptx", ".key", ".xls", ".xlsx", ".csv",
+    ".zip", ".rar", ".7z", ".tar", ".gz",
+    ".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg",
+    ".html", ".htm", ".json", ".exe", ".dmg",
+}
+
+
+def is_gdrive_folder_url(url: str) -> bool:
+    """True for a Drive *folder* link — recognisable, but not something to fetch."""
+    return bool(_GDRIVE_FOLDER_RE.search(url))
+
+
+def is_gdrive_url(url: str) -> bool:
+    """True for any Google Drive link we can act on — file or folder."""
+    if not _GDRIVE_HOST_RE.search(url):
+        return False
+    return bool(_GDRIVE_ID_RE.search(url) or _GDRIVE_FOLDER_RE.search(url))
 
 
 def detect_source(url: str) -> str:
     """Return 'youtube', 'gdrive', or 'unknown'."""
     if _YOUTUBE_RE.search(url):
         return "youtube"
-    if _GDRIVE_RE.search(url):
+    if is_gdrive_url(url):
         return "gdrive"
     return "unknown"
+
+
+def cleanup_download(path: str | None) -> None:
+    """Delete a downloaded file, and the temp dir we created to hold it."""
+    if not path:
+        return
+    target = Path(path)
+    target.unlink(missing_ok=True)
+    parent = target.parent
+    if parent.name.startswith(_TMP_PREFIXES):
+        shutil.rmtree(parent, ignore_errors=True)
 
 
 def extract_title_from_url(url: str, source: str) -> str | None:
@@ -129,44 +172,76 @@ def _download_youtube(
     return downloaded_path, title
 
 
+_NO_ACCESS = (
+    "Cannot access this Google Drive file. Open it in Drive, choose "
+    "Share → General access → 'Anyone with the link', then try again."
+)
+
+
 def _download_gdrive(
     url: str,
     on_progress: Callable[[int, str], None] | None = None,
 ) -> tuple[str, str]:
-    match = _GDRIVE_RE.search(url)
+    if _GDRIVE_FOLDER_RE.search(url):
+        raise ValueError(
+            "That link points to a Google Drive folder, not a video. Open the "
+            "video itself in Drive, use Share → Copy link, and paste that."
+        )
+
+    match = _GDRIVE_ID_RE.search(url)
     if not match:
-        raise ValueError("Could not parse Google Drive file ID from URL.")
+        raise ValueError(
+            "Could not find a file ID in that Google Drive link. Use the link "
+            "from Drive's Share → Copy link."
+        )
 
     file_id = match.group(1)
     gdrive_url = f"https://drive.google.com/uc?id={file_id}"
 
-    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4", prefix="askora_gd_")
-    tmp.close()
+    # Download into a directory (not onto a fixed path) so gdown keeps the
+    # file's real name in Drive — that name becomes the lecture title.
+    tmp_dir = tempfile.mkdtemp(prefix="askora_gd_")
 
     if on_progress:
         on_progress(0, "Downloading from Google Drive…")
 
+    def _hook(downloaded: int, total: int | None) -> None:
+        if not on_progress:
+            return
+        pct = int(downloaded / total * 100) if total else 0
+        on_progress(pct, f"Downloading from Google Drive… {pct}%")
+
     try:
-        output = gdown.download(gdrive_url, tmp.name, quiet=True, fuzzy=True)
+        # No `fuzzy=` — gdown 6 dropped it, and the id is already canonical here.
+        output = gdown.download(
+            gdrive_url,
+            tmp_dir + os.sep,
+            quiet=True,
+            progress=_hook,
+        )
     except Exception as exc:
-        Path(tmp.name).unlink(missing_ok=True)
+        shutil.rmtree(tmp_dir, ignore_errors=True)
         msg = str(exc)
-        if "access" in msg.lower() or "permission" in msg.lower():
-            raise ValueError(
-                "Cannot access this Google Drive file. "
-                "Please set sharing to 'Anyone with the link can view', then try again."
-            ) from exc
+        if any(word in msg.lower() for word in ("access", "permission", "private")):
+            raise ValueError(_NO_ACCESS) from exc
         raise ValueError(f"Could not download from Google Drive: {msg}") from exc
 
+    # gdown returns None (rather than raising) when Drive serves the sign-in or
+    # quota page instead of the file.
     if not output or not Path(output).exists():
-        Path(tmp.name).unlink(missing_ok=True)
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+        raise ValueError(_NO_ACCESS)
+
+    downloaded = Path(output)
+    if downloaded.suffix.lower() in _NON_MEDIA_SUFFIXES:
+        suffix = downloaded.suffix
+        shutil.rmtree(tmp_dir, ignore_errors=True)
         raise ValueError(
-            "Cannot access this Google Drive file. "
-            "Please set sharing to 'Anyone with the link can view', then try again."
+            f"That Google Drive file is a {suffix} file, not a video or audio "
+            "recording. Share a lecture recording instead."
         )
 
     if on_progress:
         on_progress(100, "Download complete")
 
-    file_name = Path(output).stem or "Google Drive video"
-    return output, file_name
+    return str(downloaded), downloaded.stem or "Google Drive video"

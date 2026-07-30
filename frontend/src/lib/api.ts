@@ -310,5 +310,9 @@ export const api = {
   deleteAlert: (alertId: string) =>
     request<{ detail: string }>(`/alerts/${alertId}`, { method: 'DELETE' }),
 
-  analyticsSummary: () => request<AnalyticsSummary>('/analytics/summary'),
+  /** Omit `days` for all-time; pass it to narrow every count to a recent window. */
+  analyticsSummary: (days?: number) =>
+    request<AnalyticsSummary>(
+      days ? `/analytics/summary?days=${days}` : '/analytics/summary',
+    ),
 };

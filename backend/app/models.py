@@ -9,9 +9,10 @@ from sqlalchemy import (
     String,
     Text,
     func,
+    select,
 )
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, column_property, mapped_column, relationship
 
 from app.database import Base
 
@@ -33,7 +34,8 @@ class User(Base):
     status: Mapped[str] = mapped_column(String(20), default="active", nullable=False)  # active | inactive | blocked
     auth_provider: Mapped[str] = mapped_column(String(20), default="local", nullable=False)  # local | google
     avatar_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
-    usage_minutes: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    # NOTE: `usage_minutes` is defined at the bottom of this module as a
+    # column_property computed live from the user's lectures — see there.
     last_login: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
@@ -146,3 +148,23 @@ class Alert(Base):
     is_read: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+# How much lecture material a user has actually brought in, in whole minutes.
+#
+# This used to be a stored `users.usage_minutes` column that nothing ever
+# incremented, so every account reported 0 forever and the admin analytics filed
+# everyone under "Not started". Computing it as a correlated subquery means the
+# number is read from the videos table on every query — no stored value to drift,
+# and no endpoint has to remember to update it.
+User.usage_minutes = column_property(
+    select(
+        func.cast(
+            func.round(func.coalesce(func.sum(Video.duration_seconds), 0) / 60.0),
+            Integer,
+        )
+    )
+    .where(Video.user_id == User.id)
+    .correlate_except(Video)
+    .scalar_subquery()
+)

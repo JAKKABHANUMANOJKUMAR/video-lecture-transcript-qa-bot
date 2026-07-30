@@ -1,190 +1,193 @@
 /** @type {import('tailwindcss').Config} */
 
 // =============================================================================
-// LEKTA DESIGN SYSTEM v1 — token layer
+// LEKTA DESIGN SYSTEM v4 — Air token layer
 //
-// Two kinds of color live here:
+// Monochrome plus two blues: a Haze page, Whiteout cards, Ink type. Light theme
+// only. Flat by rule — no elevation; 1px hairlines instead of shadows.
 //
-//   1. FIXED RAMPS (`brand`, `ink`) are static hex. They are the palette
-//      reference and do not change between light and dark.
+// Every color is a ROLE TOKEN driven by CSS variables defined in index.css,
+// written as `rgb(var(--x) / <alpha-value>)` so opacity modifiers such as
+// `bg-surface/60` still work. Swapping the palette is a one-file change
+// (index.css) — component code never hardcodes a hex.
 //
-//   2. ROLE TOKENS (`canvas`, `surface`, `content`, `accent`, `success`,
-//      `warning`, `danger`, `info`, `line`) are driven by CSS variables defined
-//      in index.css, so a single `dark` class on <html> re-themes the whole app.
-//      Written as `rgb(var(--x) / <alpha-value>)` so opacity modifiers such as
-//      `bg-surface/60` still work.
+// Color roles:
+//   canvas / surface / ink / line ... Haze page, Whiteout cards, Ink type, gray
+//                                    hairlines carrying every separation
+//   accent ....................... Signal Blue #2b7fff — the only saturated
+//                                  accent. Links, active states, icons.
+//                                  NEVER a button fill or large surface.
+//   ink-black .................... #000000 Black Void — nav borders, link
+//                                  underlines, deepest contrast layer
+//   peach ........................ collapsed to neutral (monochrome rule)
+//   mint ......................... Signal Blue
+//   sky .......................... Twilight Blue #426188
+//   butter / rose ................ reserved for state (warning, destructive)
+//   ok / warn / danger / info .... semantic status
 //
-// Prefer role tokens in new code (`bg-surface`, `text-content-muted`,
-// `border-line`). The raw ramps are for gradients and illustration, not chrome.
-//
-// LEGACY ALIASES: the pages still contain ~342 uses of indigo/purple/blue/
-// green/emerald etc. from before this system existed. Those families stay
-// pointed at the brand ramp so appearance does not regress; they are migrated
-// to role tokens page by page. Do not add new usages of them.
+// Type roles: font-display (Fraunces) for h1/h2/hero/empty-state headlines
+// only; font-sans (Manrope) for all UI; font-mono (JetBrains Mono) for
+// timestamps, IDs and code. Time is the atom of this product — timestamps are
+// always mono.
 // =============================================================================
 
 const withAlpha = (v) => `rgb(var(${v}) / <alpha-value>)`;
 
-// --- Fixed ramp: brand teal. Perceptually even; no jump between 400 and 500,
-// which is what made the previous ramp break on hovers and gradients.
-const brand = {
-  50: '#EAF4F2',
-  100: '#D2E8E4',
-  200: '#A6D1CA',
-  300: '#6FB3A9',
-  400: '#2E8F82',
-  500: '#0F766E', // primary accent — carried over from the previous palette
-  600: '#115E59',
-  700: '#134E4A',
-  800: '#0F3D38',
-  900: '#0A2E2A',
-  950: '#062120',
-};
-
-// --- Fixed ramp: neutrals, biased teal so they read chosen rather than
-// inherited. Correctly ordered light→dark (the previous `slate` ramp had 50
-// darker than 100, which inverted table headers against cards).
-const ink = {
-  0: '#FFFFFF',
-  25: '#FAFBFB',
-  50: '#F6F8F8',
-  100: '#EDF1F0',
-  200: '#E3E9E8',
-  300: '#C9D3D1',
-  400: '#94A5A3',
-  500: '#6B7D7B',
-  600: '#5A6B6A',
-  700: '#3E4E4C',
-  800: '#253331',
-  900: '#0F1B1A',
-  950: '#070F0E',
-};
+const pastel = (name) => ({
+  DEFAULT: withAlpha(`--c-${name}`),
+  tint: withAlpha(`--c-${name}-tint`),
+  ink: withAlpha(`--c-${name}-ink`),
+});
 
 export default {
-  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        brand,
-        ink,
-
-        // --- Role tokens: these flip with the theme ---
-        canvas: withAlpha('--c-canvas'),
-        surface: {
-          DEFAULT: withAlpha('--c-surface'),
-          sunk: withAlpha('--c-surface-sunk'),
+        canvas: {
+          DEFAULT: withAlpha('--c-canvas'),
+          deep: withAlpha('--c-canvas-deep'),
         },
+        surface: withAlpha('--c-surface'),
         line: {
-          DEFAULT: withAlpha('--c-border'),
-          strong: withAlpha('--c-border-strong'),
+          DEFAULT: withAlpha('--c-line'),
+          strong: withAlpha('--c-line-strong'),
         },
-        content: {
-          DEFAULT: withAlpha('--c-text'),
-          body: withAlpha('--c-text-body'),
-          muted: withAlpha('--c-text-muted'),
-          disabled: withAlpha('--c-text-disabled'),
+        ink: {
+          DEFAULT: withAlpha('--c-ink'),
+          2: withAlpha('--c-ink-2'),
+          3: withAlpha('--c-ink-3'),
+          // Reserved for the single filled-button surface.
+          black: withAlpha('--c-ink-black'),
         },
+        // Neutral chart mark — lighter than ink-3 so it separates from the
+        // green under colour-vision deficiency. Bars only, never text.
+        'mark-neutral': withAlpha('--c-mark-neutral'),
         accent: {
           DEFAULT: withAlpha('--c-accent'),
-          hover: withAlpha('--c-accent-hover'),
+          deep: withAlpha('--c-accent-deep'),
           soft: withAlpha('--c-accent-soft'),
-          ink: withAlpha('--c-accent-ink'),
+          tint: withAlpha('--c-accent-tint'),
         },
-        success: {
-          DEFAULT: withAlpha('--c-success'),
-          soft: withAlpha('--c-success-soft'),
-          ink: withAlpha('--c-success-ink'),
-        },
-        warning: {
-          DEFAULT: withAlpha('--c-warning'),
-          soft: withAlpha('--c-warning-soft'),
-          ink: withAlpha('--c-warning-ink'),
-        },
-        danger: {
-          DEFAULT: withAlpha('--c-danger'),
-          soft: withAlpha('--c-danger-soft'),
-          ink: withAlpha('--c-danger-ink'),
-        },
-        info: {
-          DEFAULT: withAlpha('--c-info'),
-          soft: withAlpha('--c-info-soft'),
-          ink: withAlpha('--c-info-ink'),
-        },
-
-        // --- Legacy compatibility. Migrated away page by page. ---
-        slate: ink,
-        gray: ink,
-        teal: brand,
-        indigo: brand,
-        violet: brand,
-        purple: brand,
-        fuchsia: brand,
-        sky: brand,
-        blue: brand,
-        cyan: brand,
-        emerald: brand,
-        green: brand,
-        orange: brand,
+        peach: pastel('peach'),
+        mint: pastel('mint'),
+        sky: pastel('sky'),
+        butter: pastel('butter'),
+        rose: pastel('rose'),
+        ok: { DEFAULT: withAlpha('--c-ok'), tint: withAlpha('--c-ok-tint') },
+        warn: { DEFAULT: withAlpha('--c-warn'), tint: withAlpha('--c-warn-tint') },
+        danger: { DEFAULT: withAlpha('--c-danger'), tint: withAlpha('--c-danger-tint') },
+        info: { DEFAULT: withAlpha('--c-info'), tint: withAlpha('--c-info-tint') },
       },
 
-      // Role-assigned radius. 4 steps + full; nothing else.
+      // Preflight otherwise defaults every border to gray-200 (#e5e7eb), which
+      // is outside the palette — point it at the hairline token instead.
+      borderColor: {
+        DEFAULT: withAlpha('--c-line'),
+      },
+
+      // Air's radius set: inputs 4, buttons 8, images 11, cards 12, pills full.
+      // `chip` and `ctl` deliberately resolve to the same 8px — Air has one
+      // button radius, and collapsing the two token names would mean editing
+      // every call site rather than the token layer.
       borderRadius: {
-        sm: '6px',   // chips, tiny controls
-        md: '10px',  // buttons, inputs
-        lg: '14px',  // cards
-        xl: '20px',  // large surfaces, modals
+        input: '4px',
+        chip: '8px',
+        ctl: '8px',
+        image: '11px',
+        card: '12px',
+        panel: '12px',
       },
 
-      // Tinted elevation — shadows carry the ink hue so they sit in the
-      // palette instead of greying it out.
+      // Air has NO elevation: surfaces separate by background contrast and 1px
+      // borders, never by casting shadows. The sm/md/lg names are kept and
+      // neutralised so the swap stays inside the token layer — a `shadow-sm` in
+      // a component is now a no-op, and its sibling `border-line` does the work.
+      // The two rings are focus affordances, not elevation, so they remain.
       boxShadow: {
-        e1: '0 1px 2px rgba(15,27,26,.05), 0 1px 1px rgba(15,27,26,.03)',
-        e2: '0 2px 4px rgba(15,27,26,.05), 0 4px 12px rgba(15,27,26,.05)',
-        e3: '0 8px 24px rgba(15,27,26,.08), 0 2px 6px rgba(15,27,26,.04)',
-      },
-
-      // Type scale. Added alongside Tailwind's defaults rather than replacing
-      // them, since the existing pages lean on text-xs/sm/base heavily.
-      fontSize: {
-        display: ['clamp(34px, 5vw, 52px)', { lineHeight: '1.05', letterSpacing: '-0.035em', fontWeight: '680' }],
-        h1: ['clamp(26px, 3.4vw, 34px)', { lineHeight: '1.15', letterSpacing: '-0.028em', fontWeight: '650' }],
-        h2: ['22px', { lineHeight: '1.25', letterSpacing: '-0.02em', fontWeight: '640' }],
-        h3: ['17px', { lineHeight: '1.35', letterSpacing: '-0.012em', fontWeight: '620' }],
-        body: ['15px', { lineHeight: '1.6' }],
-        cap: ['12.5px', { lineHeight: '1.5' }],
-        label: ['11px', { lineHeight: '1.5', letterSpacing: '0.09em', fontWeight: '640' }],
+        sm: 'none',
+        md: 'none',
+        lg: 'none',
+        ring: '0 0 0 3px rgb(var(--c-accent-soft))',
+        'ring-danger': '0 0 0 3px rgb(var(--c-rose-tint))',
       },
 
       fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['ui-monospace', 'Cascadia Code', 'SF Mono', 'Menlo', 'Consolas', 'monospace'],
+        display: ['Fraunces', 'Georgia', 'ui-serif', 'serif'],
+        sans: ['Manrope', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'Cascadia Code', 'Menlo', 'Consolas', 'monospace'],
+      },
+
+      // Scale: 12.5 / 13.5 / 15 / 17 / 20 / 24 / 30 / 38
+      fontSize: {
+        micro: ['11px', { lineHeight: '1.5', letterSpacing: '0.08em', fontWeight: '700' }],
+        cap: ['12.5px', { lineHeight: '1.5' }],
+        sm: ['13.5px', { lineHeight: '1.55' }],
+        body: ['15px', { lineHeight: '1.6' }],
+        lg: ['17px', { lineHeight: '1.5' }],
+        h3: ['20px', { lineHeight: '1.4', letterSpacing: '-0.01em', fontWeight: '600' }],
+        h2: ['24px', { lineHeight: '1.3', letterSpacing: '-0.015em', fontWeight: '600' }],
+        h1: ['30px', { lineHeight: '1.2', letterSpacing: '-0.02em', fontWeight: '600' }],
+        display: ['clamp(32px, 4.5vw, 44px)', { lineHeight: '1.12', letterSpacing: '-0.02em', fontWeight: '550' }],
       },
 
       transitionTimingFunction: {
-        ease: 'cubic-bezier(.2,.6,.3,1)',
+        study: 'cubic-bezier(.32,.72,0,1)',
+      },
+      transitionDuration: {
+        micro: '160ms',
+        panel: '240ms',
+        page: '320ms',
       },
 
       keyframes: {
-        fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
-        slideInUp: {
-          from: { opacity: '0', transform: 'translateY(10px)' },
+        rise: {
+          from: { opacity: '0', transform: 'translateY(12px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
+        pop: {
+          '0%': { opacity: '0', transform: 'scale(.96)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
         },
         shimmer: {
           '0%': { backgroundPosition: '100% 0' },
-          '100%': { backgroundPosition: '0 0' },
+          '100%': { backgroundPosition: '-100% 0' },
         },
-        bounceDot: {
-          '0%,60%,100%': { transform: 'translateY(0)', opacity: '.5' },
+        typingDot: {
+          '0%,60%,100%': { transform: 'translateY(0)', opacity: '.4' },
           '30%': { transform: 'translateY(-4px)', opacity: '1' },
+        },
+        waveBar: {
+          '0%,100%': { transform: 'scaleY(.35)' },
+          '50%': { transform: 'scaleY(1)' },
+        },
+        pulseSoft: {
+          '0%,100%': { opacity: '1' },
+          '50%': { opacity: '.55' },
+        },
+        segFlash: {
+          '0%': { backgroundColor: 'rgb(var(--c-butter-tint))' },
+          '100%': { backgroundColor: 'transparent' },
+        },
+        // A citation jump, acknowledged: a ring over the player that fades out.
+        // Must never animate an ancestor of <video> — see SourceRail.
+        seekPulse: {
+          '0%': { opacity: '1' },
+          '60%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
       },
       animation: {
-        'fade-in': 'fadeIn .3s ease-in',
-        'slide-in': 'slideInUp .4s cubic-bezier(.2,.6,.3,1)',
-        shimmer: 'shimmer 1.4s linear infinite',
-        'bounce-dot': 'bounceDot 1.2s cubic-bezier(.2,.6,.3,1) infinite',
+        rise: 'rise .32s cubic-bezier(.32,.72,0,1) both',
+        'fade-in': 'fadeIn .24s ease-out both',
+        pop: 'pop .16s cubic-bezier(.32,.72,0,1) both',
+        shimmer: 'shimmer 1.6s linear infinite',
+        'typing-dot': 'typingDot 1.2s cubic-bezier(.32,.72,0,1) infinite',
+        'wave-bar': 'waveBar 1.1s ease-in-out infinite',
+        'pulse-soft': 'pulseSoft 2.2s ease-in-out infinite',
+        'seg-flash': 'segFlash 1.6s ease-out both',
+        'seek-pulse': 'seekPulse 1.5s ease-out both',
       },
     },
   },

@@ -12,6 +12,19 @@ _YOUTUBE_ID_RE = re.compile(
     r"(?:youtube\.com/watch\?v=|youtu\.be/|youtube\.com/shorts/)([\w-]{11})"
 )
 
+_UNSAFE_FILENAME_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+
+
+def safe_filename(name: str | None, fallback: str) -> str:
+    """Turn a lecture title into a filename every OS will accept.
+
+    Lecture titles routinely contain ``?``, ``:`` and ``/`` — all illegal on
+    Windows — so downloads need them stripped rather than escaped.
+    """
+    cleaned = _UNSAFE_FILENAME_CHARS.sub("", (name or "").strip())
+    cleaned = re.sub(r"\s+", " ", cleaned).strip(" .")
+    return cleaned[:120] if cleaned else fallback
+
 
 def format_timestamp(seconds: float | None) -> str:
     """Render seconds as a ``m:ss`` (or ``h:mm:ss``) label."""

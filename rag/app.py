@@ -12,6 +12,7 @@ Endpoints:
 
 from __future__ import annotations
 
+import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -21,12 +22,14 @@ from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
+from sqlalchemy import or_
 
 from rag.auth import get_optional_user_id
 from rag.config import settings
 from rag.database import SessionLocal
 from rag.models import Transcript
 from rag.pipeline.embeddings import LocalEmbeddingFunction
+from rag.pipeline.formatting import safe_filename
 from rag.pipeline.ingestion import (
     delete_by_video,
     delete_transcript_everywhere,
@@ -35,7 +38,13 @@ from rag.pipeline.ingestion import (
 )
 from rag.pipeline.progress import progress_store
 from rag.pipeline.rag_chain import answer_question
-from rag.pipeline.url_download import detect_source, download_video, extract_title_from_url
+from rag.pipeline.url_download import (
+    cleanup_download,
+    detect_source,
+    download_video,
+    extract_title_from_url,
+    is_gdrive_folder_url,
+)
 from rag.pipeline.vectorstore import query as vector_query
 
 app = FastAPI(title="Lekta RAG Service", version="1.0.0")
@@ -133,6 +142,7 @@ def _run_ingest_job(
                 "duration_seconds": result.duration_seconds,
                 "num_chunks": result.num_chunks,
                 "media_key": result.media_key,
+                "title": title,
             },
         )
     except Exception as exc:
@@ -196,15 +206,37 @@ def health():
     return {"status": "healthy"}
 
 
+def _transcript_for_media_key(media_id: str) -> Transcript | None:
+    """A media key is either a backend video id or a transcript id."""
+    db = SessionLocal()
+    try:
+        return (
+            db.query(Transcript)
+            .filter(or_(Transcript.video_id == media_id, Transcript.id == media_id))
+            .first()
+        )
+    finally:
+        db.close()
+
+
 @app.get("/media/{media_id}")
-def serve_media(media_id: str):
+def serve_media(media_id: str, download: bool = False):
+    """Stream a stored lecture. ``?download=1`` sends it as a named attachment."""
     media_dir = Path(settings.media_path)
     if not media_dir.exists():
         raise HTTPException(status_code=404, detail="Media not found")
     matches = list(media_dir.glob(f"{media_id}.*"))
     if not matches:
         raise HTTPException(status_code=404, detail="Media not found")
-    return FileResponse(matches[0])
+
+    path = matches[0]
+    if not download:
+        # Default stays inline so the player can range-request it.
+        return FileResponse(path)
+
+    transcript = _transcript_for_media_key(media_id)
+    stem = safe_filename(transcript.title if transcript else None, media_id)
+    return FileResponse(path, filename=f"{stem}{path.suffix}")
 
 
 @app.get("/viewer", response_class=HTMLResponse)
@@ -479,6 +511,7 @@ def _complete_from_transcript(job_id: str, transcript: Transcript, num_chunks: i
             "duration_seconds": float(transcript.duration_seconds or 0),
             "num_chunks": num_chunks,
             "media_key": transcript.video_id or transcript.id,
+            "title": transcript.title,
         },
     )
 
@@ -536,13 +569,13 @@ def _run_url_ingest_job(
                 "duration_seconds": result.duration_seconds,
                 "num_chunks": result.num_chunks,
                 "media_key": result.media_key,
+                "title": final_title,
             },
         )
     except Exception as exc:
         progress_store.fail(job_id, str(exc))
     finally:
-        if downloaded_path:
-            Path(downloaded_path).unlink(missing_ok=True)
+        cleanup_download(downloaded_path)
 
 
 @app.post("/ingest/url", response_model=IngestJobResponse)
@@ -557,6 +590,15 @@ async def ingest_url(
         raise HTTPException(
             status_code=400,
             detail="Unsupported URL. Please provide a YouTube or Google Drive link.",
+        )
+    # Recognisable but unusable — say so now instead of failing a job later.
+    if is_gdrive_folder_url(req.url):
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "That link points to a Google Drive folder, not a video. Open the "
+                "video itself in Drive, use Share → Copy link, and paste that."
+            ),
         )
 
     job_id = progress_store.create()
@@ -604,6 +646,47 @@ def query(req: QueryRequest, user_id: str | None = Depends(get_optional_user_id)
     }
 
 
+def _transcript_payload(t: Transcript) -> dict:
+    return {
+        "transcript_id": t.id,
+        "title": t.title,
+        "language": t.language,
+        "is_english": t.is_english,
+        "duration_seconds": t.duration_seconds,
+        "original_text": t.original_text,
+        "english_text": t.english_text,
+        "source_url": t.source_url,
+    }
+
+
+@app.get("/transcript/by-video/{video_id}")
+def get_transcript_by_video(
+    video_id: str, user_id: str | None = Depends(get_optional_user_id)
+):
+    """Look a transcript up by its backend video id.
+
+    The Library only knows video ids, so this is how it reaches the transcript
+    text for a download without having to track transcript ids too.
+    """
+    db = SessionLocal()
+    try:
+        t = (
+            db.query(Transcript)
+            .filter(Transcript.video_id == video_id)
+            .order_by(Transcript.created_at.desc())
+            .first()
+        )
+        if t is None:
+            raise HTTPException(
+                status_code=404, detail="No transcript for this lecture yet"
+            )
+        if user_id is not None and t.user_id is not None and t.user_id != user_id:
+            raise HTTPException(status_code=403, detail="Not your transcript")
+        return _transcript_payload(t)
+    finally:
+        db.close()
+
+
 @app.get("/transcript/{transcript_id}")
 def get_transcript(transcript_id: str, user_id: str | None = Depends(get_optional_user_id)):
     """Return the full transcript text (original + English) for viewing/download."""
@@ -614,16 +697,7 @@ def get_transcript(transcript_id: str, user_id: str | None = Depends(get_optiona
             raise HTTPException(status_code=404, detail="Transcript not found")
         if user_id is not None and t.user_id is not None and t.user_id != user_id:
             raise HTTPException(status_code=403, detail="Not your transcript")
-        return {
-            "transcript_id": t.id,
-            "title": t.title,
-            "language": t.language,
-            "is_english": t.is_english,
-            "duration_seconds": t.duration_seconds,
-            "original_text": t.original_text,
-            "english_text": t.english_text,
-            "source_url": t.source_url,
-        }
+        return _transcript_payload(t)
     finally:
         db.close()
 
