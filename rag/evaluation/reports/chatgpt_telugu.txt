@@ -1,0 +1,227 @@
+=== Evaluation Summary ===
+Questions evaluated: 10
+Exact match: 0/10
+Average F1: 0.234
+Average generation score: 0.234
+Average faithfulness score: 0.711
+Average retrieval score: 0.750
+Average context precision: 0.750
+Average context recall: 0.635
+Average Recall@k: 1.000
+Average Hit Rate (Hit@k): 1.000
+Average MRR: 1.000
+No-answer fallback responses: 4/10
+Reference answer covered by sources: 0.600
+Overall: The model is weak on this dataset and needs improvement.
+==========================
+
+Question 1: What is the topic of the lecture?
+Answer: The topic of the lecture is not clearly defined, as the excerpts provided seem to jump between different subjects, including the use of charts, making biriyani, and discussing various unrelated topics. However, some common themes mentioned include charts, specifically "chart GPT," and the idea of using or explaining something in a chart.
+Reference: The topic of the lecture is Chat GPT and its comparison with Google search.
+Exact match: False
+F1: 0.242
+Generation score: 0.242
+Faithfulness score: 0.462
+Answer relevancy score: 0.242
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.571
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.8376 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.8563 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.8643 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.8885 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+--------------------------------------------------------------------------------
+Question 2: What is the speaker going to show in the next video?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: The speaker is going to show the practical use cases of Chat GPT in the next video.
+Exact match: False
+F1: 0.129
+Generation score: 0.129
+Faithfulness score: 0.643
+Answer relevancy score: 0.129
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.765
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.7363 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.8784 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.8893 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.9102 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+--------------------------------------------------------------------------------
+Question 3: How can we provide a clear view of a source to Google search?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: We can provide a more clear view of a source, such as a Pakistan source, to Google search.
+Exact match: False
+F1: 0.062
+Generation score: 0.062
+Faithfulness score: 0.643
+Answer relevancy score: 0.062
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.611
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.7064 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.7814 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.8620 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.8968 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+--------------------------------------------------------------------------------
+Question 4: What is the alternative to using Chat GPT?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: We can use Google search as an alternative to Chat GPT.
+Exact match: False
+F1: 0.080
+Generation score: 0.080
+Faithfulness score: 0.643
+Answer relevancy score: 0.080
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.636
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.6779 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.8455 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.8948 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.9389 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+--------------------------------------------------------------------------------
+Question 5: What is the speaker's suggestion for searching on Google?
+Answer: The speaker suggests going to Google and checking the website links to find information, such as how to make biriyani.
+Reference: The speaker suggests searching on Google with fast sounds.
+Exact match: False
+F1: 0.276
+Generation score: 0.276
+Faithfulness score: 0.750
+Answer relevancy score: 0.276
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.444
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.7465 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.7931 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.8441 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.9166 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+--------------------------------------------------------------------------------
+Question 6: What is the website mentioned in the lecture?
+Answer: The website mentioned in the lecture is self-advistaокpa.com and Google.
+Reference: The website mentioned is short.openjā.com.
+Exact match: False
+F1: 0.500
+Generation score: 0.500
+Faithfulness score: 0.846
+Answer relevancy score: 0.500
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.571
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.6676 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.7598 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.8447 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.8643 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+--------------------------------------------------------------------------------
+Question 7: What is the process of using the app mentioned in the lecture?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: To use the app, we need to register and then we can use it.
+Exact match: False
+F1: 0.143
+Generation score: 0.143
+Faithfulness score: 0.643
+Answer relevancy score: 0.143
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.857
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.6639 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.7530 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.8201 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.8391 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+--------------------------------------------------------------------------------
+Question 8: Can we use Chat GPT in Google?
+Answer: If you want to see it in Google, you can find different links.
+Reference: Yes, we can use Chat GPT in Google.
+Exact match: False
+F1: 0.286
+Generation score: 0.286
+Faithfulness score: 1.000
+Answer relevancy score: 0.286
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.750
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.6521 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.7630 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.8632 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.9156 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+--------------------------------------------------------------------------------
+Question 9: What is the example given by the speaker for searching on Google?
+Answer: The example given by the speaker for searching on Google is "How to make biriyani?"
+Reference: The speaker gives an example of searching for a simple C program for a calculator.
+Exact match: False
+F1: 0.333
+Generation score: 0.333
+Faithfulness score: 0.733
+Answer relevancy score: 0.333
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.600
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.7396 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.7888 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.8766 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.9849 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+--------------------------------------------------------------------------------
+Question 10: What is the speaker's request to the viewers?
+Answer: The speaker's request to the viewers is to like and share the video, and to subscribe to their channel. Additionally, they ask viewers to follow them for the next video.
+Reference: The speaker thanks the viewers for watching and says bye bye.
+Exact match: False
+F1: 0.286
+Generation score: 0.286
+Faithfulness score: 0.742
+Answer relevancy score: 0.286
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.545
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=3 dist=0.8347 preview=This is clear. We have given it in clear. Now I am preparing to prepare biriyani. How to make biriyani? We have to go to
+[2] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=0 dist=0.8425 preview=Fund Chan JPT oro Elden Gruje Cuando scheme ھاں تک لیر گا چاہجی پیٹے ہی تہن் தی ھا یہ یہ ایدھا میرے سایچ چاہجی پیٹے کی ھ
+[3] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=2 dist=0.8821 preview=You can also use it. You can also use it in the chart. You can also explain it in the chart. You can also use it in the 
+[4] transcript_id=81bba5e7-c6fc-402c-84b4-d2258d7e580f chunk=1 dist=0.9291 preview=Friends, CharGpp T is filled with good quality content张 So buy more of these 자晶 plas't you? Because of horny content i t
+--------------------------------------------------------------------------------

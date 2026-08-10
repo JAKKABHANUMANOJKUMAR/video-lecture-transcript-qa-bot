@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import TYPE_CHECKING
+from datetime import datetime, timezone
 
 import whisper
 
@@ -66,11 +67,17 @@ def transcribe_video(
     model = _load_model(model_name or settings.WHISPER_MODEL)
 
     report(22, "extracting_audio", "Extracting audio from video…")
+    t0 = datetime.now(timezone.utc)
     audio = whisper.load_audio(path)
+    t1 = datetime.now(timezone.utc)
+    audio_extract_seconds = (t1 - t0).total_seconds()
     duration_seconds = round(len(audio) / WHISPER_SAMPLE_RATE, 2)
 
     report(28, "transcribing", "Transcribing speech (this may take a while)…")
+    t0 = datetime.now(timezone.utc)
     original = _run_whisper(model, audio, task="transcribe")
+    t1 = datetime.now(timezone.utc)
+    transcribe_seconds = (t1 - t0).total_seconds()
     language = (original.get("language") or "unknown").lower()
     original_text = (original.get("text") or "").strip()
     is_english = language == "en"
@@ -111,7 +118,8 @@ def transcribe_video(
 
         report(72, "translating", "Translation complete.")
 
-    return TranscriptionResult(
+    # Attach timing info to result via non-standard attributes (caller reads if present)
+    res = TranscriptionResult(
         language=language,
         is_english=is_english,
         original_text=original_text,
@@ -120,3 +128,12 @@ def transcribe_video(
         segments=original.get("segments", []),
         english_segments=english_segments,
     )
+    try:
+        res.audio_extract_seconds = audio_extract_seconds
+    except Exception:
+        res.audio_extract_seconds = None
+    try:
+        res.transcribe_seconds = transcribe_seconds
+    except Exception:
+        res.transcribe_seconds = None
+    return res

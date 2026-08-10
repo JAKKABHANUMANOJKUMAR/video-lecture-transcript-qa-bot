@@ -1,0 +1,27 @@
+[
+  {
+    "question": "What does the video clarify about the term 'Python'?",
+    "reference_answer": "The video clarifies that Python is not the same as a snake, and it is a high-level programming language used to communicate between users and systems.",
+    "top_k": 4
+  },
+  {
+    "question": "What type of language do human users understand?",
+    "reference_answer": "Human users understand a high-level language.",
+    "top_k": 4
+  },
+  {
+    "question": "What language does a machine understand?",
+    "reference_answer": "The video does not explicitly state a machine language, but it contrasts it with a high-level language used for communication between users and systems.",
+    "top_k": 4
+  },
+  {
+    "question": "What is the main purpose of a programming language?",
+    "reference_answer": "The main purpose of a programming language is to communicate between users and the system, and to provide a language that is easy to use.",
+    "top_k": 4
+  },
+  {
+    "question": "How is Python formally defined in the video?",
+    "reference_answer": "Python is not formally defined in the video; the speaker only describes it as a high-level language used for programming.",
+    "top_k": 4
+  }
+]

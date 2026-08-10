@@ -1,0 +1,30 @@
+Ask Ora Hosting Commands
+========================
+
+Local services
+--------------
+1) Start backend
+cd backend
+.venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+2) Start RAG service
+cd ..\rag
+.venv\Scripts\python.exe -m uvicorn rag.app:app --host 0.0.0.0 --port 8100
+
+3) Start frontend
+cd ..\frontend
+npm run dev -- --host 0.0.0.0 --port 5175
+
+Public access
+-------------
+4) Start public tunnel
+cd ..
+ngrok http 5175
+
+5) Optional: verify services locally
+curl http://127.0.0.1:5175
+curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8100/health
+
+6) If ngrok shows the warning page, open the public URL in a browser with the header below (browser extension needed):
+ngrok-skip-browser-warning: true

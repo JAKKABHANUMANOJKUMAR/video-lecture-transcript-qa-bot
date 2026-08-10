@@ -5,7 +5,7 @@ import pytest
 pytest.importorskip("chromadb")
 pytest.importorskip("sqlalchemy")
 
-from rag.pipeline.rag_chain import _dedupe, enrich_hit  # noqa: E402
+from rag.pipeline.rag_chain import _build_answer_prompt, _dedupe, enrich_hit  # noqa: E402
 
 
 def _hit(transcript_id, start, end, distance, variant="english", text="x"):
@@ -44,3 +44,26 @@ def test_dedupe_collapses_bilingual_variants():
     # The best (lowest-distance) variant for the collapsed span is kept.
     assert out[0]["metadata"]["variant"] == "english"
     assert out[0]["start_seconds"] == 30.0
+
+
+def test_build_answer_prompt_forces_short_exact_answers():
+    prompt = _build_answer_prompt(
+        "Context excerpt",
+        "What is Python?",
+        scope_note="Answer about the current lecture only.",
+    )
+
+    assert "shortest exact answer" in prompt.lower()
+    assert "do not add explanations" in prompt.lower()
+    assert "Answer about the current lecture only." in prompt
+
+
+def test_build_answer_prompt_includes_abstention_guidance():
+    prompt = _build_answer_prompt(
+        "Context excerpt",
+        "Who said this?",
+        scope_note="Answer about the current lecture only.",
+    )
+
+    assert "if the answer is not directly supported" in prompt.lower()
+    assert "i don't have enough information" in prompt.lower()

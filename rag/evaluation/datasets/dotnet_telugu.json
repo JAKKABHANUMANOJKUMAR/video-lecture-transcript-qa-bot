@@ -1,0 +1,16 @@
+{
+  "name": "dotnet_telugu",
+  "video_path": "D:\\video-lecture-transcript-qa-bot\\test_videos\\dotnet_telugu.mp4",
+  "items": [
+    {"question": "What is the topic of discussion in the lecture?", "reference_answer": "The topic of discussion is related to .NET and its applications."},
+    {"question": "What type of applications can be developed using the framework mentioned in the lecture?", "reference_answer": "The framework can be used to develop Web applications, Windows applications, mobile applications, and console applications."},
+    {"question": "What is ASP.NET antenna?", "reference_answer": "ASP.NET antenna is a framework used to develop different applications."},
+    {"question": "What is .NET core?", "reference_answer": ".NET core is a framework developed by the developer core to develop a single application."},
+    {"question": "What languages and technologies are mentioned in the lecture?", "reference_answer": ".NET, Angular, HTML, and CSS."},
+    {"question": "What is the purpose of the lecture?", "reference_answer": "The purpose of the lecture is to discuss .NET and its related technologies."},
+    {"question": "What are the different types of applications that can be developed using .NET?", "reference_answer": ".NET can be used to develop a number of applications, including Web applications, Windows applications, and mobile applications."},
+    {"question": "What is the relationship between ASP.NET and .NET core?", "reference_answer": "ASP.NET is the same core as .NET core, and .NET core is a framework developed by the developer core."},
+    {"question": "What are the benefits of using .NET?", "reference_answer": "The lecture does not explicitly mention the benefits of using .NET, but it discusses its applications and related technologies."},
+    {"question": "What are the retainer tasks mentioned in the lecture?", "reference_answer": "The lecture mentions retainer tasks, but it does not provide a clear explanation of what they are; however, it mentions \"assesses\" and \"Video Navi blocks\" in relation to .NET core."}
+  ]
+}

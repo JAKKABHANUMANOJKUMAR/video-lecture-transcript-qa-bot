@@ -1,0 +1,469 @@
+VIDEO LECTURE TRANSCRIPT Q&A BOT - TECHNICAL DOCUMENTATION
+================================================================
+
+Project name: Video Lecture Transcript Q&A Bot
+Repository root: d:\video-lecture-transcript-qa-bot
+Document purpose: exhaustive technical walkthrough of the current implementation, including every workflow, pipeline, trigger, API call, middleware, library, database interaction, and internal process from application open to logout.
+
+Scope and assumptions
+--------------------
+This document describes the implementation that exists in the repository as of 2026-08-01.
+The system is composed of three main runtime layers:
+1. Frontend web app (React + TypeScript + Vite)
+2. Backend API service (FastAPI + SQLAlchemy + PostgreSQL)
+3. RAG service (FastAPI + Whisper + ChromaDB + sentence-transformers + Groq)
+
+The frontend and backend communicate through the backend API prefix /api.
+The frontend and RAG service communicate through the RAG endpoints /ingest, /query, /media, /transcript, /api/chroma, and /viewer.
+
+High-level architecture
+----------------------
+- Frontend renders the user experience, local session state, auth state, library, chat sessions, ingestion progress UI, and admin dashboards.
+- Backend stores user accounts, chat sessions, videos, complaints, alerts, and analytics data in PostgreSQL.
+- RAG service handles video ingestion, transcription, chunking, embedding, vector retrieval, and LLM answer generation.
+- The RAG service validates the same JWT token issued by the backend, so it can scope data to the authenticated user.
+- The backend also owns schema bootstrapping and demo account seeding.
+
+Runtime components
+-----------------
+Frontend:
+- React 18
+- TypeScript
+- Vite
+- lucide-react
+- localStorage token storage
+- fetch/XHR-based API client
+
+Backend:
+- FastAPI
+- Uvicorn
+- SQLAlchemy 2
+- psycopg
+- Pydantic / Pydantic Settings
+- python-jose for JWT
+- bcrypt for password hashing
+- python-multipart for form uploads
+
+RAG service:
+- FastAPI
+- openai-whisper for transcription
+- chromadb for vector storage
+- sentence-transformers for embeddings
+- groq for answer generation
+- yt-dlp and gdown for URL-based ingestion
+- SQLAlchemy for transcript metadata storage
+
+System startup sequence
+----------------------
+1. The developer starts the backend service.
+2. The backend process loads configuration from environment variables and .env files.
+3. The backend creates the SQLAlchemy engine and session factory.
+4. FastAPI app startup runs the lifespan handler.
+5. The lifespan handler calls Base.metadata.create_all(bind=engine) to create tables if they do not exist.
+6. The lifespan handler calls apply_schema_patches() to fix or add schema columns for existing databases.
+7. The lifespan handler checks settings.SEED_DEMO_DATA.
+8. If enabled, it opens a database session, calls seed_demo_accounts(db), and creates demo accounts if missing.
+9. The backend app registers middleware, routers, and health endpoints.
+10. The backend begins listening for requests.
+
+11. The RAG service is started separately.
+12. The RAG service loads settings from rag/.env.
+13. The RAG service creates its own SQLAlchemy engine and initializes the schema on startup.
+14. The RAG process creates or connects to ChromaDB storage in rag/chroma_db.
+15. The RAG process ensures the transcript-related tables exist and starts listening for requests.
+
+16. The frontend web app is started with Vite.
+17. Vite dev server exposes the app on localhost:5173.
+18. Vite proxy rules forward /api to the backend, and /ingest, /query, /media, /viewer, /api/chroma, and /rag to the RAG service.
+19. The browser loads the frontend bundle and renders the app shell.
+
+Frontend boot flow from initial page open
+---------------------------------------
+1. The user opens the application in the browser.
+2. The browser loads the React app bundle from Vite.
+3. The app root imports AuthProvider from frontend/src/lib/auth-context.tsx.
+4. AuthProvider initializes local state for user, profile, and loading.
+5. AuthProvider checks localStorage for the saved authentication token under the key askora_token.
+6. If no token exists, the app marks loading as complete and displays the authentication gate.
+7. If a token exists, AuthProvider calls api.me() to validate it with the backend /auth/me endpoint.
+8. If the token is valid, the backend returns the authenticated user profile.
+9. The frontend maps the backend response into local user and profile objects.
+10. The frontend stores the authenticated user in context and renders the main app instead of the gate.
+11. If the token is invalid or expired, the frontend clears the token from storage and shows the authentication gate.
+
+Authentication and login flow
+----------------------------
+Signup path:
+1. The user enters full name, email, and password.
+2. The frontend calls api.signup(full_name, email, password, provider) in the frontend API layer.
+3. The frontend API layer transforms the request into a POST /api/auth/signup call.
+4. The backend auth router receives the request.
+5. The backend lowercases the email, checks whether the user already exists in the users table.
+6. If duplicate, the backend returns HTTP 409 with a conflict error.
+7. If the email is new, the backend hashes the password with bcrypt.
+8. The backend creates a new User ORM object, assigns role=user and status=active, and sets last_login.
+9. The backend commits the user to PostgreSQL.
+10. The backend creates a JWT access token with subject equal to the new user ID and expiry set by configuration.
+11. The backend returns a Token response containing access_token, token_type, and user profile data.
+12. The frontend stores the access token in localStorage.
+13. The frontend updates auth context with the user and profile data.
+14. The user is now considered authenticated and the main app is displayed.
+
+Login path:
+1. The user enters email and password.
+2. The frontend calls api.login(email, password).
+3. The frontend API layer sends POST /api/auth/login to the backend.
+4. The backend queries the users table for a matching email.
+5. The backend verifies the password with bcrypt.
+6. If the password is wrong, the backend returns HTTP 401.
+7. If the account is blocked, the backend returns HTTP 403.
+8. If credentials are valid, the backend updates last_login and commits it.
+9. The backend issues a JWT and returns it to the frontend.
+10. The frontend saves the token locally and updates auth state.
+11. The user is logged in.
+
+Token validation path:
+1. Every authenticated frontend request includes an Authorization: Bearer <token> header.
+2. The backend dependency get_current_user() reads the token from the request.
+3. The dependency uses python-jose to decode the JWT with the configured secret key and algorithm.
+4. The dependency extracts the subject from the sub claim and looks up the User by primary key in PostgreSQL.
+5. If the user does not exist, validation fails.
+6. If the user is blocked, the dependency raises HTTP 403.
+7. If validation fails, the request is rejected with HTTP 401.
+8. The same JWT validation logic is used by the RAG service through rag/auth.py.
+
+Backend request middleware and lifecycle
+--------------------------------------
+The backend FastAPI app defines an HTTP middleware that logs incoming requests.
+For each request, it records the method and path, executes the downstream handler, records response time, and logs the request as completed or failed.
+The middleware also wraps exceptions and logs stack traces.
+The backend also enables CORS via CORSMiddleware.
+The allowed origins are derived from the settings values such as http://localhost:5173 and any configured ngrok or localhost URL regex.
+The backend startup lifecycle performs DB creation, schema patching, and optional seeding.
+
+Backend routers and responsibilities
+----------------------------------
+- /api/auth: signup, login, token exchange, current user profile
+- /api/users: admin user listing, self-profile reading, profile updates, admin status changes, admin deletion
+- /api/chats: create, list, read, update, delete chat sessions and their messages
+- /api/videos: list, create, update, mark accessed, delete videos in library
+- /api/complaints: create and view complaints, admin updates, complaint deletion
+- /api/alerts: list, create, update, delete alerts for admin workflows
+- /api/analytics: aggregated analytics summary for the admin dashboard
+
+Database models in the backend
+-----------------------------
+- User: stores account identity, role, status, password hash, auth provider, avatar, last login, timestamps, and relationships to chats, videos, and complaints.
+- ChatSession: stores session metadata and links to the user and messages.
+- ChatMessage: stores per-session messages and role values.
+- Video: stores library video metadata and processing state.
+- Complaint: stores user-submitted complaints plus admin response and resolution state.
+- Alert: stores admin-facing alert records derived from complaints and other events.
+
+The backend uses SQLAlchemy ORM sessions via SessionLocal and get_db() dependency injection.
+Each request opens a database session, yields it to the handler, and closes it afterward.
+
+Frontend session and chat state management
+----------------------------------------
+1. On app load, UserApp initializes state for view, active chat ID, chat session list, session nonce, and session intent.
+2. The frontend calls api.listChats() to fetch the user’s chat sessions from the backend.
+3. The responses are transformed into local ChatSession objects using the fromApiChat mapper.
+4. The sidebar displays recent sessions.
+5. When the user clicks a previous session, the frontend calls api.getChat(id).
+6. The backend returns the requested session and its messages.
+7. The frontend updates local state and switches the view to the session page.
+8. When the user starts a new session, the frontend sets the current intent and view to session mode.
+9. When the user renames a chat, the frontend updates the locally cached title immediately, then calls api.updateChat(id, { title }).
+10. If the update fails, the frontend rolls the title back locally.
+11. When the user deletes a chat, the frontend first calls the backend delete endpoint and then removes it from local state.
+
+Library and video flow
+---------------------
+1. The user opens the Library view.
+2. The frontend calls api.listVideos() to retrieve the backend videos table entries for the signed-in user.
+3. The backend queries the videos table, filters by user_id and optional status/subject filters, and returns the results.
+4. The frontend displays the video cards.
+5. When the user selects a video, the frontend calls api.markVideoAccessed(videoId) to update last_accessed in the backend.
+6. The backend updates the Video row and commits the change.
+7. When the user creates a video record, the frontend calls api.createVideo({ title, subject, duration_seconds, size_mb, status }).
+8. The backend creates a new Video row in PostgreSQL.
+9. When the video is later ingested, the RAG service receives the backend video id as video_id and ties transcripts to that video.
+
+RAG ingestion workflow overview
+------------------------------
+The ingestion workflow is triggered when the user uploads a video file or pastes a link.
+The workflow has two major routes:
+- File upload route: POST /ingest
+- URL ingestion route: POST /ingest/url
+
+Both routes return a job_id immediately. The frontend polls GET /ingest/status/{job_id} until the job completes or fails.
+
+RAG frontend client details
+--------------------------
+The frontend uses frontend/src/lib/rag.ts as its RAG integration layer.
+- ingestWithProgress(file, onProgress, title?, videoId?) uploads a file and polls the job status.
+- ingestUrlWithProgress(url, onProgress, title?, videoId?) submits a URL job and then polls its status.
+- query(question, options) sends a POST /query request to the RAG service.
+- getTranscript(transcriptId) requests /transcript/{transcriptId}.
+- getTranscriptByVideo(videoId) requests /transcript/by-video/{video_id}.
+- deleteTranscript and deleteVideo call the corresponding deletion endpoints.
+
+File upload ingestion path
+--------------------------
+1. The user selects a video file in the frontend UI.
+2. The frontend calls rag.ingestWithProgress(file, onProgress, title, videoId).
+3. The frontend builds a FormData payload containing the file and optional title and video_id.
+4. The frontend sends an XMLHttpRequest POST request to /ingest on the RAG service.
+5. The RAG FastAPI endpoint ingest() receives the request.
+6. The endpoint derives a temporary file suffix from the uploaded filename.
+7. The endpoint creates a temporary file on disk with NamedTemporaryFile.
+8. The endpoint copies the uploaded bytes into the temporary file.
+9. The endpoint creates a progress job record in the in-memory progress_store.
+10. The endpoint schedules a background task through FastAPI BackgroundTasks.
+11. The endpoint returns a JSON payload containing the job_id immediately.
+12. The frontend begins polling GET /ingest/status/{job_id} every 500ms.
+13. The background task _run_ingest_job(job_id, tmp.name, title, video_id, user_id) starts.
+14. The background job updates progress to 15% and stage=processing with a message indicating the file has been received.
+15. If a video_id is supplied, the temporary file is copied into the permanent media folder using the backend video id as the media key.
+16. The job calls ingest_video(path, title, video_id, user_id, on_progress=progress callback).
+17. The ingest_video() function initializes the RAG database schema, computes a sha256 content hash for duplicate detection, and opens a SQLAlchemy session.
+18. The function calls find_reusable_transcript(...). This checks the transcripts table for an already-indexed transcript matching the same content hash or source URL.
+19. If a reusable transcript is found, the pipeline stops early and returns the existing transcript metadata without re-transcribing.
+20. If no reusable transcript is found, the pipeline calls transcribe_video(path, on_progress=on_progress).
+
+Whisper transcription pipeline
+----------------------------
+1. transcribe_video() is called with the uploaded media file path.
+2. The function loads the Whisper model from whisper.load_model(). The model is cached with functools.lru_cache.
+3. The function reports progress to the job store.
+4. The function calls whisper.load_audio(path), which uses ffmpeg under the hood to decode the audio stream from the video file.
+5. The function computes the audio duration in seconds.
+6. The function runs Whisper transcription in the original language using the model.transcribe() call.
+7. It captures the detected language, the raw transcription text, and the transcription segments with timestamps.
+8. If the detected language is English, it marks the transcript as English and uses the same text for the English translation field.
+9. If the detected language is not English, the pipeline runs a second Whisper transcription pass in translation mode to produce English text.
+10. If the translation fails, the pipeline falls back to the original text.
+11. The function returns a TranscriptionResult object containing original_text, english_text, language, is_english, duration_seconds, segments, and english_segments.
+12. The progress store receives updates around the loading model, audio extraction, transcription, and translation stages.
+
+Database save and chunking pipeline
+----------------------------------
+1. The ingest_video() function calls save_transcript().
+2. save_transcript() creates a Transcript ORM object and inserts it into the transcripts table.
+3. The transcript row stores user_id, video_id, source_path, source_url, content_hash, title, language, is_english, original_text, english_text, duration_seconds, status, and indexed flag.
+4. The database commit persists the transcript row.
+5. The function calls index_transcript(db, transcript, result, on_progress=on_progress).
+6. index_transcript() builds an ordered list of text variants to index.
+7. If the transcript is English, it uses the English text as the primary variant.
+8. If the transcript is not English, it indexes the original text and the translated English text separately.
+9. The function deletes any old TranscriptChunk rows for the transcript to avoid stale chunks.
+10. It reports progress and moves to chunking.
+11. It calls _segments_for_variant() to pick the appropriate Whisper segments for the current variant.
+12. It calls _timed_chunks_from_segments(). If Whisper segments exist, it uses chunk_segments(); otherwise it falls back to chunk_text().
+13. The chunking logic groups segments while preserving start/end timestamps and optional overlap handling.
+14. For each resulting chunk, the function creates a TranscriptChunk ORM row in the transcript_chunks table.
+15. Each chunk row stores the transcript_id, chunk_index, content, start_seconds, and end_seconds.
+16. The function calls add_timed_chunks(...).
+
+Embedding and vector storage pipeline
+------------------------------------
+1. add_timed_chunks() opens or creates the ChromaDB collection.
+2. The collection is backed by LocalEmbeddingFunction, which wraps sentence-transformers.
+3. The chunk texts are embedded locally using the configured sentence-transformers model.
+4. The embedding function normalizes embeddings and returns vectors.
+5. Each chunk is stored as a ChromaDB document with metadata that includes transcript_id, video_id, user_id, chunk_index, language, variant, lecture_title, start_seconds, and end_seconds.
+6. The vector IDs use the pattern {transcript_id}:{variant}:{chunk_index}.
+7. The operation upserts the vectors into ChromaDB.
+8. The transcript indexed flag is set to true if at least one chunk was stored.
+9. The database commit records the indexing result.
+10. The job progress store is updated to 98% and the stage becomes embedding.
+11. The job is marked completed with the final transcript_id, language, duration_seconds, num_chunks, media_key, and title.
+
+URL ingestion path
+------------------
+1. The frontend calls rag.ingestUrlWithProgress(url, onProgress, title, videoId).
+2. The frontend sends POST /ingest/url to the RAG service with a JSON body containing the URL and optional title/video_id.
+3. The RAG endpoint ingest_url() validates the URL.
+4. It rejects unsupported URLs and Google Drive folder links.
+5. The endpoint creates a progress job and schedules _run_url_ingest_job in the background.
+6. The background job first checks whether the source URL already exists in the transcripts table.
+7. If it already exists, the job completes immediately using the existing transcript.
+8. If it does not, the job calls download_video(url, on_progress=...) using yt-dlp or gdown depending on the source.
+9. The downloaded file is saved locally.
+10. The job optionally persists the downloaded media under a stable media key if a backend video_id is supplied.
+11. The job calls ingest_video(...source_url=url...) to perform the full transcription + storage + embedding pipeline.
+12. The job then marks the progress job complete and stores the ingest result in the progress store.
+13. The frontend polls the status endpoint until completed.
+
+Query workflow from question to answer
+------------------------------------
+1. The user types a question in the session UI.
+2. The frontend calls rag.query(question, options).
+3. The RAG client sends a POST /query request to the RAG service with JSON containing question, transcript_id, video_id, top_k, and search_all.
+4. The RAG endpoint query() validates that the question is not empty.
+5. The endpoint calls answer_question(..., user_id=user_id) after authenticating or optionally accepting a token.
+6. The answer_question() function checks whether the request is scoped to a single lecture or all lectures.
+7. If no lecture scope and no search_all flag is present, it returns a helpful instruction telling the user to upload a lecture first.
+8. If a valid scope exists, it resolves the user-specific transcript/video accessibility scope via _user_scope(user_id).
+9. If search_all is enabled, it searches across all transcripts the user is allowed to read.
+10. If a specific transcript or video is requested, it checks that the caller is allowed to access it.
+11. If a time-based question is detected, the system tries to answer from a time window using get_time_range() instead of semantic similarity.
+12. If the time-window path yields results, the answer is generated from those chunks directly.
+13. Otherwise the function uses vector_query() to retrieve semantically relevant chunks from ChromaDB.
+14. The vector query uses the configured collection, optional transcript_id or video_id filter, and optional transcript_ids list for user-specific scoping.
+15. The returned chunks are enriched with lecture title, transcript id, video id, timestamps, source URL, and deep-link metadata.
+16. The system deduplicates overlapping bilingual hits.
+17. The system filters hits by the configured minimum similarity threshold if enabled.
+18. The context is built from the selected excerpts.
+19. The prompt is sent to the Groq chat completions API with the system prompt that instructs the model to answer only from the provided excerpts.
+20. The Groq response is returned as the answer text alongside the list of source chunks.
+
+Time-window query logic
+-----------------------
+The time-window logic is used for queries like “explain the first 10 minutes” or “what happened between 5:00 and 8:00”.
+1. The question is parsed by parse_time_window() from the timespec module.
+2. The function computes the time window boundaries and a human-readable label.
+3. The system checks whether the requested range exceeds the lecture duration.
+4. If it does, the system returns a message explaining the requested time is beyond the lecture length.
+5. If it is valid, the system uses get_time_range() to fetch all chunks overlapping the time range from ChromaDB.
+6. The system builds a prompt containing those chunks in chronological order.
+7. The final answer is generated by Groq, not by embedding similarity.
+
+RAG retrieval internals
+----------------------
+The vectorstore module uses ChromaDB persistent storage.
+- get_collection() opens the persistent client and loads or creates the configured collection.
+- add_timed_chunks() stores embeddings and metadata.
+- query() performs similarity search with optional transcript/video/transcript-id scope.
+- get_time_range() performs metadata-based retrieval based on timestamps and overlaps.
+- delete_transcript() removes all vectors for a transcript from the collection.
+
+The embedding function uses sentence-transformers locally. It does not call an external embedding API.
+The chunking logic preserves timestamps and groups segments into overlapping chunks.
+The retrieval pipeline uses cosine similarity semantics in ChromaDB and a configurable similarity threshold.
+
+RAG access control and user scoping
+----------------------------------
+1. The RAG service validates the JWT provided by the frontend.
+2. The auth module extracts the subject from the JWT and returns the user_id.
+3. The answer_question() function uses _user_scope(user_id) to query which transcripts and videos the user may access.
+4. For normal signed-in users, the system returns only their transcripts or globally owned transcripts.
+5. For anonymous requests, the system behaves more loosely and does not enforce per-user scoping.
+6. This ensures that one user cannot retrieve another user’s transcript data.
+
+Transcript retrieval and media serving endpoints
+---------------------------------------------
+- GET /media/{media_id}: serves a stored media file from the RAG media folder.
+- GET /viewer: serves a simple HTML/JS browser for inspecting ChromaDB chunks.
+- GET /api/chroma/stats: returns vector store statistics.
+- GET /api/chroma/chunks: returns chunk payloads, optionally with embeddings.
+- GET /api/chroma/search: runs a vector search and returns chunk payloads.
+- GET /transcript/by-video/{video_id}: returns transcripts for a backend video id.
+- GET /transcript/{transcript_id}: returns the full transcript text and metadata.
+- DELETE /transcript/{transcript_id}: removes transcript DB rows, vectors, and media.
+- DELETE /video/{video_id}: removes all RAG data tied to a backend video.
+
+Admin flows
+-----------
+The admin user can access admin views in the frontend.
+- AdminOverview retrieves analytics summary from /api/analytics/summary.
+- AdminUsers calls /api/users and /api/users/{user_id}/status.
+- AdminAlerts calls /api/alerts and /api/alerts/{alert_id}.
+- AdminSettings displays RAG health and connection information.
+
+Complaint and alert flow:
+1. An ordinary user submits a complaint from the support UI.
+2. The frontend POSTs to /api/complaints.
+3. The backend creates a Complaint row and also immediately creates an Alert row for the admin system.
+4. Admin users can review, update, and resolve complaints through the backend endpoints.
+5. Alert status changes update the alerts table and optionally set resolved_at.
+
+Logout flow
+-----------
+1. The user clicks the logout action in the frontend.
+2. The frontend calls the auth context signOut() function.
+3. The auth context clears the token from localStorage.
+4. The auth context clears the user and profile state.
+5. The application switches back to the authentication gate.
+6. No backend logout endpoint is required because the application uses stateless JWTs.
+7. After logout, subsequent requests without a valid token are treated as unauthenticated.
+
+Middleware and libraries in detail
+---------------------------------
+Backend middleware:
+- HTTP request logging middleware
+- CORSMiddleware for cross-origin access
+
+RAG middleware:
+- HTTP request logging middleware
+- CORSMiddleware for cross-origin access
+
+Important libraries:
+- FastAPI: HTTP server, router registration, dependency injection, request handling
+- Uvicorn: ASGI server runtime
+- SQLAlchemy: ORM and database session management
+- psycopg: PostgreSQL driver
+- Pydantic: request/response validation and schema generation
+- python-jose: JWT creation and validation
+- bcrypt: password hashing and comparison
+- python-multipart: multipart form parsing for file uploads
+- openai-whisper: speech-to-text and translation
+- sentence-transformers: local embedding generation
+- chromadb: persistent vector database
+- groq: LLM answer generation
+- yt-dlp/gdown: media download from URLs
+- React/TypeScript/Vite: frontend client and bundling
+- localStorage: browser token persistence
+
+Database interactions summary
+-----------------------------
+Backend database operations:
+- User creation and login validation
+- Chat session creation, update, deletion, and message persistence
+- Video library record creation, updating, marking accessed, and deletion
+- Complaint and alert creation and lifecycle updates
+- Analytics aggregate reads
+
+RAG database operations:
+- Transcript row creation and update
+- TranscriptChunk row creation and deletion
+- Duplicate transcript lookup by content hash or source URL
+- Transcript metadata reads for title/source URL enrichment
+- Vector upsert/query/delete operations in ChromaDB
+- Media file persistence in the local media folder
+
+Error handling behavior
+-----------------------
+- Missing or invalid auth tokens return 401 and a bearer challenge.
+- Forbidden access to another user’s data returns 403.
+- Duplicate account creation returns 409.
+- Missing resources return 404.
+- Invalid ingestion URLs return 400.
+- Empty questions return 400.
+- Internal failures return 500 with exception details.
+- RAG ingestion jobs become failed if transcription or indexing fails and the failure reason is stored in the progress store.
+
+Operational notes
+-----------------
+- The backend uses a shared PostgreSQL database for user and app state.
+- The RAG service uses PostgreSQL for transcript metadata and ChromaDB for vector embeddings.
+- Progress jobs for ingestion are stored in memory and optionally persisted to a JSON file in the ChromaDB directory.
+- The RAG service is designed to be run as a separate process from the backend.
+- The frontend uses Vite proxy rules to make the app work locally without hard-coding the RAG service port into the browser code.
+
+End-to-end lifecycle summary
+----------------------------
+From the moment the user opens the app until logout, the runtime path is as follows:
+1. Browser loads the frontend and checks for a saved token.
+2. If a token exists, the frontend validates it with the backend and loads the user profile.
+3. If no token exists or the token is invalid, the authentication gate is shown.
+4. After login or signup, the frontend stores a JWT and loads the authenticated dashboard.
+5. The user may open chats, view videos, start a new session, and upload or ingest lectures.
+6. File or URL ingestion creates a background job in the RAG service.
+7. The RAG service transcribes the lecture, stores transcript metadata in PostgreSQL, chunks the transcript, embeds the chunks in ChromaDB, and reports progress back to the UI.
+8. The user asks a question about the lecture.
+9. The RAG service scopes the request to the user, retrieves relevant chunks, sends them to Groq, and returns an answer with sources.
+10. The user can inspect the transcript, delete content, manage their videos, and submit complaints.
+11. When the user logs out, the frontend clears the token and returns to the public gate.
+
+This document covers the major execution paths of the current implementation. The repository contains additional deployment-specific files and helper scripts, but the runtime behavior above is the core operational model of the application.

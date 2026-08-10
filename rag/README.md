@@ -83,7 +83,8 @@ python -m rag.query "..." --transcript-id <id> --top-k 5
 ### Run as an HTTP service (optional)
 
 ```powershell
-uvicorn rag.app:app --reload --port 8100
+cd rag
+uvicorn app:app --reload --port 8100
 ```
 
 - `POST /ingest` — multipart upload (`file`, optional `title`, `video_id`)

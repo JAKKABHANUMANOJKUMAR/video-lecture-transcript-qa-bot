@@ -1,0 +1,227 @@
+=== Evaluation Summary ===
+Questions evaluated: 10
+Exact match: 0/10
+Average F1: 0.298
+Average generation score: 0.298
+Average faithfulness score: 0.716
+Average retrieval score: 0.950
+Average context precision: 0.950
+Average context recall: 0.619
+Average Recall@k: 1.000
+Average Hit Rate (Hit@k): 1.000
+Average MRR: 1.000
+No-answer fallback responses: 2/10
+Reference answer covered by sources: 0.700
+Overall: The model is weak on this dataset and needs improvement.
+==========================
+
+Question 1: What is the topic of the lecture?
+Answer: The topic of the lecture appears to be about mastering new skills, such as English, storytelling, and YouTube ads, using a 30-day plan and tools like chatGPT.
+Reference: The topic of the lecture is how to use ChatGPT.
+Exact match: False
+F1: 0.368
+Generation score: 0.368
+Faithfulness score: 0.821
+Answer relevancy score: 0.368
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.800
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=11 dist=0.5894 preview=Day 10. Day 11 to 15. On and Go. You will have 30 day plan to master any skill. Okay. So, like this, Using this, You wil
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=10 dist=0.6789 preview=I want to teach you a story telling. I want to ask you to read my book. Okay. Give me an answer. I want to know the top 
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=2 dist=0.6893 preview=உள்ள உமா காதுங்களாதான முடியவு சார்வாக இரவு வயண்டும் போய் வேண்டும், இரவு வேண்டும் ருக்காயே தெல்லவேண்டும் ஊன்ரில் தானulati
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=6 dist=0.7567 preview=you will be able to do the first time. Okay. So what is the name? There is something called chatGPT 3.5, chatGPT 4. GPT 
+--------------------------------------------------------------------------------
+Question 2: What language is the lecture given in?
+Answer: The lecture appears to be given in multiple languages, including English, Tamil, and possibly Hindi, as mentioned in Excerpt 1. However, Excerpts 3 and 4 are primarily in Tamil.
+Reference: The lecture is given in Tamil, but it also mentions the possibility of getting information in Hindi language.
+Exact match: False
+F1: 0.298
+Generation score: 0.298
+Faithfulness score: 0.414
+Answer relevancy score: 0.298
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.611
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=9 dist=0.6570 preview=If you want this to be in Tamil, Okay. Give me this in Tamil language. Okay. You can also get this in Tamil language. An
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=10 dist=0.6757 preview=I want to teach you a story telling. I want to ask you to read my book. Okay. Give me an answer. I want to know the top 
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=2 dist=0.6877 preview=உள்ள உமா காதுங்களாதான முடியவு சார்வாக இரவு வயண்டும் போய் வேண்டும், இரவு வேண்டும் ருக்காயே தெல்லவேண்டும் ஊன்ரில் தானulati
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=3 dist=0.7179 preview=ஐயாசuンブ இருக்கும்போகfriendlyுடvision எப்படிப்பனாவதில்லை. ர்சைவிடியை byw,uszகwareNirM thànhவிருமதான் ஒரு திடங்கேa Namrika
+--------------------------------------------------------------------------------
+Question 3: What is the first step to use ChatGPT according to the lecture?
+Answer: To use ChatGPT, if you don't have an account, the first step is to go to chat.openA.com and create one, then you will be able to login.
+Reference: The first step is to log into the ChatGPT.
+Exact match: False
+F1: 0.308
+Generation score: 0.308
+Faithfulness score: 0.900
+Answer relevancy score: 0.308
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.667
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=6 dist=0.4407 preview=you will be able to do the first time. Okay. So what is the name? There is something called chatGPT 3.5, chatGPT 4. GPT 
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=2 dist=0.6299 preview=உள்ள உமா காதுங்களாதான முடியவு சார்வாக இரவு வயண்டும் போய் வேண்டும், இரவு வேண்டும் ருக்காயே தெல்லவேண்டும் ஊன்ரில் தானulati
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=5 dist=0.6770 preview=You can ask anything and that will give you answer for everything. So, that is the charge of the device. This is the cha
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=11 dist=0.6890 preview=Day 10. Day 11 to 15. On and Go. You will have 30 day plan to master any skill. Okay. So, like this, Using this, You wil
+--------------------------------------------------------------------------------
+Question 4: What is the second step to use ChatGPT according to the lecture?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: The second step is to determine the value of an object or to refine a prompt.
+Exact match: False
+F1: 0.133
+Generation score: 0.133
+Faithfulness score: 0.714
+Answer relevancy score: 0.133
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.625
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=6 dist=0.4978 preview=you will be able to do the first time. Okay. So what is the name? There is something called chatGPT 3.5, chatGPT 4. GPT 
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=2 dist=0.6638 preview=உள்ள உமா காதுங்களாதான முடியவு சார்வாக இரவு வயண்டும் போய் வேண்டும், இரவு வேண்டும் ருக்காயே தெல்லவேண்டும் ஊன்ரில் தானulati
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=11 dist=0.6850 preview=Day 10. Day 11 to 15. On and Go. You will have 30 day plan to master any skill. Okay. So, like this, Using this, You wil
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=5 dist=0.6870 preview=You can ask anything and that will give you answer for everything. So, that is the charge of the device. This is the cha
+--------------------------------------------------------------------------------
+Question 5: Can ChatGPT provide information in different languages?
+Answer: Yes, ChatGPT can provide information in different languages. For example, if you want the information in Tamil, you can ask for it in Tamil, and it will be provided in Tamil. Similarly, if you want it in Hindi, you can ask for it in Hindi, and it will be provided in Hindi.
+Reference: Yes, ChatGPT can provide information in different languages, including Tamil and Hindi.
+Exact match: False
+F1: 0.344
+Generation score: 0.344
+Faithfulness score: 0.808
+Answer relevancy score: 0.344
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.500
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=6 dist=0.5585 preview=you will be able to do the first time. Okay. So what is the name? There is something called chatGPT 3.5, chatGPT 4. GPT 
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=9 dist=0.6912 preview=If you want this to be in Tamil, Okay. Give me this in Tamil language. Okay. You can also get this in Tamil language. An
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=3 dist=0.6924 preview=ஐயாசuンブ இருக்கும்போகfriendlyுடvision எப்படிப்பனாவதில்லை. ர்சைவிடியை byw,uszகwareNirM thànhவிருமதான் ஒரு திடங்கேa Namrika
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=2 dist=0.7443 preview=உள்ள உமா காதுங்களாதான முடியவு சார்வாக இரவு வயண்டும் போய் வேண்டும், இரவு வேண்டும் ருக்காயே தெல்லவேண்டும் ஊன்ரில் தானulati
+--------------------------------------------------------------------------------
+Question 6: What is the purpose of the 30-day plan mentioned in the lecture?
+Answer: The purpose of the 30-day plan is to master any skill.
+Reference: The 30-day plan is to master a new skill, such as mastering YouTube or learning marketing skills.
+Exact match: False
+F1: 0.533
+Generation score: 0.533
+Faithfulness score: 0.917
+Answer relevancy score: 0.533
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.611
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=11 dist=0.5192 preview=Day 10. Day 11 to 15. On and Go. You will have 30 day plan to master any skill. Okay. So, like this, Using this, You wil
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=1 dist=0.6784 preview='ற்று உங்கள் செய்மாக இருக்கலாம். பْنک quotaGO Nil rho ajudislav Margit appl פر Heisted 鹹 AP belang Agcave Email குடுமன்.
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=7 dist=0.7239 preview=So it will give you resignation letter complete. Okay. Then you will get a basic answer. Okay. You will have this. Okay.
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=8 dist=0.7574 preview=Act as an email writing expert. Act as a data developer. Act as a data analyst. Okay. It will give you a different answe
+--------------------------------------------------------------------------------
+Question 7: How can one improve their communication skills according to the lecture?
+Answer: To improve communication skills, one can use ChatGPT as a tool. According to the lecture, ChatGPT can be used to improve English skills, and it can also be used to learn new skills. The lecture mentions that ChatGPT can be used as a virtual teacher, and it can provide answers to various questions, including those related to communication skills. Additionally, the lecture mentions a 30-day plan to master any skill, including YouTube ads, which may also involve improving communication skills. However, the lecture does not provide a specific plan or steps to improve communication skills.
+Reference: One can improve their communication skills by learning storytelling and practicing speaking.
+Exact match: False
+F1: 0.111
+Generation score: 0.111
+Faithfulness score: 0.573
+Answer relevancy score: 0.111
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.583
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=2 dist=0.5583 preview=உள்ள உமா காதுங்களாதான முடியவு சார்வாக இரவு வயண்டும் போய் வேண்டும், இரவு வேண்டும் ருக்காயே தெல்லவேண்டும் ஊன்ரில் தானulati
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=10 dist=0.6273 preview=I want to teach you a story telling. I want to ask you to read my book. Okay. Give me an answer. I want to know the top 
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=11 dist=0.6883 preview=Day 10. Day 11 to 15. On and Go. You will have 30 day plan to master any skill. Okay. So, like this, Using this, You wil
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=5 dist=0.7032 preview=You can ask anything and that will give you answer for everything. So, that is the charge of the device. This is the cha
+--------------------------------------------------------------------------------
+Question 8: What is the "art of storytelling" mentioned in the lecture?
+Answer: The "art of storytelling" is mentioned as a topic the speaker wants to master, and it is related to improving speaking skills. The speaker also mentions "Talk like a dead storyteller" and having 10 books, but the exact details of the "art of storytelling" are not fully explained in the provided excerpts.
+Reference: The "art of storytelling" is a way to improve speaking skills, but the exact details are not provided in the excerpts.
+Exact match: False
+F1: 0.521
+Generation score: 0.521
+Faithfulness score: 0.635
+Answer relevancy score: 0.521
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.619
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=10 dist=0.4772 preview=I want to teach you a story telling. I want to ask you to read my book. Okay. Give me an answer. I want to know the top 
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=2 dist=0.4901 preview=உள்ள உமா காதுங்களாதான முடியவு சார்வாக இரவு வயண்டும் போய் வேண்டும், இரவு வேண்டும் ருக்காயே தெல்லவேண்டும் ஊன்ரில் தானulati
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=11 dist=0.7045 preview=Day 10. Day 11 to 15. On and Go. You will have 30 day plan to master any skill. Okay. So, like this, Using this, You wil
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=8 dist=0.7234 preview=Act as an email writing expert. Act as a data developer. Act as a data analyst. Okay. It will give you a different answe
+--------------------------------------------------------------------------------
+Question 9: Can ChatGPT provide a list of the top 10 best-selling books?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: Yes, ChatGPT can provide a list of the top 10 best-selling books.
+Exact match: False
+F1: 0.074
+Generation score: 0.074
+Faithfulness score: 0.643
+Answer relevancy score: 0.074
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.692
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=2 dist=0.5426 preview=உள்ள உமா காதுங்களாதான முடியவு சார்வாக இரவு வயண்டும் போய் வேண்டும், இரவு வேண்டும் ருக்காயே தெல்லவேண்டும் ஊன்ரில் தானulati
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=10 dist=0.5750 preview=I want to teach you a story telling. I want to ask you to read my book. Okay. Give me an answer. I want to know the top 
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=6 dist=0.6731 preview=you will be able to do the first time. Okay. So what is the name? There is something called chatGPT 3.5, chatGPT 4. GPT 
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=0 dist=0.8384 preview=ஓர் ஓர் ஜாஜே பெய்� weltு பெய்யும்ன, ஜாஜே பெய் ஓஜppersணி என் சொல்ல diseh ஓர் ஓuvre் ஓuvre் தாத ஓர்? ஛ாஜே பெய் பெய் ஓ஡்டி 
+--------------------------------------------------------------------------------
+Question 10: How can one get started with using ChatGPT according to the lecture?
+Answer: To get started with using ChatGPT, you can go to chat.openA.com. If you don't have an account, you can create one. Once you have an account, you can log in and start using ChatGPT. There are two models available: GPT 3.5, which is free, and GPT 4, which is an advanced model. You can ask ChatGPT anything, and it will provide an answer. You can use it to improve your communication skills, English skills, email skills, and more.
+Reference: One can get started with using ChatGPT by logging in and refining their prompt, and there are also resources available, such as a video on how to use ChatGPT.
+Exact match: False
+F1: 0.288
+Generation score: 0.288
+Faithfulness score: 0.732
+Answer relevancy score: 0.288
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.483
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=6 dist=0.4359 preview=you will be able to do the first time. Okay. So what is the name? There is something called chatGPT 3.5, chatGPT 4. GPT 
+[2] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=2 dist=0.6434 preview=உள்ள உமா காதுங்களாதான முடியவு சார்வாக இரவு வயண்டும் போய் வேண்டும், இரவு வேண்டும் ருக்காயே தெல்லவேண்டும் ஊன்ரில் தானulati
+[3] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=5 dist=0.6781 preview=You can ask anything and that will give you answer for everything. So, that is the charge of the device. This is the cha
+[4] transcript_id=54272570-f372-4919-8384-2e5a3d38904b chunk=3 dist=0.7147 preview=ஐயாசuンブ இருக்கும்போகfriendlyுடvision எப்படிப்பனாவதில்லை. ர்சைவிடியை byw,uszகwareNirM thànhவிருமதான் ஒரு திடங்கேa Namrika
+--------------------------------------------------------------------------------

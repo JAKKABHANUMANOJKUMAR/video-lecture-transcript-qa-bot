@@ -1,0 +1,38 @@
+Video Lecture Transcript QA Bot - Tech Stack
+===========================================
+
+Frontend:
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Lucide React
+- Fetch API for HTTP requests
+
+Backend:
+- Python
+- FastAPI
+- Uvicorn
+- Pydantic
+- JWT authentication
+- OAuth2 password flow
+- SQLAlchemy ORM
+- Python-multipart
+
+RAG / AI Services:
+- Whisper for transcription
+- FFmpeg for audio extraction
+- sentence-transformers for embeddings
+- ChromaDB for vector storage
+- LangChain-style retrieval pipeline (project-specific implementation)
+- OpenRouter / Groq models for LLM-based responses
+
+Database:
+- PostgreSQL
+- SQLAlchemy models and migrations/bootstrap scripts
+
+Infrastructure / Dev Tools:
+- Docker Compose
+- Docker
+- pytest for testing
+- Node.js / npm for frontend tooling

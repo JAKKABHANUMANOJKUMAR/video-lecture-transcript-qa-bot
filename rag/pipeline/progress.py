@@ -20,6 +20,8 @@ from pathlib import Path
 from typing import Any, Callable
 
 from rag.config import settings
+from rag.database import SessionLocal
+from rag.models import IngestJob
 
 ProgressCallback = Callable[[int, str, str], None]
 
@@ -37,6 +39,7 @@ class JobProgress:
     message: str = "Waiting to start…"
     error: str | None = None
     result: dict[str, Any] | None = None
+    elapsed_seconds: float | None = None
     updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
     def to_dict(self) -> dict[str, Any]:
@@ -48,6 +51,7 @@ class JobProgress:
             "message": self.message,
             "error": self.error,
             "result": self.result,
+            "elapsed_seconds": self.elapsed_seconds,
             "updated_at": self.updated_at.isoformat(),
         }
 
@@ -66,6 +70,7 @@ class JobProgress:
             message=data.get("message", ""),
             error=data.get("error"),
             result=data.get("result"),
+            elapsed_seconds=data.get("elapsed_seconds"),
             updated_at=updated,
         )
 
@@ -103,6 +108,81 @@ class ProgressStore:
         except Exception:
             pass
 
+    def _db_save_job(self, job: JobProgress) -> None:
+        try:
+            db = SessionLocal()
+            try:
+                existing = db.get(IngestJob, job.job_id)
+                result_value = json.dumps(job.result) if job.result is not None else None
+                if existing is None:
+                    existing = IngestJob(
+                        job_id=job.job_id,
+                        status=job.status,
+                        percent=job.percent,
+                        stage=job.stage,
+                        message=job.message,
+                        error=job.error,
+                        result=result_value,
+                        elapsed_seconds=job.elapsed_seconds if job.elapsed_seconds is not None else 0.0,
+                        audio_extract_seconds=(json.loads(result_value).get("audio_extract_seconds") if result_value else None),
+                        transcribe_seconds=(json.loads(result_value).get("transcribe_seconds") if result_value else None),
+                        embedding_seconds=(json.loads(result_value).get("embedding_seconds") if result_value else None),
+                    )
+                    db.add(existing)
+                else:
+                    existing.status = job.status
+                    existing.percent = job.percent
+                    existing.stage = job.stage
+                    existing.message = job.message
+                    existing.error = job.error
+                    existing.result = result_value
+                    # Persist per-stage timings when available in the result payload
+                    try:
+                        if result_value:
+                            payload = json.loads(result_value)
+                            existing.audio_extract_seconds = payload.get("audio_extract_seconds", existing.audio_extract_seconds)
+                            existing.transcribe_seconds = payload.get("transcribe_seconds", existing.transcribe_seconds)
+                            existing.embedding_seconds = payload.get("embedding_seconds", existing.embedding_seconds)
+                    except Exception:
+                        pass
+                    try:
+                        # Compute elapsed time since the DB-created timestamp when available
+                        if existing.created_at:
+                            now = datetime.now(timezone.utc)
+                            elapsed = (now - existing.created_at).total_seconds()
+                            existing.elapsed_seconds = float(elapsed)
+                        else:
+                            existing.elapsed_seconds = job.elapsed_seconds
+                    except Exception:
+                        # best-effort; don't let timing errors block progress persistence
+                        existing.elapsed_seconds = job.elapsed_seconds
+                db.commit()
+            except Exception:
+                db.rollback()
+            finally:
+                db.close()
+        except Exception:
+            pass
+
+    def _row_to_job(self, row: IngestJob) -> JobProgress:
+        result = None
+        if row.result:
+            try:
+                result = json.loads(row.result)
+            except Exception:
+                result = None
+        return JobProgress(
+            job_id=row.job_id,
+            status=row.status,
+            percent=row.percent,
+            stage=row.stage,
+            message=row.message,
+            error=row.error,
+            result=result,
+            elapsed_seconds=float(row.elapsed_seconds) if row.elapsed_seconds is not None else None,
+            updated_at=row.updated_at or datetime.now(timezone.utc),
+        )
+
     def _prune_locked(self) -> None:
         cutoff = datetime.now(timezone.utc) - _MAX_AGE
         stale = [jid for jid, j in self._jobs.items() if j.updated_at < cutoff]
@@ -113,7 +193,9 @@ class ProgressStore:
         job_id = str(uuid.uuid4())
         with self._lock:
             self._prune_locked()
-            self._jobs[job_id] = JobProgress(job_id=job_id)
+            job = JobProgress(job_id=job_id)
+            self._jobs[job_id] = job
+        self._db_save_job(job)
         return job_id
 
     def update(self, job_id: str, percent: int, stage: str, message: str) -> None:
@@ -126,6 +208,7 @@ class ProgressStore:
             job.stage = stage
             job.message = message
             job.updated_at = datetime.now(timezone.utc)
+        self._db_save_job(job)
 
     def complete(self, job_id: str, result: dict[str, Any]) -> None:
         with self._lock:
@@ -139,6 +222,7 @@ class ProgressStore:
             job.result = result
             job.updated_at = datetime.now(timezone.utc)
             self._persist_locked()
+        self._db_save_job(job)
 
     def fail(self, job_id: str, error: str) -> None:
         with self._lock:
@@ -151,11 +235,29 @@ class ProgressStore:
             job.error = error
             job.updated_at = datetime.now(timezone.utc)
             self._persist_locked()
+        self._db_save_job(job)
 
     def get(self, job_id: str) -> JobProgress | None:
         with self._lock:
             job = self._jobs.get(job_id)
-            return job
+            if job:
+                return job
+
+        try:
+            db = SessionLocal()
+            try:
+                row = db.get(IngestJob, job_id)
+                if row:
+                    job = self._row_to_job(row)
+                    with self._lock:
+                        self._jobs[job_id] = job
+                    return job
+            finally:
+                db.close()
+        except Exception:
+            pass
+
+        return None
 
     def callback(self, job_id: str) -> ProgressCallback:
         def report(percent: int, stage: str, message: str) -> None:

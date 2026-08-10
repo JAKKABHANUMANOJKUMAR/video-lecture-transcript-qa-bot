@@ -1,0 +1,50 @@
+[
+  {
+    "question": "What is a MOSFET?",
+    "reference_answer": "A MOSFET is an electronic device most widely used in integrated circuits, with three terminals named source, drain, and gate, fabricated on a P-type semiconductor substrate.",
+    "transcript_id": "a2ffec25-7fc1-46ce-8075-a544eb649214",
+    "top_k": 4
+  },
+  {
+    "question": "How many terminals does the MOSFET described in the lecture have?",
+    "reference_answer": "The MOSFET described in the lecture has three terminals: source, drain, and gate.",
+    "transcript_id": "a2ffec25-7fc1-46ce-8075-a544eb649214",
+    "top_k": 4
+  },
+  {
+    "question": "Why is the gate of a MOSFET insulated?",
+    "reference_answer": "Because the entire surface of the substrate is coated with silicon dioxide insulation, and the gate contact is placed on that insulated layer.",
+    "transcript_id": "a2ffec25-7fc1-46ce-8075-a544eb649214",
+    "top_k": 4
+  },
+  {
+    "question": "How does a MOSFET operate?",
+    "reference_answer": "A MOSFET operates by using gate voltage to induce a conducting channel between the drain and source; current flows only when the gate voltage exceeds the threshold voltage.",
+    "transcript_id": "a2ffec25-7fc1-46ce-8075-a544eb649214",
+    "top_k": 4
+  },
+  {
+    "question": "What is the threshold voltage (Vth)?",
+    "reference_answer": "The threshold voltage is the minimum gate voltage at which drain-to-source current starts flowing.",
+    "transcript_id": "a2ffec25-7fc1-46ce-8075-a544eb649214",
+    "top_k": 4
+  },
+  {
+    "question": "What is the role of the drain and source terminals?",
+    "reference_answer": "The drain is connected to the positive side of the DC source and the source is connected to the negative side; they form the current path when the MOSFET turns on.",
+    "transcript_id": "a2ffec25-7fc1-46ce-8075-a544eb649214",
+    "top_k": 4
+  },
+  {
+    "question": "What application of MOSFET is mentioned in the lecture?",
+    "reference_answer": "The lecture says MOSFET is suitably used as a gate-control switching device and is most widely used in integrated circuits.",
+    "transcript_id": "a2ffec25-7fc1-46ce-8075-a544eb649214",
+    "top_k": 4
+  },
+  {
+    "question": "Why is a MOSFET considered a voltage-controlled device according to the lecture?",
+    "reference_answer": "Because the conductance between drain and source is controlled by the voltage applied to the gate, and the device only conducts when the gate voltage exceeds threshold.",
+    "transcript_id": "a2ffec25-7fc1-46ce-8075-a544eb649214",
+    "top_k": 4
+  }
+]

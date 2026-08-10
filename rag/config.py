@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "change-me"
     ALGORITHM: str = "HS256"
 
+    # Logging
+    LOG_LEVEL: str = "INFO"
+
     # Groq LLM
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"

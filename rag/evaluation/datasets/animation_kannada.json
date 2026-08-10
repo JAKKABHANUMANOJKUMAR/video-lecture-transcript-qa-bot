@@ -1,0 +1,16 @@
+{
+  "name": "animation_kannada",
+  "video_path": "D:\\video-lecture-transcript-qa-bot\\test_videos\\vidssave.com How To Create Animation Videos Using ChatGPT & Ai Tools In Kannada (100% FREE MONETISATION )#kannada 144P.mp4",
+  "items": [
+    {"question": "Where do the young animals live?", "reference_answer": "In a dense and vibrant jungle."},
+    {"question": "What do the young animals love to spend their time doing?", "reference_answer": "Learning new things."},
+    {"question": "How many videos do the young learners create weekly?", "reference_answer": "Two videos."},
+    {"question": "Where do they upload their videos?", "reference_answer": "YouTube."},
+    {"question": "What type of tools can be used to create animation videos?", "reference_answer": "AI tools, such as ChatGPT."},
+    {"question": "What is the process of creating an animation video?", "reference_answer": "Create a script, generate related images, and edit the video using tools like CapCut or Power Director."},
+    {"question": "How long does it take to create an image or animation?", "reference_answer": "Just 30 seconds."},
+    {"question": "What features can be added to the video?", "reference_answer": "Background music, automatic subtitles, and video effects."},
+    {"question": "How can the video be optimized for YouTube?", "reference_answer": "By adding subtitles, choosing a font, and exporting the video with SEO."},
+    {"question": "What is the benefit of using AI tools for creating animation videos?", "reference_answer": "They are free to use and can generate high-quality images and videos."}
+  ]
+}

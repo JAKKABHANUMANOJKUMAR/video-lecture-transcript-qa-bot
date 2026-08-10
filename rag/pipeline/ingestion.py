@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
+from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
@@ -29,6 +30,9 @@ class IngestionResult:
     english_chars: int
     media_key: str | None = None
     reused: bool = False
+    audio_extract_seconds: float | None = None
+    transcribe_seconds: float | None = None
+    embedding_seconds: float | None = None
 
 
 def _sha256_file(path: str, chunk_bytes: int = 1024 * 1024) -> str:
@@ -144,7 +148,7 @@ def index_transcript(
     result: TranscriptionResult,
     *,
     on_progress: "ProgressCallback | None" = None,
-) -> int:
+) -> tuple[int, float]:
     """Steps 3-4 — chunk with Whisper timestamps, persist, and embed into ChromaDB."""
     def report(percent: int, stage: str, message: str) -> None:
         if on_progress:
@@ -173,6 +177,7 @@ def index_transcript(
     total = 0
     chunk_index = 0
     num_variants = len(variant_specs)
+    t_embed_start = datetime.now(timezone.utc)
     for src_idx, (text, language, variant) in enumerate(variant_specs):
         segments = _segments_for_variant(result, variant)
         timed = _timed_chunks_from_segments(segments, text)
@@ -195,7 +200,8 @@ def index_transcript(
         embed_pct = 85 + int((src_idx + 1) / max(num_variants, 1) * 12)
         report(embed_pct, "embedding", "Creating vector embeddings…")
 
-        total += add_timed_chunks(
+        t0 = datetime.now(timezone.utc)
+        added = add_timed_chunks(
             transcript_id=transcript.id,
             chunks=timed,
             video_id=transcript.video_id,
@@ -205,11 +211,30 @@ def index_transcript(
             user_id=transcript.user_id,
             start_index=start_index,
         )
+        t1 = datetime.now(timezone.utc)
+        # accumulate embedding time per transcript
+        try:
+            embed_time = (t1 - t0).total_seconds()
+        except Exception:
+            embed_time = 0.0
+        total += added
+    t_embed_end = datetime.now(timezone.utc)
+    embedding_seconds = (t_embed_end - t_embed_start).total_seconds()
 
     transcript.indexed = total > 0
     db.commit()
     report(98, "embedding", "Search index ready.")
-    return total
+    # persist per-stage timings into ingest_jobs via progress store get->db update
+    try:
+        # best-effort: update IngestJob row if exists via direct DB call
+        job_id = None
+        # result may have been passed via caller; we can't reliably find job_id here
+        # so skip automatic job row update — ProgressStore will compute elapsed_seconds
+        # and transcription timings are returned in the final IngestionResult.
+        pass
+    except Exception:
+        pass
+    return total, embedding_seconds
 
 
 def ingest_video(
@@ -256,9 +281,9 @@ def ingest_video(
             source_url=source_url,
             content_hash=content_hash,
         )
-        num_chunks = index_transcript(db, transcript, result, on_progress=on_progress)
+        num_chunks, embedding_seconds = index_transcript(db, transcript, result, on_progress=on_progress)
         media_key = video_id or transcript.id
-        return IngestionResult(
+        ingestion = IngestionResult(
             transcript_id=transcript.id,
             language=transcript.language,
             is_english=transcript.is_english,
@@ -268,6 +293,17 @@ def ingest_video(
             english_chars=len(result.english_text),
             media_key=media_key,
         )
+        # Attach timing fields from transcription result if present
+        try:
+            ingestion_audio = getattr(result, "audio_extract_seconds", None)
+            ingestion_trans = getattr(result, "transcribe_seconds", None)
+        except Exception:
+            ingestion_audio = None
+            ingestion_trans = None
+        ingestion.audio_extract_seconds = ingestion_audio
+        ingestion.transcribe_seconds = ingestion_trans
+        ingestion.embedding_seconds = embedding_seconds if 'embedding_seconds' in locals() else None
+        return ingestion
     finally:
         db.close()
 

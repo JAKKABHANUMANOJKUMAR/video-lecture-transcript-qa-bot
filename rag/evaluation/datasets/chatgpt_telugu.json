@@ -1,0 +1,16 @@
+{
+  "name": "chatgpt_telugu",
+  "video_path": "D:\\video-lecture-transcript-qa-bot\\test_videos\\vidssave.com What is Chat GPT __  in Telugu __ 144P.mp4",
+  "items": [
+    {"question": "What is the topic of the lecture?", "reference_answer": "The topic of the lecture is Chat GPT and its comparison with Google search."},
+    {"question": "What is the speaker going to show in the next video?", "reference_answer": "The speaker is going to show the practical use cases of Chat GPT in the next video."},
+    {"question": "How can we provide a clear view of a source to Google search?", "reference_answer": "We can provide a more clear view of a source, such as a Pakistan source, to Google search."},
+    {"question": "What is the alternative to using Chat GPT?", "reference_answer": "We can use Google search as an alternative to Chat GPT."},
+    {"question": "What is the speaker's suggestion for searching on Google?", "reference_answer": "The speaker suggests searching on Google with fast sounds."},
+    {"question": "What is the website mentioned in the lecture?", "reference_answer": "The website mentioned is short.openjā.com."},
+    {"question": "What is the process of using the app mentioned in the lecture?", "reference_answer": "To use the app, we need to register and then we can use it."},
+    {"question": "Can we use Chat GPT in Google?", "reference_answer": "Yes, we can use Chat GPT in Google."},
+    {"question": "What is the example given by the speaker for searching on Google?", "reference_answer": "The speaker gives an example of searching for a simple C program for a calculator."},
+    {"question": "What is the speaker's request to the viewers?", "reference_answer": "The speaker thanks the viewers for watching and says bye bye."}
+  ]
+}

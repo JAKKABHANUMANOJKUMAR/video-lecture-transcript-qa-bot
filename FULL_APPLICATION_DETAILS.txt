@@ -749,8 +749,8 @@ Manual (3 terminals):
     uvicorn app.main:app --reload --port 8000
 
   Terminal 2 — RAG:
-    cd C:\Users\manoj\Downloads\vl_07-06-2026
-    .\rag\.venv\Scripts\python.exe -m uvicorn rag.app:app --reload --port 8100
+    cd C:\Users\manoj\Downloads\vl_07-06-2026\rag
+    .\rag\.venv\Scripts\python.exe -m uvicorn app:app --reload --port 8100
 
   Terminal 3 — Frontend:
     cd frontend

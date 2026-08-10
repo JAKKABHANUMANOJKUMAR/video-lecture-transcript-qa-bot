@@ -1,0 +1,158 @@
+=== Evaluation Summary ===
+Questions evaluated: 8
+Exact match: 0/8
+Average F1: 0.350
+Average generation score: 0.350
+Average faithfulness score: 0.802
+Average retrieval score: 1.000
+Average context precision: 0.802
+Average context recall: 0.862
+No-answer fallback responses: 1/8
+Reference answer covered by sources: 1.000
+Overall: The model is weak on this dataset and needs improvement.
+==========================
+
+Question 1: What is a MOSFET?
+Answer: MOSFET is an electronic device most widely used in ICs.
+Reference: A MOSFET is an electronic device most widely used in integrated circuits, with three terminals named source, drain, and gate, fabricated on a P-type semiconductor substrate.
+Exact match: False
+F1: 0.486
+Generation score: 0.486
+Faithfulness score: 1.000
+Answer relevancy score: 0.486
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.889
+Reference in sources: True
+Sources:
+[1] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=0 dist=0.2198 preview=Let us discuss MOSFET in detail. MOSFET is an electronic device most widely used in ICs. It has three terminals named as
+[2] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=1 dist=0.5240 preview=This metallic plate will act as gate contact to the substrate. The gate terminal is brought out from this metallic plate
+[3] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=5 dist=0.5433 preview=after certain minimum applied gate voltage, drain to source current will start flowing. And this voltage is called thres
+[4] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=4 dist=0.6816 preview=More the applied voltage greater the width of the channel, means greater the conductance between drain and source. Here 
+--------------------------------------------------------------------------------
+Question 2: How many terminals does the MOSFET described in the lecture have?
+Answer: 3
+Reference: The MOSFET described in the lecture has three terminals: source, drain, and gate.
+Exact match: False
+F1: 0.000
+Generation score: 0.000
+Faithfulness score: 0.000
+Answer relevancy score: 0.000
+Retrieval score: 1.000
+Context precision: 0.000
+Context recall: 0.846
+Reference in sources: True
+Sources:
+[1] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=0 dist=0.4396 preview=Let us discuss MOSFET in detail. MOSFET is an electronic device most widely used in ICs. It has three terminals named as
+[2] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=1 dist=0.5760 preview=This metallic plate will act as gate contact to the substrate. The gate terminal is brought out from this metallic plate
+[3] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=5 dist=0.6263 preview=after certain minimum applied gate voltage, drain to source current will start flowing. And this voltage is called thres
+[4] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=4 dist=0.6832 preview=More the applied voltage greater the width of the channel, means greater the conductance between drain and source. Here 
+--------------------------------------------------------------------------------
+Question 3: Why is the gate of a MOSFET insulated?
+Answer: The gate contact is insulated from the substrate, because silicon dioxide will behave as insulation.
+Reference: Because the entire surface of the substrate is coated with silicon dioxide insulation, and the gate contact is placed on that insulated layer.
+Exact match: False
+F1: 0.579
+Generation score: 0.579
+Faithfulness score: 1.000
+Answer relevancy score: 0.579
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=1 dist=0.3432 preview=This metallic plate will act as gate contact to the substrate. The gate terminal is brought out from this metallic plate
+[2] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=0 dist=0.4012 preview=Let us discuss MOSFET in detail. MOSFET is an electronic device most widely used in ICs. It has three terminals named as
+[3] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=4 dist=0.4253 preview=More the applied voltage greater the width of the channel, means greater the conductance between drain and source. Here 
+[4] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=5 dist=0.4286 preview=after certain minimum applied gate voltage, drain to source current will start flowing. And this voltage is called thres
+--------------------------------------------------------------------------------
+Question 4: How does a MOSFET operate?
+Answer: After certain minimum applied gate voltage, drain to source current will start flowing.
+Reference: A MOSFET operates by using gate voltage to induce a conducting channel between the drain and source; current flows only when the gate voltage exceeds the threshold voltage.
+Exact match: False
+F1: 0.293
+Generation score: 0.293
+Faithfulness score: 1.000
+Answer relevancy score: 0.293
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.786
+Reference in sources: True
+Sources:
+[1] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=0 dist=0.2408 preview=Let us discuss MOSFET in detail. MOSFET is an electronic device most widely used in ICs. It has three terminals named as
+[2] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=1 dist=0.4279 preview=This metallic plate will act as gate contact to the substrate. The gate terminal is brought out from this metallic plate
+[3] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=5 dist=0.4581 preview=after certain minimum applied gate voltage, drain to source current will start flowing. And this voltage is called thres
+[4] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=4 dist=0.5783 preview=More the applied voltage greater the width of the channel, means greater the conductance between drain and source. Here 
+--------------------------------------------------------------------------------
+Question 5: What is the threshold voltage (Vth)?
+Answer: I don't have enough information from the lecture to answer that.
+Reference: The threshold voltage is the minimum gate voltage at which drain-to-source current starts flowing.
+Exact match: False
+F1: 0.143
+Generation score: 0.143
+Faithfulness score: 0.417
+Answer relevancy score: 0.143
+Retrieval score: 1.000
+Context precision: 0.417
+Context recall: 0.875
+Reference in sources: True
+Sources:
+[1] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=5 dist=0.4115 preview=after certain minimum applied gate voltage, drain to source current will start flowing. And this voltage is called thres
+[2] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=3 dist=0.5625 preview=Now let us see what happens if one suitable positive voltage is applied at gate terminal of the device. In that case, du
+[3] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=4 dist=0.5662 preview=More the applied voltage greater the width of the channel, means greater the conductance between drain and source. Here 
+[4] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=2 dist=0.6547 preview=One is in between N-type drain and P-type base, and the other is in between P-type base and N-type source. As drain is c
+--------------------------------------------------------------------------------
+Question 6: What is the role of the drain and source terminals?
+Answer: The N-type region connected with positive terminal of the source is called as drain, and the N-region connected with negative terminal of the source is called as source.
+Reference: The drain is connected to the positive side of the DC source and the source is connected to the negative side; they form the current path when the MOSFET turns on.
+Exact match: False
+F1: 0.492
+Generation score: 0.492
+Faithfulness score: 1.000
+Answer relevancy score: 0.492
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.839
+Reference in sources: True
+Sources:
+[1] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=2 dist=0.4782 preview=One is in between N-type drain and P-type base, and the other is in between P-type base and N-type source. As drain is c
+[2] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=1 dist=0.5250 preview=This metallic plate will act as gate contact to the substrate. The gate terminal is brought out from this metallic plate
+[3] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=4 dist=0.5444 preview=More the applied voltage greater the width of the channel, means greater the conductance between drain and source. Here 
+[4] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=5 dist=0.6558 preview=after certain minimum applied gate voltage, drain to source current will start flowing. And this voltage is called thres
+--------------------------------------------------------------------------------
+Question 7: What application of MOSFET is mentioned in the lecture?
+Answer: gate control switching device
+Reference: The lecture says MOSFET is suitably used as a gate-control switching device and is most widely used in integrated circuits.
+Exact match: False
+F1: 0.320
+Generation score: 0.320
+Faithfulness score: 1.000
+Answer relevancy score: 0.320
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.810
+Reference in sources: True
+Sources:
+[1] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=0 dist=0.3291 preview=Let us discuss MOSFET in detail. MOSFET is an electronic device most widely used in ICs. It has three terminals named as
+[2] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=5 dist=0.5744 preview=after certain minimum applied gate voltage, drain to source current will start flowing. And this voltage is called thres
+[3] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=1 dist=0.5914 preview=This metallic plate will act as gate contact to the substrate. The gate terminal is brought out from this metallic plate
+[4] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=4 dist=0.6826 preview=More the applied voltage greater the width of the channel, means greater the conductance between drain and source. Here 
+--------------------------------------------------------------------------------
+Question 8: Why is a MOSFET considered a voltage-controlled device according to the lecture?
+Answer: More the applied voltage greater the width of the channel, means greater the conductance between drain and source.
+Reference: Because the conductance between drain and source is controlled by the voltage applied to the gate, and the device only conducts when the gate voltage exceeds threshold.
+Exact match: False
+F1: 0.489
+Generation score: 0.489
+Faithfulness score: 1.000
+Answer relevancy score: 0.489
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.852
+Reference in sources: True
+Sources:
+[1] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=5 dist=0.2926 preview=after certain minimum applied gate voltage, drain to source current will start flowing. And this voltage is called thres
+[2] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=0 dist=0.3337 preview=Let us discuss MOSFET in detail. MOSFET is an electronic device most widely used in ICs. It has three terminals named as
+[3] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=4 dist=0.3710 preview=More the applied voltage greater the width of the channel, means greater the conductance between drain and source. Here 
+[4] transcript_id=a2ffec25-7fc1-46ce-8075-a544eb649214 chunk=3 dist=0.4982 preview=Now let us see what happens if one suitable positive voltage is applied at gate terminal of the device. In that case, du
+--------------------------------------------------------------------------------

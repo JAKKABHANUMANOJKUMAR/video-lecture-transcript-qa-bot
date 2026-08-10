@@ -99,9 +99,9 @@ function TrendBars({ data, tone = 'accent' }: { data: Bucket[]; tone?: Tone }) {
   const step = data.length > 14 ? 4 : data.length > 7 ? 2 : 1;
   return (
     <div>
-      <div className="flex h-40 items-end gap-1.5" role="img" aria-label="Weekly trend">
+      <div className="flex h-40 items-end gap-1.5 overflow-x-auto" role="img" aria-label="Weekly trend">
         {data.map((d) => (
-          <div key={d.start} className="group relative flex flex-1 flex-col justify-end">
+          <div key={d.start} className="group relative flex h-full flex-1 flex-col justify-end">
             <span className="pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 rounded-chip bg-ink px-1.5 py-0.5 text-[11px] font-medium text-white opacity-0 transition-opacity duration-micro group-hover:opacity-100">
               {d.value}
             </span>

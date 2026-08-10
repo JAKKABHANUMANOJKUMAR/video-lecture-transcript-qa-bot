@@ -1,0 +1,475 @@
+================================================================================
+LEKTA — HOST IT FREE FROM YOUR OWN PC (CLOUDFLARE TUNNEL)
+================================================================================
+
+Total cost: $0. No cloud account, no credit card, no domain required.
+Your PC runs the app; Cloudflare gives it a public HTTPS address.
+
+Written for THIS machine and THIS project. Every prerequisite below was already
+verified as installed and working before this guide was written.
+
+Time to first public URL: about 20 minutes.
+
+
+--------------------------------------------------------------------------------
+0. HOW IT WORKS  (read this once — it explains every step that follows)
+--------------------------------------------------------------------------------
+
+Right now you run three separate servers on three ports:
+
+    :5173  frontend (Vite dev server)
+    :8000  backend API
+    :8100  RAG service (Whisper + ChromaDB + Groq)
+
+A Cloudflare Tunnel exposes ONE port. So we put a tiny local web server
+(Caddy) in front that merges all three behind a single port, and expose that:
+
+    Internet
+       |
+       |  https://something.trycloudflare.com
+       v
+    Cloudflare Tunnel  (outbound connection from your PC — no router setup,
+       |                no port forwarding, no firewall holes)
+       v
+    Caddy  :8080   <-- the single public entry point
+       |
+       +-- /api/*         -------------------> backend :8000
+       +-- /api/chroma/*  -------------------> rag     :8100
+       +-- /ingest*  /query  /media/*
+       |   /transcript*  /video/*  /viewer --> rag     :8100
+       |
+       +-- everything else -----------------> frontend/dist (static files)
+
+WHY THIS SHAPE MATTERS: because the browser talks to only one origin, the
+frontend can use RELATIVE urls ("/api/...") instead of absolute ones. That
+means the public URL can change and you DO NOT have to rebuild anything.
+That single fact is what makes the free, no-domain option actually usable.
+
+This mirrors deploy/nginx.conf (the Docker gateway), so you are not inventing
+a new architecture — you are running the same design without Docker.
+
+
+--------------------------------------------------------------------------------
+1. LIMITS — KNOW THESE BEFORE YOU SHARE THE LINK
+--------------------------------------------------------------------------------
+
+These are real and none of them have workarounds on the free tier:
+
+  * YOUR PC MUST BE AWAKE AND ONLINE.
+    Close the laptop or let it sleep and the site goes down. Your PC currently
+    sleeps after 30 minutes on AC power — Step 6 fixes that.
+
+  * 100 MB UPLOAD LIMIT.
+    Cloudflare's free plan rejects request bodies over 100 MB. Video files are
+    big, so a long lecture upload WILL fail with error 413.
+    WORKAROUND: use "Paste a link" (YouTube / Google Drive) instead of Upload.
+    The download then happens server-side on your PC and never crosses the
+    100 MB limit. This is the single most useful thing to know here.
+
+  * TRANSCRIPTION SPEED IS YOUR CPU.
+    WHISPER_MODEL is currently "base". Roughly 1 minute of processing per
+    10 minutes of video, and it pins several CPU cores while it runs.
+    If it is too slow for a live demo, set WHISPER_MODEL=tiny in rag/.env.
+
+  * THE QUICK TUNNEL URL CHANGES EVERY RESTART.
+    Fine for demos (no rebuild needed — see section 0). If you need a URL that
+    never changes, use Option B in Step 5 (needs a free Cloudflare account and
+    a domain).
+
+  * ANYONE WITH THE LINK CAN SIGN UP.
+    It is the public internet. Step 7 covers locking it down.
+
+  * Cloudflare cuts off any single HTTP request that takes over 100 seconds.
+    This project is already safe: POST /ingest returns a job_id immediately and
+    the browser polls GET /ingest/status/{id}, so a 20-minute transcription
+    never sits inside one long request. Nothing to change.
+
+
+--------------------------------------------------------------------------------
+2. PREREQUISITES  (all already confirmed present on this PC)
+--------------------------------------------------------------------------------
+
+  [OK] PostgreSQL running, database "video_lecture_transcript"
+  [OK] ffmpeg 8.1.1                     (required by Whisper)
+  [OK] Node v24.17.0                    (to build the frontend)
+  [OK] backend/.venv and rag/.venv      (Python dependencies installed)
+  [OK] rag/.env has GROQ_API_KEY set    (needed to generate answers)
+  [OK] SECRET_KEY is IDENTICAL in backend/.env and rag/.env
+
+That last one is not optional. The backend signs the login token; the RAG
+service verifies it with the same secret. If they ever differ, every upload
+and every question returns 401 and the app looks completely broken. If you
+edit one, edit both.
+
+Nothing to install for the app itself. You only need the two tools in Step 1.
+
+
+--------------------------------------------------------------------------------
+3. STEP 1 — INSTALL CADDY AND CLOUDFLARED  (one time)
+--------------------------------------------------------------------------------
+
+In PowerShell:
+
+    winget install --id CaddyServer.Caddy --accept-package-agreements
+    winget install --id Cloudflare.cloudflared --accept-package-agreements
+
+Close and reopen PowerShell (so PATH refreshes), then confirm:
+
+    caddy version
+    cloudflared --version
+
+If winget cannot find either package, download the .exe directly and drop it
+in the project root:
+
+    Caddy:       https://caddyserver.com/download    (choose windows / amd64)
+    cloudflared: https://github.com/cloudflare/cloudflared/releases/latest
+                 (file: cloudflared-windows-amd64.exe — rename to cloudflared.exe)
+
+Then call them as .\caddy.exe and .\cloudflared.exe in the commands below.
+
+
+--------------------------------------------------------------------------------
+4. STEP 2 — BUILD THE FRONTEND FOR SAME-ORIGIN  (the step people get wrong)
+--------------------------------------------------------------------------------
+
+READ THIS PARAGRAPH. frontend/.env currently contains:
+
+    VITE_API_URL=http://localhost:8000/api
+    VITE_RAG_API_URL=http://localhost:8100
+
+Those values get COMPILED INTO the JavaScript bundle. Your existing
+frontend/dist has them baked in right now. If you tunnel that build, every
+visitor's browser tries to reach THEIR OWN localhost:8000 — which is not your
+PC — so login fails for everyone but you, on your machine, and it looks like a
+mysterious backend outage. This is the number one cause of a broken tunnel.
+
+Vite loads .env.production with HIGHER priority than .env for builds, so
+create that file once and the problem is permanently solved.
+
+Create the file  frontend\.env.production  containing exactly these two lines:
+
+    VITE_API_URL=/api
+    VITE_RAG_API_URL=
+
+(The second one is intentionally empty. Empty means "same origin as the page",
+which is exactly what we want behind Caddy.)
+
+PowerShell one-liner to create it:
+
+    Set-Content -Path frontend\.env.production -Encoding utf8 -Value @(
+      'VITE_API_URL=/api',
+      'VITE_RAG_API_URL='
+    )
+
+Now build:
+
+    cd frontend
+    npm run build
+    cd ..
+
+VERIFY IT WORKED — this must print nothing at all:
+
+    Select-String -Path frontend\dist\assets\*.js -Pattern 'localhost:8000','localhost:8100'
+
+If it prints any match, .env.production was not picked up. Fix it and rebuild.
+Do not continue until that command is silent.
+
+
+--------------------------------------------------------------------------------
+5. STEP 3 — CREATE THE CADDYFILE
+--------------------------------------------------------------------------------
+
+Create a file named exactly  Caddyfile  (no extension) in the project root:
+
+--------------------------- copy from here ---------------------------
+:8080 {
+	encode gzip
+
+	# --- RAG service (must come BEFORE the /api/* rule below) ---
+	handle /api/chroma/* {
+		reverse_proxy 127.0.0.1:8100
+	}
+
+	# --- Backend API: auth, users, chats, videos, complaints, alerts ---
+	handle /api/* {
+		reverse_proxy 127.0.0.1:8000
+	}
+
+	# --- RAG service: ingest, ask, media, transcripts ---
+	# /ingest also covers /ingest/url and /ingest/status/{job_id}
+	handle /ingest* {
+		reverse_proxy 127.0.0.1:8100
+	}
+	handle /query {
+		reverse_proxy 127.0.0.1:8100
+	}
+	# /media streams the stored lecture; Range requests must pass through
+	# untouched or seeking to a citation timestamp will not work.
+	handle /media/* {
+		reverse_proxy 127.0.0.1:8100
+	}
+	handle /transcript* {
+		reverse_proxy 127.0.0.1:8100
+	}
+	handle /video/* {
+		reverse_proxy 127.0.0.1:8100
+	}
+	handle /viewer {
+		reverse_proxy 127.0.0.1:8100
+	}
+
+	# --- Health checks ---
+	handle /health {
+		reverse_proxy 127.0.0.1:8000
+	}
+	handle /rag-health {
+		rewrite * /health
+		reverse_proxy 127.0.0.1:8100
+	}
+
+	# --- The React app. Anything not matched above is served from disk, and
+	#     unknown paths fall back to index.html so client-side routing works.
+	handle {
+		root * frontend/dist
+		try_files {path} /index.html
+		file_server
+	}
+}
+---------------------------- to here ----------------------------------
+
+NOTE: use TAB or spaces consistently; Caddy is not fussy, but the braces must
+match. Order matters only for /api/chroma/* vs /api/* — Caddy resolves the
+more specific path first, and they are written in the safe order anyway.
+
+IMPORTANT: /media/*, /transcript*, and /video/* are in this list on purpose.
+deploy/nginx.conf (the Docker gateway) is MISSING those three routes, which is
+a real bug in that file. Without them, /media/<id> falls through to the SPA
+fallback, the <video> element receives HTML instead of video, and both the
+player and the click-a-timestamp-to-play feature are dead. The Caddyfile above
+is correct — do not trim it down to match nginx.conf.
+
+
+--------------------------------------------------------------------------------
+6. STEP 4 — START THE THREE LOCAL SERVERS
+--------------------------------------------------------------------------------
+
+Open THREE PowerShell windows in the project root
+(C:\Users\DELL\Desktop\video-lecture-transcript-qa-bot).
+
+WINDOW 1 — Backend API (port 8000)
+
+    cd backend
+    .\.venv\Scripts\Activate.ps1
+    uvicorn app.main:app --port 8000
+
+WINDOW 2 — RAG service (port 8100)
+
+    .\rag\.venv\Scripts\python.exe -m uvicorn app:app --port 8100
+
+WINDOW 3 — Caddy (port 8080, the single entry point)
+
+    caddy run
+
+Do NOT pass --reload to uvicorn when hosting. Reload watches files, uses more
+memory, and can restart mid-transcription and kill a job.
+
+Do NOT start the Vite dev server (npm run dev). Caddy now serves the built
+files from frontend/dist instead. Vite dev is for development only.
+
+Now test locally before involving the internet. Both must return
+{"status":"healthy"} — if they return HTML, a Caddyfile route is wrong:
+
+    curl http://localhost:8080/health             # backend, via Caddy
+    curl http://localhost:8080/rag-health         # rag, via Caddy
+
+Check the Caddyfile parses at any time with:  caddy validate
+
+Then open  http://localhost:8080  in your browser and log in. If the app does
+not fully work here, the tunnel will not fix it. Solve it locally first.
+
+
+--------------------------------------------------------------------------------
+7. STEP 5 — OPEN THE TUNNEL
+--------------------------------------------------------------------------------
+
+===== OPTION A: QUICK TUNNEL (no account, no domain, 30 seconds) =====
+
+In a FOURTH PowerShell window:
+
+    cloudflared tunnel --url http://localhost:8080
+
+It prints a banner containing a URL like:
+
+    https://random-words-here.trycloudflare.com
+
+That URL is live on the public internet right now, with HTTPS already valid.
+Share it. Open it on your phone to prove it works off your network.
+
+Keep that window open — closing it closes the tunnel. The URL changes every
+time you restart, but thanks to Step 2 you never need to rebuild.
+
+===== OPTION B: NAMED TUNNEL (stable URL, survives reboots) =====
+
+Needs a free Cloudflare account and a domain whose nameservers point at
+Cloudflare. A cheap .xyz or a free domain works fine.
+
+    cloudflared tunnel login                    # opens a browser, pick your domain
+    cloudflared tunnel create lekta             # note the Tunnel ID it prints
+    cloudflared tunnel route dns lekta lekta.yourdomain.com
+
+Create  C:\Users\DELL\.cloudflared\config.yml  :
+
+    tunnel: lekta
+    credentials-file: C:\Users\DELL\.cloudflared\<TUNNEL-ID>.json
+    ingress:
+      - hostname: lekta.yourdomain.com
+        service: http://localhost:8080
+      - service: http_status:404
+
+Test it, then install it as a Windows service so it starts with the PC:
+
+    cloudflared tunnel run lekta                       # test in foreground first
+    cloudflared service install                        # then make it permanent
+
+Your app is now permanently at  https://lekta.yourdomain.com
+
+
+--------------------------------------------------------------------------------
+8. STEP 6 — STOP THE PC FROM SLEEPING
+--------------------------------------------------------------------------------
+
+Your machine currently sleeps after 30 minutes on AC power, which takes the
+site down with it. In an ADMIN PowerShell:
+
+    powercfg /change standby-timeout-ac 0      # never sleep on AC
+    powercfg /change hibernate-timeout-ac 0    # never hibernate on AC
+    powercfg /change monitor-timeout-ac 15     # screen may still switch off
+
+On a laptop, also set Control Panel > Power Options > "Choose what closing the
+lid does" to "Do nothing" while plugged in.
+
+Verify:
+
+    powercfg /query SCHEME_CURRENT SUB_SLEEP STANDBYIDLE
+
+The AC setting index should read 0x00000000.
+
+To undo later:  powercfg /change standby-timeout-ac 30
+
+
+--------------------------------------------------------------------------------
+9. STEP 7 — LOCK IT DOWN BEFORE SHARING
+--------------------------------------------------------------------------------
+
+The moment the tunnel opens, this is a public website. Do these:
+
+  1. THE DEMO ACCOUNTS HAVE THE PASSWORD "password".
+     user@example.com and admin@example.com — and admin can see every user,
+     all analytics and all alerts. Change both passwords via Settings after
+     logging in, or stop them being recreated by setting this in backend/.env:
+
+         SEED_DEMO_DATA=false
+
+     (They are re-seeded on every backend start while this is true.)
+
+  2. ANYONE CAN CREATE AN ACCOUNT. There is no invite code and no email
+     verification. Per-user isolation does work — one user cannot read
+     another's transcripts — but the sign-up form is open to the world. Only
+     share the link with people you actually want in there.
+
+  3. THE CHROMADB VIEWER IS PUBLIC at /viewer. It exposes chunk text and
+     embedding vectors for every lecture in the store, with no login at all.
+     If you do not want that, delete the /viewer block from the Caddyfile.
+
+  4. YOUR DATABASE IS ON YOUR PC. Postgres itself is not exposed by the
+     tunnel (only port 8080 is), which is correct. Keep it that way.
+
+  5. DO NOT commit .env files. They hold your Groq key, SECRET_KEY and
+     Postgres password. They are already correctly gitignored — leave it so.
+
+
+--------------------------------------------------------------------------------
+10. DAILY USE — START AND STOP
+--------------------------------------------------------------------------------
+
+START (four windows, project root):
+
+    1)  cd backend ; .\.venv\Scripts\Activate.ps1 ; uvicorn app.main:app --port 8000
+    2)  cd rag ; .\.venv\Scripts\python.exe -m uvicorn app:app --port 8100
+    3)  caddy run
+    4)  cloudflared tunnel --url http://localhost:8080
+
+STOP:  press Ctrl+C in each window (stop the tunnel first).
+
+AFTER YOU CHANGE CODE:
+
+    Frontend changed?  cd frontend ; npm run build ; cd ..
+                       (Caddy serves the new files immediately — no restart)
+    Backend changed?   restart window 1
+    RAG changed?       restart window 2
+    Caddyfile changed? caddy reload      (no downtime)
+
+
+--------------------------------------------------------------------------------
+11. TROUBLESHOOTING
+--------------------------------------------------------------------------------
+
+Login works for you but fails for everyone else
+    The bundle has localhost baked in. Redo Step 2 and confirm the
+    Select-String check prints nothing.
+
+Every upload and every question returns 401
+    SECRET_KEY differs between backend/.env and rag/.env. Make them identical
+    and restart BOTH services.
+
+Error 413 when uploading a video
+    Over Cloudflare's 100 MB free limit. Use "Paste a link" instead, or use a
+    smaller/shorter file.
+
+Video will not play, or timestamps do not seek
+    /media/* is missing from your Caddyfile, or the media file is gone from
+    rag/media/. Check:  curl -I http://localhost:8080/media/<id>
+    A content-type of text/html means the route is missing.
+
+Error 502 / 521 from Cloudflare
+    Caddy is not running on 8080, or the backend/RAG windows died. Check
+    http://localhost:8080 directly first.
+
+"Couldn't answer that" on every question
+    GROQ_API_KEY missing or invalid in rag/.env. Check window 2's log.
+
+Site was up, now dead, nothing changed
+    The PC slept (redo Step 6), the network dropped, or the cloudflared window
+    was closed. Quick tunnels also expire — restart it for a new URL.
+
+Transcription is extremely slow
+    Set WHISPER_MODEL=tiny in rag/.env and restart the RAG service.
+
+Port already in use
+    Something is still running:  netstat -ano | findstr ":8080 :8000 :8100"
+    then:  taskkill /PID <pid> /F
+
+
+--------------------------------------------------------------------------------
+12. IF YOU OUTGROW THIS
+--------------------------------------------------------------------------------
+
+A PC + tunnel is genuinely fine for a demo, a class presentation, or letting a
+few people try it. It is not right for something that must stay up.
+
+When you need always-on, the repo already has a Docker Compose setup for a
+single cloud VM — see DEPLOY-FREE-ONE-CLOUD.md (Oracle Cloud Always Free is
+$0 with enough RAM for Whisper). Be aware that config currently has four
+blocking bugs that must be fixed before it will work:
+
+    1. .dockerignore excludes frontend/, so the gateway image cannot build.
+    2. docker-compose.yml never passes SECRET_KEY to the rag service, so every
+       upload and question 401s.
+    3. deploy/nginx.conf is missing /media, /transcript and /video routes.
+    4. Uploaded videos are not on a volume, so they vanish on restart.
+
+The Caddyfile in this guide already handles the equivalent of #2 and #3
+correctly, which is why the tunnel route works today and the Docker route
+does not.
+
+================================================================================

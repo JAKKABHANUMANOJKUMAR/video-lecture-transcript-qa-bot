@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
+from app.core.logger import app_logger
 from app.database import get_db
 from app.deps import get_current_user
 from app.models import User
@@ -34,6 +35,7 @@ def signup(payload: UserSignup, db: Session = Depends(get_db)):
     email = payload.email.lower().strip()
     existing = db.query(User).filter(User.email == email).first()
     if existing:
+        app_logger.warning("signup rejected: email already exists email=%s", email)
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="An account with this email already exists",
@@ -48,6 +50,7 @@ def signup(payload: UserSignup, db: Session = Depends(get_db)):
         auth_provider=payload.auth_provider or "local",
         last_login=datetime.now(timezone.utc),
     )
+    app_logger.info("creating user account email=%s", email)
     db.add(user)
     try:
         db.commit()
@@ -56,12 +59,15 @@ def signup(payload: UserSignup, db: Session = Depends(get_db)):
         # The check above loses to a concurrent signup for the same address; the
         # unique index is what actually decides, so report its verdict.
         if _is_duplicate_email(exc):
+            app_logger.warning("signup failed due to duplicate email email=%s", email)
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
                 detail="An account with this email already exists",
             ) from exc
+        app_logger.exception("signup failed for email=%s", email)
         raise
     db.refresh(user)
+    app_logger.info("signup successful email=%s user_id=%s", email, user.id)
     return _issue_token(user)
 
 
@@ -71,15 +77,18 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
     email = payload.email.lower().strip()
     user = db.query(User).filter(User.email == email).first()
     if not user or not verify_password(payload.password, user.hashed_password):
+        app_logger.warning("login failed for email=%s", email)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
         )
     if user.status == "blocked":
+        app_logger.warning("login blocked for email=%s user_id=%s", email, user.id)
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is blocked")
 
     user.last_login = datetime.now(timezone.utc)
     db.commit()
     db.refresh(user)
+    app_logger.info("login successful email=%s user_id=%s", email, user.id)
     return _issue_token(user)
 
 

@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
+from app.core.logger import app_logger
 from app.database import get_db
 from app.deps import get_current_user
 from app.models import User, Video
@@ -30,7 +31,9 @@ def list_videos(
         query = query.filter(Video.status == status_filter)
     if subject:
         query = query.filter(Video.subject == subject)
-    return query.order_by(Video.created_at.desc()).all()
+    videos = query.order_by(Video.created_at.desc()).all()
+    app_logger.info("listed videos for user=%s count=%s", current_user.id, len(videos))
+    return videos
 
 
 @router.post("", response_model=VideoPublic, status_code=status.HTTP_201_CREATED)
@@ -43,6 +46,7 @@ def create_video(
     db.add(video)
     db.commit()
     db.refresh(video)
+    app_logger.info("created video video_id=%s user_id=%s title=%s", video.id, current_user.id, video.title)
     return video
 
 
@@ -59,6 +63,7 @@ def update_video(
         setattr(video, key, value)
     db.commit()
     db.refresh(video)
+    app_logger.info("updated video video_id=%s user_id=%s", video.id, current_user.id)
     return video
 
 
@@ -72,6 +77,7 @@ def mark_accessed(
     video.last_accessed = datetime.now(timezone.utc)
     db.commit()
     db.refresh(video)
+    app_logger.info("marked video accessed video_id=%s user_id=%s", video.id, current_user.id)
     return video
 
 
@@ -84,4 +90,5 @@ def delete_video(
     video = _get_owned_video(video_id, db, current_user)
     db.delete(video)
     db.commit()
+    app_logger.info("deleted video video_id=%s user_id=%s", video.id, current_user.id)
     return MessageResponse(detail="Video deleted")

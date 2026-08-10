@@ -30,14 +30,12 @@ function SourceRow({
       <div className="flex flex-wrap items-center gap-1.5">
         <Tag tone="mint">grounded in {sources.length} moment{sources.length > 1 ? 's' : ''}</Tag>
         {sources.map((s, i) => (
-          <span key={i} className="inline-flex items-center gap-0.5">
-            <Tooltip label={s.text.slice(0, 220) + (s.text.length > 220 ? '…' : '')} side="top">
+            <span key={i} className="inline-flex items-center gap-0.5">
               <TimestampChip
                 seconds={s.start_seconds ?? 0}
                 endSeconds={s.end_seconds ?? undefined}
                 onSeek={() => onSeek(s)}
               />
-            </Tooltip>
             {s.deep_link && (
               <a
                 href={s.deep_link}

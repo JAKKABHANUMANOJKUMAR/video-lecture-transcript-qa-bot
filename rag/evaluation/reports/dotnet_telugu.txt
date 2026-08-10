@@ -1,0 +1,249 @@
+=== Evaluation Summary ===
+Questions evaluated: 10
+Exact match: 0/10
+Average F1: 0.255
+Average generation score: 0.255
+Average faithfulness score: 0.681
+Average retrieval score: 0.975
+Average context precision: 0.975
+Average context recall: 0.718
+Average Recall@k: 1.000
+Average Hit Rate (Hit@k): 1.000
+Average MRR: 1.000
+No-answer fallback responses: 4/10
+Reference answer covered by sources: 0.800
+Overall: The model is weak on this dataset and needs improvement.
+==========================
+
+Question 1: What is the topic of discussion in the lecture?
+Answer: The topic of discussion in the lecture appears to be related to coding, development, and programming, with mentions of specific technologies such as Angular, .NET, and ASP.NET. However, the exact topic is not clearly defined due to the disjointed and unclear nature of the provided excerpts. 
+
+Some possible subtopics include:
+* Developing code and applications
+* Using specific programming frameworks and languages
+* Implementing passwords and security measures
+* Working with different types of applications, such as web, Windows, and mobile applications. 
+
+Overall, the topic seems to be focused on programming and development, but a clear and specific topic is not explicitly stated.
+Reference: The topic of discussion is related to .NET and its applications.
+Exact match: False
+F1: 0.180
+Generation score: 0.180
+Faithfulness score: 0.500
+Answer relevancy score: 0.180
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.727
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=0.8554 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.8800 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.8862 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.9130 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+--------------------------------------------------------------------------------
+Question 2: What type of applications can be developed using the framework mentioned in the lecture?
+Answer: * Web applications
+* Windows applications
+* Mobile applications 
+
+These types of applications can be developed using the framework mentioned in the lecture.
+Reference: The framework can be used to develop Web applications, Windows applications, mobile applications, and console applications.
+Exact match: False
+F1: 0.611
+Generation score: 0.611
+Faithfulness score: 0.700
+Answer relevancy score: 0.611
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.875
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.6319 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.6693 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.7299 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=0.8989 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+--------------------------------------------------------------------------------
+Question 3: What is ASP.NET antenna?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: ASP.NET antenna is a framework used to develop different applications.
+Exact match: False
+F1: 0.080
+Generation score: 0.080
+Faithfulness score: 0.643
+Answer relevancy score: 0.080
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.818
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.7463 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.7528 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.8825 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=0.9542 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+--------------------------------------------------------------------------------
+Question 4: What is .NET core?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: .NET core is a framework developed by the developer core to develop a single application.
+Exact match: False
+F1: 0.138
+Generation score: 0.138
+Faithfulness score: 0.643
+Answer relevancy score: 0.138
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.733
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.6624 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.7977 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.9255 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=0.9690 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+--------------------------------------------------------------------------------
+Question 5: What languages and technologies are mentioned in the lecture?
+Answer: * Angular
+* HTML
+* Dartnet
+* .NET
+* ASP.NET
+* Linux 
+* eFrame
+Reference: .NET, Angular, HTML, and CSS.
+Exact match: False
+F1: 0.462
+Generation score: 0.462
+Faithfulness score: 1.000
+Answer relevancy score: 0.462
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.800
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.7569 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.7594 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=0.8369 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.8690 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+--------------------------------------------------------------------------------
+Question 6: What is the purpose of the lecture?
+Answer: The purpose of the lecture appears to be related to developing code, specifically in languages such as Angular, HTML, and possibly others. The speaker mentions implementing code, developing passwords, and using various frameworks and applications, including .NET and ASP.NET. However, the exact purpose is not clearly stated, and the excerpts provided seem to jump between different topics and ideas.
+Reference: The purpose of the lecture is to discuss .NET and its related technologies.
+Exact match: False
+F1: 0.274
+Generation score: 0.274
+Faithfulness score: 0.500
+Answer relevancy score: 0.274
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.615
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.7809 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.8212 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=0.8640 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.9104 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+--------------------------------------------------------------------------------
+Question 7: What are the different types of applications that can be developed using .NET?
+Answer: * Web applications
+* Windows applications
+* Mobile applications 
+
+These are the types of applications mentioned in the excerpts as being developable using .NET.
+Reference: .NET can be used to develop a number of applications, including Web applications, Windows applications, and mobile applications.
+Exact match: False
+F1: 0.462
+Generation score: 0.462
+Faithfulness score: 0.619
+Answer relevancy score: 0.462
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.889
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.5120 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.6845 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.9507 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=1.0528 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+--------------------------------------------------------------------------------
+Question 8: What is the relationship between ASP.NET and .NET core?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: ASP.NET is the same core as .NET core, and .NET core is a framework developed by the developer core.
+Exact match: False
+F1: 0.059
+Generation score: 0.059
+Faithfulness score: 0.643
+Answer relevancy score: 0.059
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.700
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.6329 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.8399 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=0.9461 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.9725 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+--------------------------------------------------------------------------------
+Question 9: What are the benefits of using .NET?
+Answer: We can use a .NET and a .NET to do all the same tasks in different ways. We can use a flat form, Web applications, Windows applications, mobile applications, etc. with .NET. Additionally, we can use ASP.NET and a .NET framework, such as eFrame, to achieve the same things.
+Reference: The lecture does not explicitly mention the benefits of using .NET, but it discusses its applications and related technologies.
+Exact match: False
+F1: 0.145
+Generation score: 0.145
+Faithfulness score: 0.920
+Answer relevancy score: 0.145
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.526
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.5788 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.7866 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.9887 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=0.9989 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+--------------------------------------------------------------------------------
+Question 10: What are the retainer tasks mentioned in the lecture?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: The lecture mentions retainer tasks, but it does not provide a clear explanation of what they are; however, it mentions "assesses" and "Video Navi blocks" in relation to .NET core.
+Exact match: False
+F1: 0.136
+Generation score: 0.136
+Faithfulness score: 0.643
+Answer relevancy score: 0.136
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.500
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=0 dist=0.7624 preview=Hä для vaand Í Í Í Who aci ñ Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø Ø ڈ crítจئی پی beachesaπως το aids anál неё internationals Dr
+[2] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=2 dist=0.8057 preview=So, this is the code for the developer. So, we have to implement this code. So, we have to develop the code and use it. 
+[3] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=3 dist=0.8219 preview=Now after the Date, there are details related to date match it can be followed by detailicky details and effect. After P
+[4] transcript_id=0259f1d2-da84-415d-8f56-fff69c491294 chunk=1 dist=0.8634 preview=Hi friends, Good morning I have had some questions about the data related to the data and the data is the data and the d
+--------------------------------------------------------------------------------

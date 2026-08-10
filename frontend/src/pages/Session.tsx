@@ -8,7 +8,7 @@ import {
   type QuerySource,
 } from '../lib/rag';
 import { cx } from '../lib/cx';
-import { Button, Dialog, Field, Input, EmptyState } from '../components/ui';
+import { Button, Dialog, Field, Input, EmptyState, useToast } from '../components/ui';
 import { LektaLogo } from '../components/LektaLogo';
 import { Messages } from '../components/session/Messages';
 import { Composer } from '../components/session/Composer';
@@ -77,6 +77,25 @@ export function Session({ initialSession, intent, onConsumeIntent, onPersist }: 
   const [seekMark, setSeekMark] = useState<{ seconds: number; n: number }>({ seconds: 0, n: 0 });
 
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { toast } = useToast();
+
+  const isSupportedMediaFile = (file: File) => {
+    if (file.type.startsWith('video/') || file.type.startsWith('audio/')) return true;
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    return [
+      'mp4',
+      'mov',
+      'webm',
+      'mkv',
+      'avi',
+      'mp3',
+      'wav',
+      'm4a',
+      'aac',
+      'flac',
+      'ogg',
+    ].includes(ext ?? '');
+  };
   const pendingSeekRef = useRef<number | null>(null);
   const blobUrlRef = useRef<string | null>(null);
   const serverChatIdRef = useRef<string | null>(initialSession?.id ?? null);
@@ -166,6 +185,12 @@ export function Session({ initialSession, intent, onConsumeIntent, onPersist }: 
       const isFile = kind === 'file';
       const file = isFile ? (payload as File) : null;
       const url = isFile ? null : (payload as string);
+
+      if (isFile && file && !isSupportedMediaFile(file)) {
+        toast('warn', 'Invalid format', 'Please upload a video or audio file.');
+        return;
+      }
+
       const label = isFile
         ? file!.name
         : isYouTubeOrDriveUrl(url!) === 'drive'

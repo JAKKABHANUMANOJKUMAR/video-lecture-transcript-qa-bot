@@ -1,0 +1,9 @@
+| Model                                                             | Parameters | Embedding Dimension | Language Support | Speed            | Memory Usage | Retrieval Quality | Best Use Case                        |
+| ----------------------------------------------------------------- | ---------: | ------------------: | ---------------- | ---------------- | ------------ | ----------------- | ------------------------------------ |
+| **paraphrase-multilingual-MiniLM-L12-v2** *(Used in our project)* |      ~118M |             **384** | 50+ languages    | Fast             | Low          | High              | Multilingual RAG, semantic search    |
+| **all-mpnet-base-v2**                                             |      ~109M |                 768 | English          | Moderate         | Medium       | Very High         | English semantic search              |
+| **paraphrase-multilingual-mpnet-base-v2**                         |      ~278M |                 768 | 50+ languages    | Moderate         | High         | Very High         | High-accuracy multilingual retrieval |
+| **multilingual-e5-large**                                         |      ~560M |                1024 | 100+ languages   | Slow             | Very High    | Excellent         | Enterprise multilingual retrieval    |
+| **BGE-large-en-v1.5**                                             |      ~335M |                1024 | English          | Moderate to Slow | High         | Excellent         | English RAG systems                  |
+| **LaBSE**                                                         |      ~470M |                 768 | 100+ languages   | Slow             | High         | High              | Cross-language retrieval             |
+| **OpenAI text-embedding-3-large**                                 |  API-based |                3072 | Multilingual     | API Dependent    | Cloud        | Excellent         | Cloud-based enterprise applications  |

@@ -1,28 +1,42 @@
-# RAG service: Whisper + embeddings + ChromaDB (needs ffmpeg + ~2GB RAM)
-FROM python:3.12-slim
+FROM python:3.14-slim AS builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg \
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+WORKDIR /build
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends build-essential gcc ffmpeg \
     && rm -rf /var/lib/apt/lists/*
+
+COPY rag/requirements.txt ./requirements.txt
+RUN pip install --upgrade pip \
+    && pip install --prefix=/install -r requirements.txt
+
+FROM python:3.14-slim AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8100 \
+    PYTHONPATH=/app \
+    HF_HOME=/data/hf \
+    XDG_CACHE_HOME=/data/cache \
+    WHISPER_MODEL=base
 
 WORKDIR /app
 
-# Install from repo root context (see render.yaml dockerContext)
-COPY rag/requirements.txt ./rag/requirements.txt
-RUN pip install --no-cache-dir -r rag/requirements.txt
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
+COPY --from=builder /install /usr/local
 COPY rag/ ./rag/
+COPY rag/models/ ./rag/models/
 
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=/app
-# Cache models on a writable path (mount persistent disk here on Render)
-ENV HF_HOME=/data/hf
-ENV XDG_CACHE_HOME=/data/cache
-ENV WHISPER_MODEL=tiny
-
-RUN mkdir -p /data/chroma /data/hf /data/cache
-
-ENV CHROMA_DIR=/data/chroma
+RUN mkdir -p /data/chroma /data/hf /data/cache /data/media /app/logs
 
 EXPOSE 8100
 
-CMD uvicorn rag.app:app --host 0.0.0.0 --port ${PORT:-8100}
+CMD ["sh", "-c", "uvicorn rag.app:app --host 0.0.0.0 --port ${PORT:-8100}"]

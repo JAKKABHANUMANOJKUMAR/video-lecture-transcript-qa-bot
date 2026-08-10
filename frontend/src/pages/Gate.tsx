@@ -163,7 +163,7 @@ export function Gate() {
                 </Field>
               )}
               <Button type="submit" size="lg" loading={busy} className="w-full">
-                {mode === 'in' ? 'Enter your study' : 'Start studying'}
+                {mode === 'in' ? 'Login' : 'Sign up'}
               </Button>
             </form>
 

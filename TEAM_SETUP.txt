@@ -165,7 +165,7 @@ Edit rag/.env with your values:
 Test RAG alone (from project root, not inside rag folder):
 
   cd ..
-  .\rag\.venv\Scripts\python.exe -m uvicorn rag.app:app --reload --port 8100
+  .\rag\.venv\Scripts\python.exe -m uvicorn app:app --reload --port 8100
 
 Open: http://localhost:8100/docs
 Chroma viewer: http://localhost:8100/viewer
@@ -268,7 +268,7 @@ If port 8000 or 8100 is busy, stop old processes or change ports in .env files.
     -> Start backend: uvicorn app.main:app --port 8000
 
   "Cannot reach the RAG service" on video upload
-    -> Start RAG: uvicorn rag.app:app --port 8100
+    -> Start RAG: uvicorn app:app --port 8100
 
   PostgreSQL connection failed
     -> Check PostgreSQL is running

@@ -1,12 +1,10 @@
 import { tokenStore } from './api';
 
-// Empty string = same origin (single-server Docker / nginx gateway)
+// Use the same-origin public gateway paths when running behind nginx/ngrok.
 const RAG_URL =
-  import.meta.env.VITE_RAG_API_URL !== undefined
+  import.meta.env.VITE_RAG_API_URL !== undefined && import.meta.env.VITE_RAG_API_URL !== ''
     ? import.meta.env.VITE_RAG_API_URL
-    : import.meta.env.DEV
-      ? 'http://localhost:8100'
-      : '';
+    : '';
 
 // The RAG service validates the same JWT the backend issues, so it can scope
 // every ingest/query to the signed-in user.

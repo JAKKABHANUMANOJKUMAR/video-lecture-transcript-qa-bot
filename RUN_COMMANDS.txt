@@ -1,69 +1,70 @@
 ================================================================================
-ASK ORA - COMMANDS TO RUN ALL SERVICES
+VIDEO LECTURE TRANSCRIPT QA BOT - RUN COMMANDS
 ================================================================================
 
-Run everything from project root:
-  C:\Users\manoj\Downloads\vl_07-06-2026
-
+Run these from the project root: D:\video-lecture-transcript-qa-bot
 
 --------------------------------------------------------------------------------
-OPTION 1 - ONE CLICK (opens 3 terminals automatically)
---------------------------------------------------------------------------------
-
-  .\run-services.ps1
-
-  OR double-click:  run-services.bat
-
-
---------------------------------------------------------------------------------
-OPTION 2 - MANUAL (open 3 separate PowerShell terminals)
+OPTION 1 - MANUAL RUN (4 separate terminals)
 --------------------------------------------------------------------------------
 
 TERMINAL 1 - Backend API (port 8000)
-  cd C:\Users\manoj\Downloads\vl_07-06-2026\backend
+  cd .\backend
   .\.venv\Scripts\Activate.ps1
-  uvicorn app.main:app --reload --port 8000
+  .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 
 TERMINAL 2 - RAG Service (port 8100)
-  cd C:\Users\manoj\Downloads\vl_07-06-2026
-  .\rag\.venv\Scripts\python.exe -m uvicorn rag.app:app --reload --port 8100
+  cd D:\video-lecture-transcript-qa-bot
+  .\rag\.venv\Scripts\Activate.ps1
+  .\rag\.venv\Scripts\python.exe -m uvicorn rag.app:app --host 127.0.0.1 --port 8100 --reload
 
 TERMINAL 3 - Frontend (port 5173)
-  cd C:\Users\manoj\Downloads\vl_07-06-2026\frontend
+  cd .\frontend
   npm run dev
 
+TERMINAL 4 - Load testing (Locust)
+  cd .\load_tests
+  ..\.venv\Scripts\python.exe -m locust -f locustfile.py --host http://localhost:8000 --users 10 --spawn-rate 2 --run-time 1m
+
+--------------------------------------------------------------------------------
+OPTION 2 - ONE CLICK (PowerShell)
+--------------------------------------------------------------------------------
+
+From project root:
+  .\run-services.ps1
+
+Or from Explorer:
+  .\run-services.bat
 
 --------------------------------------------------------------------------------
 FIRST TIME SETUP (run once)
 --------------------------------------------------------------------------------
 
-1) PostgreSQL must be running (database: video_lecture_transcript)
+1) PostgreSQL must be running with database: video_lecture_transcript
 
 2) Backend setup:
-  cd backend
+  cd .\backend
   python -m venv .venv
   .\.venv\Scripts\Activate.ps1
   pip install -r requirements.txt
-  python create_db.py
-  copy .env.example .env
-  (edit .env with your PostgreSQL password)
+  .\.venv\Scripts\python.exe create_db.py
 
 3) RAG setup:
-  cd rag
+  cd .\rag
   python -m venv .venv
   .\.venv\Scripts\Activate.ps1
   pip install -r requirements.txt
-  copy .env.example .env
-  (edit .env - add GROQ_API_KEY and PostgreSQL password)
 
 4) Frontend setup:
-  cd frontend
+  cd .\frontend
   npm install
-  copy .env.example .env   (if exists, or use frontend\.env)
 
-5) Install ffmpeg (required for Whisper):
+5) Install Locust:
+  cd .\
+  .\.venv\Scripts\python.exe -m pip install locust
+
+6) Install ffmpeg (required for Whisper):
   winget install Gyan.FFmpeg
-
 
 --------------------------------------------------------------------------------
 OPEN IN BROWSER
@@ -74,37 +75,20 @@ OPEN IN BROWSER
   RAG Docs:       http://localhost:8100/docs
   ChromaDB UI:    http://localhost:8100/viewer
 
-  Login user:     user@example.com / password
-  Login admin:    admin@example.com / password
-
-
---------------------------------------------------------------------------------
-OPTION 3 - DOCKER (all services in one command)
---------------------------------------------------------------------------------
-
-  copy .env.docker.example .env.docker
-  (edit .env.docker - set GROQ_API_KEY, passwords, PUBLIC_ORIGIN)
-
-  docker compose --env-file .env.docker up -d --build
-
-  Open: http://localhost
-
-
 --------------------------------------------------------------------------------
 USEFUL COMMANDS
 --------------------------------------------------------------------------------
 
 Ingest video from command line:
-  cd C:\Users\manoj\Downloads\vl_07-06-2026
-  .\rag\.venv\Scripts\python.exe -m rag.ingest "C:\path\to\video.mp4" --title "Lecture 1"
+  cd .\rag
+  .\.venv\Scripts\python.exe -m rag.ingest "C:\path\to\video.mp4" --title "Lecture 1"
 
 Ask question from command line:
-  .\rag\.venv\Scripts\python.exe -m rag.query "What is this lecture about?"
+  cd .\rag
+  .\.venv\Scripts\python.exe -m rag.query "What is this lecture about?"
 
-View ChromaDB chunks:
-  .\rag\.venv\Scripts\python.exe -m rag.inspect_db
-
-Stop Docker services:
-  docker compose --env-file .env.docker down
+Run load test with HTML report:
+  cd .\load_tests
+  ..\.venv\Scripts\python.exe -m locust -f locustfile.py --host http://localhost:8000 --users 50 --spawn-rate 5 --run-time 5m --html reports\report.html
 
 ================================================================================

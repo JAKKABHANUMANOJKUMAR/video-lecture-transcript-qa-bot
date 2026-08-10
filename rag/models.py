@@ -2,7 +2,6 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, func
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from rag.database import Base
@@ -17,7 +16,7 @@ class Transcript(Base):
 
     __tablename__ = "transcripts"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=_uuid)
     # Owner of this transcript. Every read/query is scoped to this user so one
     # user can never access another user's transcripts.
     user_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
@@ -57,9 +56,9 @@ class TranscriptChunk(Base):
 
     __tablename__ = "transcript_chunks"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=_uuid)
     transcript_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), ForeignKey("transcripts.id", ondelete="CASCADE"), index=True
+        String(64), ForeignKey("transcripts.id", ondelete="CASCADE"), index=True
     )
     chunk_index: Mapped[int] = mapped_column(Integer, default=0)
     content: Mapped[str] = mapped_column(Text, nullable=False)
@@ -68,3 +67,28 @@ class TranscriptChunk(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     transcript: Mapped["Transcript"] = relationship(back_populates="chunks")
+
+
+class IngestJob(Base):
+    """Persist background ingest job progress and status."""
+
+    __tablename__ = "ingest_jobs"
+
+    job_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    status: Mapped[str] = mapped_column(String(20), default="pending")
+    percent: Mapped[int] = mapped_column(Integer, default=0)
+    stage: Mapped[str] = mapped_column(String(50), default="pending")
+    message: Mapped[str] = mapped_column(Text, default="Waiting to start…")
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    result: Mapped[str | None] = mapped_column(Text, nullable=True)
+    user_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
+    video_id: Mapped[str | None] = mapped_column(String(64), index=True, nullable=True)
+    source_url: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    elapsed_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
+    audio_extract_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
+    transcribe_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
+    embedding_seconds: Mapped[float | None] = mapped_column(Float, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )

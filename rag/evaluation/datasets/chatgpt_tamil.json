@@ -1,0 +1,16 @@
+{
+  "name": "chatgpt_tamil",
+  "video_path": "D:\\video-lecture-transcript-qa-bot\\test_videos\\vidssave.com How to use ChatGPT in Tamil _ Dr Karuna Tamil 144P.mp4",
+  "items": [
+    {"question": "What is the topic of the lecture?", "reference_answer": "The topic of the lecture is how to use ChatGPT."},
+    {"question": "What language is the lecture given in?", "reference_answer": "The lecture is given in Tamil, but it also mentions the possibility of getting information in Hindi language."},
+    {"question": "What is the first step to use ChatGPT according to the lecture?", "reference_answer": "The first step is to log into the ChatGPT."},
+    {"question": "What is the second step to use ChatGPT according to the lecture?", "reference_answer": "The second step is to determine the value of an object or to refine a prompt."},
+    {"question": "Can ChatGPT provide information in different languages?", "reference_answer": "Yes, ChatGPT can provide information in different languages, including Tamil and Hindi."},
+    {"question": "What is the purpose of the 30-day plan mentioned in the lecture?", "reference_answer": "The 30-day plan is to master a new skill, such as mastering YouTube or learning marketing skills."},
+    {"question": "How can one improve their communication skills according to the lecture?", "reference_answer": "One can improve their communication skills by learning storytelling and practicing speaking."},
+    {"question": "What is the \"art of storytelling\" mentioned in the lecture?", "reference_answer": "The \"art of storytelling\" is a way to improve speaking skills, but the exact details are not provided in the excerpts."},
+    {"question": "Can ChatGPT provide a list of the top 10 best-selling books?", "reference_answer": "Yes, ChatGPT can provide a list of the top 10 best-selling books."},
+    {"question": "How can one get started with using ChatGPT according to the lecture?", "reference_answer": "One can get started with using ChatGPT by logging in and refining their prompt, and there are also resources available, such as a video on how to use ChatGPT."}
+  ]
+}

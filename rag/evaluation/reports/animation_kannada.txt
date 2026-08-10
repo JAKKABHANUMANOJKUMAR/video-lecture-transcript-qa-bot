@@ -1,0 +1,241 @@
+=== Evaluation Summary ===
+Questions evaluated: 10
+Exact match: 1/10
+Average F1: 0.393
+Average generation score: 0.393
+Average faithfulness score: 0.900
+Average retrieval score: 0.800
+Average context precision: 0.800
+Average context recall: 0.831
+Average Recall@k: 1.000
+Average Hit Rate (Hit@k): 1.000
+Average MRR: 0.850
+No-answer fallback responses: 0/10
+Reference answer covered by sources: 0.800
+Overall: The model is weak on this dataset and needs improvement.
+==========================
+
+Question 1: Where do the young animals live?
+Answer: In a dense and vibrant jungle.
+Reference: In a dense and vibrant jungle.
+Exact match: True
+F1: 1.000
+Generation score: 1.000
+Faithfulness score: 1.000
+Answer relevancy score: 1.000
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=7 dist=0.6508 preview=You can select the image and add it. You can select the background music. You can also select the background music. You 
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=0 dist=0.6683 preview=ai guys one dosaadi videora nore in a dense and vibrant jungle they lived a group of young animals who were not like the
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.7134 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=5 dist=0.8543 preview=Next, we can create a related image You can also type it Generate a image prompt for each scene This image script can be
+--------------------------------------------------------------------------------
+Question 2: What do the young animals love to spend their time doing?
+Answer: The young animals love to spend their time learning new things.
+Reference: Learning new things.
+Exact match: False
+F1: 0.429
+Generation score: 0.429
+Faithfulness score: 1.000
+Answer relevancy score: 0.429
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 0.500
+Reference in sources: True
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=0 dist=0.5671 preview=ai guys one dosaadi videora nore in a dense and vibrant jungle they lived a group of young animals who were not like the
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=7 dist=0.6309 preview=You can select the image and add it. You can select the background music. You can also select the background music. You 
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.6567 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=3 dist=0.8303 preview=ETHER A CREATMADAY VEAKLY TWO VIDEOS NAY YOU TO BALLY UPLOAD MADAY SIMPA LAGII INCOM GENERATMADAY NIMGA VON A STIP NIMGA
+--------------------------------------------------------------------------------
+Question 3: How many videos do the young learners create weekly?
+Answer: Two videos are created weekly.
+Reference: Two videos.
+Exact match: False
+F1: 0.571
+Generation score: 0.571
+Faithfulness score: 1.000
+Answer relevancy score: 0.571
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=3 dist=0.5168 preview=ETHER A CREATMADAY VEAKLY TWO VIDEOS NAY YOU TO BALLY UPLOAD MADAY SIMPA LAGII INCOM GENERATMADAY NIMGA VON A STIP NIMGA
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.5695 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=7 dist=0.6157 preview=You can select the image and add it. You can select the background music. You can also select the background music. You 
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=6 dist=0.7148 preview=You can also copy the text and paste it in the text You can also use high quality images Like 8K Ultra images, Pixas sty
+--------------------------------------------------------------------------------
+Question 4: Where do they upload their videos?
+Answer: They upload their videos on YouTube.
+Reference: YouTube.
+Exact match: False
+F1: 0.286
+Generation score: 0.286
+Faithfulness score: 1.000
+Answer relevancy score: 0.286
+Retrieval score: 0.500
+Context precision: 0.500
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.5651 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=3 dist=0.6008 preview=ETHER A CREATMADAY VEAKLY TWO VIDEOS NAY YOU TO BALLY UPLOAD MADAY SIMPA LAGII INCOM GENERATMADAY NIMGA VON A STIP NIMGA
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=7 dist=0.6685 preview=You can select the image and add it. You can select the background music. You can also select the background music. You 
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=6 dist=0.7120 preview=You can also copy the text and paste it in the text You can also use high quality images Like 8K Ultra images, Pixas sty
+--------------------------------------------------------------------------------
+Question 5: What type of tools can be used to create animation videos?
+Answer: AI tools can be used to create animation videos. Additionally, other tools such as Capcut, Kindmaster, InShort, and Power Director can also be used for editing and creating videos.
+Reference: AI tools, such as ChatGPT.
+Exact match: False
+F1: 0.235
+Generation score: 0.235
+Faithfulness score: 0.724
+Answer relevancy score: 0.235
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 0.400
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.4170 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=6 dist=0.4447 preview=You can also copy the text and paste it in the text You can also use high quality images Like 8K Ultra images, Pixas sty
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=3 dist=0.5052 preview=ETHER A CREATMADAY VEAKLY TWO VIDEOS NAY YOU TO BALLY UPLOAD MADAY SIMPA LAGII INCOM GENERATMADAY NIMGA VON A STIP NIMGA
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=7 dist=0.5805 preview=You can select the image and add it. You can select the background music. You can also select the background music. You 
+--------------------------------------------------------------------------------
+Question 6: What is the process of creating an animation video?
+Answer: The process of creating an animation video involves several steps:
+* Creating a script or a small story with good learning
+* Generating an image prompt for each scene
+* Using AI tools to create high-quality images
+* Selecting the ratio and using video to view
+* Editing using Capcut or other apps like Kindmaster, InShort, Power Director
+* Adding background music and video effects
+* Uploading the video to YouTube 
+
+Note that the provided excerpts do not give a clear, step-by-step guide, but these are the general steps that can be gathered from the context.
+Reference: Create a script, generate related images, and edit the video using tools like CapCut or Power Director.
+Exact match: False
+F1: 0.257
+Generation score: 0.257
+Faithfulness score: 0.620
+Answer relevancy score: 0.257
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.824
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.4756 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=6 dist=0.5107 preview=You can also copy the text and paste it in the text You can also use high quality images Like 8K Ultra images, Pixas sty
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=3 dist=0.5356 preview=ETHER A CREATMADAY VEAKLY TWO VIDEOS NAY YOU TO BALLY UPLOAD MADAY SIMPA LAGII INCOM GENERATMADAY NIMGA VON A STIP NIMGA
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=2 dist=0.6463 preview=JUST ONE MINUTELY NIMGA E HIGH QUALITY EMAGESGENERAT AGUTE NODY EAST CREASIAL VAA SO SAME LASINESKU TEXT NAPESHMADKONDO 
+--------------------------------------------------------------------------------
+Question 7: How long does it take to create an image or animation?
+Answer: This image script can be created in the next 2 seconds.
+Reference: Just 30 seconds.
+Exact match: False
+F1: 0.143
+Generation score: 0.143
+Faithfulness score: 1.000
+Answer relevancy score: 0.143
+Retrieval score: 0.500
+Context precision: 0.500
+Context recall: 0.667
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 0.500
+Reference in sources: True
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=6 dist=0.5288 preview=You can also copy the text and paste it in the text You can also use high quality images Like 8K Ultra images, Pixas sty
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.6307 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=5 dist=0.6329 preview=Next, we can create a related image You can also type it Generate a image prompt for each scene This image script can be
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=3 dist=0.6513 preview=ETHER A CREATMADAY VEAKLY TWO VIDEOS NAY YOU TO BALLY UPLOAD MADAY SIMPA LAGII INCOM GENERATMADAY NIMGA VON A STIP NIMGA
+--------------------------------------------------------------------------------
+Question 8: What features can be added to the video?
+Answer: * Image
+* Background music
+* Automatic subtitles
+* Subtitles with choice of font 
+* Voiceover 
+* Video effects
+Reference: Background music, automatic subtitles, and video effects.
+Exact match: False
+F1: 0.600
+Generation score: 0.600
+Faithfulness score: 0.923
+Answer relevancy score: 0.600
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 0.500
+Reference in sources: True
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=3 dist=0.4245 preview=ETHER A CREATMADAY VEAKLY TWO VIDEOS NAY YOU TO BALLY UPLOAD MADAY SIMPA LAGII INCOM GENERATMADAY NIMGA VON A STIP NIMGA
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=6 dist=0.4635 preview=You can also copy the text and paste it in the text You can also use high quality images Like 8K Ultra images, Pixas sty
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.4834 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=7 dist=0.4867 preview=You can select the image and add it. You can select the background music. You can also select the background music. You 
+--------------------------------------------------------------------------------
+Question 9: How can the video be optimized for YouTube?
+Answer: You can upload the video on YouTube and make it a general video. When you create the animation video, you can also use AI tools. Additionally, you can select the image, add background music, and use video effects to optimize the video for YouTube.
+Reference: By adding subtitles, choosing a font, and exporting the video with SEO.
+Exact match: False
+F1: 0.143
+Generation score: 0.143
+Faithfulness score: 0.932
+Answer relevancy score: 0.143
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.417
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: False
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=6 dist=0.5472 preview=You can also copy the text and paste it in the text You can also use high quality images Like 8K Ultra images, Pixas sty
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=3 dist=0.5540 preview=ETHER A CREATMADAY VEAKLY TWO VIDEOS NAY YOU TO BALLY UPLOAD MADAY SIMPA LAGII INCOM GENERATMADAY NIMGA VON A STIP NIMGA
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.5543 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=2 dist=0.5700 preview=JUST ONE MINUTELY NIMGA E HIGH QUALITY EMAGESGENERAT AGUTE NODY EAST CREASIAL VAA SO SAME LASINESKU TEXT NAPESHMADKONDO 
+--------------------------------------------------------------------------------
+Question 10: What is the benefit of using AI tools for creating animation videos?
+Answer: The benefit of using AI tools for creating animation videos is that they can help generate high-quality images and scripts quickly. For example, you can generate an image script in just 2 seconds. Additionally, AI tools can be used to create a small story with good learning, and you can also use them to select high-quality images, such as 8K Ultra images, and add background music to your video.
+Reference: They are free to use and can generate high-quality images and videos.
+Exact match: False
+F1: 0.262
+Generation score: 0.262
+Faithfulness score: 0.803
+Answer relevancy score: 0.262
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=4 dist=0.4499 preview=Hi guys, one of the videos is in a dense and vibrant jungle They are lived a group of young animals who were not like th
+[2] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=6 dist=0.4956 preview=You can also copy the text and paste it in the text You can also use high quality images Like 8K Ultra images, Pixas sty
+[3] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=3 dist=0.5236 preview=ETHER A CREATMADAY VEAKLY TWO VIDEOS NAY YOU TO BALLY UPLOAD MADAY SIMPA LAGII INCOM GENERATMADAY NIMGA VON A STIP NIMGA
+[4] transcript_id=9b562b66-fdf7-411d-8a28-7fbd98fca366 chunk=2 dist=0.5594 preview=JUST ONE MINUTELY NIMGA E HIGH QUALITY EMAGESGENERAT AGUTE NODY EAST CREASIAL VAA SO SAME LASINESKU TEXT NAPESHMADKONDO 
+--------------------------------------------------------------------------------

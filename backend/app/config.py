@@ -22,12 +22,16 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = "video_lecture_transcript"
 
     # Security
-    SECRET_KEY: str = "change-me"
+    SECRET_KEY: str = "dev-local-7f3c9a1e8b6d4f2a0c5e9b7d1a3f6c8e2d4b6a8c0e1f3d5b7a9c1e3f5d7b9a1c"
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15  # 15 minutes
+
+    # Logging
+    LOG_LEVEL: str = "INFO"
 
     # CORS
     BACKEND_CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
+    BACKEND_CORS_ORIGIN_REGEX: str | None = r"https://.*\\.ngrok-(free|app)\\.dev|https://.*\\.loca\\.lt"
 
     # Seeding
     SEED_DEMO_DATA: bool = True
@@ -50,6 +54,10 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(",") if origin.strip()]
+
+    @property
+    def cors_origin_regex(self) -> str | None:
+        return self.BACKEND_CORS_ORIGIN_REGEX.strip() or None
 
 
 @lru_cache

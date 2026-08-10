@@ -1,73 +1,114 @@
-# Run ALL services on ONE machine (single cloud VM — free Oracle tier recommended)
-#
-# Usage:
-#   cp .env.docker.example .env.docker
-#   # edit .env.docker — set GROQ_API_KEY and POSTGRES_PASSWORD
-#   docker compose --env-file .env.docker up -d --build
-#
-# Open: http://YOUR_SERVER_IP
-
 services:
   db:
     image: postgres:16-alpine
+    container_name: video-lecture-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: video_lecture_transcript
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:-video_lecture_transcript}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-video_lecture_transcript}"]
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: video-lecture-backend
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+psycopg://postgres:${POSTGRES_PASSWORD}@db:5432/video_lecture_transcript
-      SECRET_KEY: ${SECRET_KEY}
-      BACKEND_CORS_ORIGINS: ${PUBLIC_ORIGIN:-http://localhost}
-      SEED_DEMO_DATA: "true"
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://postgres:change-me@db:5432/video_lecture_transcript}
+      SECRET_KEY: ${SECRET_KEY:-change-me-long-random-secret-key}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-10080}
+      BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-true}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      PORT: 8000
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+      - uploads_data:/data/uploads
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)\""]
+      interval: 15s
+      timeout: 10s
+      retries: 10
 
   rag:
     build:
       context: .
       dockerfile: rag/Dockerfile
+    container_name: video-lecture-rag
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql+psycopg://postgres:${POSTGRES_PASSWORD}@db:5432/video_lecture_transcript
-      GROQ_API_KEY: ${GROQ_API_KEY}
-      CORS_ORIGINS: ${PUBLIC_ORIGIN:-http://localhost}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://postgres:change-me@db:5432/video_lecture_transcript}
+      SECRET_KEY: ${SECRET_KEY:-change-me-long-random-secret-key}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-llama-3.3-70b-versatile}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      OPENROUTER_MODEL: ${OPENROUTER_MODEL:-meta-llama/llama-3.2-3b-instruct:free}
       WHISPER_MODEL: ${WHISPER_MODEL:-tiny}
+      WHISPER_WORD_TIMESTAMPS: ${WHISPER_WORD_TIMESTAMPS:-false}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2}
       CHROMA_DIR: /data/chroma
-    volumes:
-      - chroma:/data/chroma
-      - hf_cache:/data/hf
+      CHROMA_COLLECTION: ${CHROMA_COLLECTION:-transcripts_multilingual}
+      MEDIA_DIR: /data/media
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      PORT: 8100
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - chroma_data:/data/chroma
+      - media_data:/data/media
+      - hf_cache:/data/hf
+      - ./logs:/app/logs
+    ports:
+      - "8100:8100"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8100/health', timeout=5)\""]
+      interval: 15s
+      timeout: 10s
+      retries: 10
 
-  gateway:
+  frontend:
     build:
       context: .
-      dockerfile: deploy/Dockerfile.gateway
+      dockerfile: frontend/Dockerfile
       args:
-        VITE_API_URL: /api
-        VITE_RAG_API_URL: ""
+        VITE_API_URL: ${VITE_API_URL:-/api}
+        VITE_RAG_API_URL: ${VITE_RAG_API_URL:-}
+    container_name: video-lecture-frontend
     restart: unless-stopped
-    ports:
-      - "80:80"
     depends_on:
-      - backend
-      - rag
+      backend:
+        condition: service_healthy
+      rag:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
 
 volumes:
-  pgdata:
-  chroma:
+  postgres_data:
+  uploads_data:
+  chroma_data:
+  media_data:
   hf_cache:

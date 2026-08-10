@@ -1,0 +1,104 @@
+=== Evaluation Summary ===
+Questions evaluated: 5
+Exact match: 0/5
+Average F1: 0.388
+Average generation score: 0.388
+Average faithfulness score: 0.971
+Average retrieval score: 1.000
+Average context precision: 0.971
+Average context recall: 0.701
+No-answer fallback responses: 0/5
+Reference answer covered by sources: 0.800
+Overall: The model is weak on this dataset and needs improvement.
+==========================
+
+Question 1: What does the video clarify about the term 'Python'?
+Answer: We are going to see Python. We are going to see a small clarification.
+Reference: The video clarifies that Python is not the same as a snake, and it is a high-level programming language used to communicate between users and systems.
+Exact match: False
+F1: 0.146
+Generation score: 0.146
+Faithfulness score: 1.000
+Answer relevancy score: 0.146
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.778
+Reference in sources: True
+Sources:
+[1] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=6 dist=0.3782 preview=So, this is the simple Python. So, this is the video. In the future, we will have to write in the comments section of th
+[2] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=3 dist=0.4542 preview=Welcome to Python Life YouTube channel. We are discussing what is Python and what is Python and what is snake? All of th
+[3] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=0 dist=0.5030 preview=Welcome to Python Life YouTube Channel 演 vyavý lenou moneyng wottis paitannaj recuer Deiscodearies parrotknom Paitanodi 
+[4] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=2 dist=0.6688 preview=Okana, so ipa anunchi paitananan te ii di jeppali. Kampal sa ari paitanan. Vartis paitanananna puru snakean gahan ga adh
+--------------------------------------------------------------------------------
+Question 2: What type of language do human users understand?
+Answer: High level language.
+Reference: Human users understand a high-level language.
+Exact match: False
+F1: 0.600
+Generation score: 0.600
+Faithfulness score: 1.000
+Answer relevancy score: 0.600
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.571
+Reference in sources: False
+Sources:
+[1] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=1 dist=0.3847 preview=Object oriented hai leval programming language in jeppali. Ipudayana parchupogandi. Adha edanga paitanan ni te ghaan de 
+[2] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=4 dist=0.4653 preview=So, we are going to communicate with you. So, here, we are going to use the high level language. I am going to use the h
+[3] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=5 dist=0.5272 preview=The high level programming language is the high level programming language. So, we are going to use the high level progr
+[4] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=3 dist=0.6339 preview=Welcome to Python Life YouTube channel. We are discussing what is Python and what is Python and what is snake? All of th
+--------------------------------------------------------------------------------
+Question 3: What language does a machine understand?
+Answer: The programming language of the machine.
+Reference: The video does not explicitly state a machine language, but it contrasts it with a high-level language used for communication between users and systems.
+Exact match: False
+F1: 0.194
+Generation score: 0.194
+Faithfulness score: 1.000
+Answer relevancy score: 0.194
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.640
+Reference in sources: True
+Sources:
+[1] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=1 dist=0.4034 preview=Object oriented hai leval programming language in jeppali. Ipudayana parchupogandi. Adha edanga paitanan ni te ghaan de 
+[2] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=4 dist=0.4316 preview=So, we are going to communicate with you. So, here, we are going to use the high level language. I am going to use the h
+[3] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=5 dist=0.5552 preview=The high level programming language is the high level programming language. So, we are going to use the high level progr
+[4] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=3 dist=0.6964 preview=Welcome to Python Life YouTube channel. We are discussing what is Python and what is Python and what is snake? All of th
+--------------------------------------------------------------------------------
+Question 4: What is the main purpose of a programming language?
+Answer: The main purpose of a programming language is to communicate between user and machine.
+Reference: The main purpose of a programming language is to communicate between users and the system, and to provide a language that is easy to use.
+Exact match: False
+F1: 0.615
+Generation score: 0.615
+Faithfulness score: 0.857
+Answer relevancy score: 0.615
+Retrieval score: 1.000
+Context precision: 0.857
+Context recall: 0.800
+Reference in sources: True
+Sources:
+[1] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=5 dist=0.4836 preview=The high level programming language is the high level programming language. So, we are going to use the high level progr
+[2] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=1 dist=0.5446 preview=Object oriented hai leval programming language in jeppali. Ipudayana parchupogandi. Adha edanga paitanan ni te ghaan de 
+[3] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=4 dist=0.6159 preview=So, we are going to communicate with you. So, here, we are going to use the high level language. I am going to use the h
+[4] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=3 dist=0.6896 preview=Welcome to Python Life YouTube channel. We are discussing what is Python and what is Python and what is snake? All of th
+--------------------------------------------------------------------------------
+Question 5: How is Python formally defined in the video?
+Answer: Python is an interpreted object oriented high level programming language.
+Reference: Python is not formally defined in the video; the speaker only describes it as a high-level language used for programming.
+Exact match: False
+F1: 0.387
+Generation score: 0.387
+Faithfulness score: 1.000
+Answer relevancy score: 0.387
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.714
+Reference in sources: True
+Sources:
+[1] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=6 dist=0.3856 preview=So, this is the simple Python. So, this is the video. In the future, we will have to write in the comments section of th
+[2] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=3 dist=0.4760 preview=Welcome to Python Life YouTube channel. We are discussing what is Python and what is Python and what is snake? All of th
+[3] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=0 dist=0.5441 preview=Welcome to Python Life YouTube Channel 演 vyavý lenou moneyng wottis paitannaj recuer Deiscodearies parrotknom Paitanodi 
+[4] transcript_id=1af1c81c-7faf-48e7-9a05-8d64939e083c chunk=5 dist=0.6537 preview=The high level programming language is the high level programming language. So, we are going to use the high level progr
+--------------------------------------------------------------------------------

@@ -1,0 +1,9 @@
+| Model                 | Open Source | Offline | Multilingual       | Accuracy | Cost | Best Use Case                             |
+| --------------------- | ----------- | ------- | ------------------ | -------- | ---- | ----------------------------------------- |
+| Whisper AI (Used)     | Yes         | Yes     | 99languages        | High     | Free | Multilingual transcription, RAG systems   |
+| Google Speech-to-Text | No          | No      | Yes                | High     | Paid | Cloud-based applications                  |
+| Azure Speech Service  | No          | No      | Yes                | High     | Paid | Enterprise applications                   |
+| Amazon Transcribe     | No          | No      | Yes                | High     | Paid | AWS ecosystem                             |
+| Deepgram              | No          | No      | Yes                | High     | Paid | Real-time transcription                   |
+| Vosk                  | Yes         | Yes     | Limited            | Moderate | Free | Lightweight offline applications          |
+| NVIDIA NeMo ASR       | Yes         | Yes     | Yes                | High     | Free | GPU-based research and enterprise systems |

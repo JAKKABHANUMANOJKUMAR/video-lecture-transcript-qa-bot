@@ -18,6 +18,12 @@ DEMO_ACCOUNTS = [
         "password": "password",
         "role": "user",
     },
+    {
+        "full_name": "Load Test User",
+        "email": "loadtest@example.com",
+        "password": "LoadTest123!",
+        "role": "user",
+    },
 ]
 
 

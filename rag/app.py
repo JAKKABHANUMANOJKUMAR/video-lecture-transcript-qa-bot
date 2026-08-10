@@ -12,13 +12,15 @@ Endpoints:
 
 from __future__ import annotations
 
+import logging
 import re
 import shutil
 import tempfile
+import time
 from pathlib import Path
 
 import chromadb
-from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, HTTPException, Query, UploadFile
+from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
@@ -48,6 +50,29 @@ from rag.pipeline.url_download import (
 from rag.pipeline.vectorstore import query as vector_query
 
 app = FastAPI(title="Lekta RAG Service", version="1.0.0")
+
+logger = logging.getLogger("rag_service")
+logger.setLevel(getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO))
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(asctime)s | %(levelname)s | %(name)s | %(message)s"))
+    logger.addHandler(handler)
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    logger.info("incoming request: %s %s", request.method, request.url.path)
+    try:
+        response = await call_next(request)
+        duration_ms = round((time.time() - start_time) * 1000, 2)
+        logger.info("completed request: %s %s status=%s duration_ms=%.2f", request.method, request.url.path, response.status_code, duration_ms)
+        return response
+    except Exception as exc:
+        duration_ms = round((time.time() - start_time) * 1000, 2)
+        logger.exception("failed request: %s %s duration_ms=%.2f error=%s", request.method, request.url.path, duration_ms, exc)
+        raise
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -143,6 +168,9 @@ def _run_ingest_job(
                 "num_chunks": result.num_chunks,
                 "media_key": result.media_key,
                 "title": title,
+                "audio_extract_seconds": getattr(result, "audio_extract_seconds", None),
+                "transcribe_seconds": getattr(result, "transcribe_seconds", None),
+                "embedding_seconds": getattr(result, "embedding_seconds", None),
             },
         )
     except Exception as exc:
@@ -203,6 +231,7 @@ def _chunk_payload(doc: str, meta: dict, embedding: list[float] | None, distance
 
 @app.get("/health")
 def health():
+    logger.info("healthcheck requested")
     return {"status": "healthy"}
 
 
@@ -490,10 +519,12 @@ async def ingest(
     try:
         shutil.copyfileobj(file.file, tmp)
         tmp.close()
+        logger.info("started ingest job job_id=%s video_id=%s user_id=%s filename=%s", job_id, video_id, user_id, file.filename)
         background_tasks.add_task(
             _run_ingest_job, job_id, tmp.name, title or file.filename, video_id, user_id
         )
     except Exception as exc:
+        logger.exception("ingest failed job_id=%s video_id=%s user_id=%s", job_id, video_id, user_id)
         Path(tmp.name).unlink(missing_ok=True)
         progress_store.fail(job_id, str(exc))
         raise HTTPException(status_code=500, detail=str(exc)) from exc
@@ -602,6 +633,7 @@ async def ingest_url(
         )
 
     job_id = progress_store.create()
+    logger.info("started url ingest job job_id=%s video_id=%s user_id=%s url=%s", job_id, req.video_id, user_id, req.url)
     background_tasks.add_task(
         _run_url_ingest_job, job_id, req.url, req.title, req.video_id, user_id
     )
@@ -627,8 +659,10 @@ def ingest_status(job_id: str):
 @app.post("/query")
 def query(req: QueryRequest, user_id: str | None = Depends(get_optional_user_id)):
     if not req.question.strip():
+        logger.warning("query rejected: empty question user_id=%s", user_id)
         raise HTTPException(status_code=400, detail="Question must not be empty")
     try:
+        logger.info("processing query user_id=%s video_id=%s transcript_id=%s search_all=%s", user_id, req.video_id, req.transcript_id, req.search_all)
         result = answer_question(
             req.question,
             top_k=req.top_k,
@@ -638,8 +672,10 @@ def query(req: QueryRequest, user_id: str | None = Depends(get_optional_user_id)
             user_id=user_id,
         )
     except Exception as exc:
+        logger.exception("query failed user_id=%s question=%s", user_id, req.question)
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
+    logger.info("query completed user_id=%s answer_length=%s", user_id, len(result.answer or ""))
     return {
         "answer": result.answer,
         "sources": result.sources,

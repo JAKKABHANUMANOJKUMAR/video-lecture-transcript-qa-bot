@@ -1,0 +1,47 @@
+[
+  {
+    "question": "What is the definition of Machine Learning?",
+    "reference_answer": "Machine Learning is a subfield of computer science that gives computers the ability to learn without being explicitly programmed.",
+    "top_k": 4
+  },
+  {
+    "question": "Who originally stated that Machine Learning allows computers to learn without being explicitly programmed?",
+    "reference_answer": "The lecture excerpt does not provide enough information to determine who made that statement.",
+    "top_k": 4
+  },
+  {
+    "question": "How does Machine Learning fit into the broader field of computer science?",
+    "reference_answer": "Machine Learning is a subfield of computer science.",
+    "top_k": 4
+  },
+  {
+    "question": "What is 'Sentiment Analysis' as described by the speaker?",
+    "reference_answer": "Sentiment Analysis is an application of Machine Learning where computers analyze text such as tweets to understand the emotion or sentiment behind the text.",
+    "top_k": 4
+  },
+  {
+    "question": "What does the concept of 'extraction of knowledge from data' mean?",
+    "reference_answer": "It means extracting useful knowledge from data to make decisions or predictions, which is a key aspect of Machine Learning.",
+    "top_k": 4
+  },
+  {
+    "question": "How does Machine Learning predict the future?",
+    "reference_answer": "It learns from past behavior and uses that learning to make predictions about future outcomes.",
+    "top_k": 4
+  },
+  {
+    "question": "What real-world example is used to explain how Machine Learning makes predictions?",
+    "reference_answer": "A tweet is used as a real-world example to explain how Machine Learning makes predictions in sentiment analysis.",
+    "top_k": 4
+  },
+  {
+    "question": "In Machine Learning, does a computer need step-by-step programming for every decision?",
+    "reference_answer": "No, a computer does not need step-by-step programming for every decision in Machine Learning.",
+    "top_k": 4
+  },
+  {
+    "question": "How does the speaker feel about the topic of Machine Learning?",
+    "reference_answer": "The speaker seems excited about Machine Learning and says they are very excited for the course.",
+    "top_k": 4
+  }
+]

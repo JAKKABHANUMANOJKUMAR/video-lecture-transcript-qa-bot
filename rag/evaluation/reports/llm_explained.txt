@@ -1,0 +1,229 @@
+=== Evaluation Summary ===
+Questions evaluated: 10
+Exact match: 1/10
+Average F1: 0.513
+Average generation score: 0.513
+Average faithfulness score: 0.912
+Average retrieval score: 0.975
+Average context precision: 0.975
+Average context recall: 0.930
+Average Recall@k: 1.000
+Average Hit Rate (Hit@k): 1.000
+Average MRR: 1.000
+No-answer fallback responses: 1/10
+Reference answer covered by sources: 1.000
+Overall: The model is moderate and may need tuning or more data.
+==========================
+
+Question 1: What is the final function performed on the last vector in the sequence?
+Answer: The final function performed on the last vector in the sequence is to produce a prediction of the next word. This prediction looks like a probability for every possible next word.
+Reference: The final function performed is to produce a prediction of the next word.
+Exact match: False
+F1: 0.591
+Generation score: 0.591
+Faithfulness score: 1.000
+Answer relevancy score: 0.591
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=8 dist=0.3036 preview=At the end, one final function is performed on the last vector in this sequence, which now has had a chance to be influe
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=3 dist=0.7179 preview=Instead they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many exa
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=2 dist=0.7936 preview=For a standard human to read the amount of text that was used to train GPT-3, for example, if they read non-stop 24-7, i
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=7 dist=0.8053 preview=and refine the meanings that they encode based on the context around, all done in parallel. For example, the numbers enc
+--------------------------------------------------------------------------------
+Question 2: What does the model's prediction look like?
+Answer: The model's prediction looks like a probability for every possible next word.
+Reference: The model's prediction looks like a probability for every possible next word.
+Exact match: True
+F1: 1.000
+Generation score: 1.000
+Faithfulness score: 1.000
+Answer relevancy score: 1.000
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=8 dist=0.4103 preview=At the end, one final function is performed on the last vector in this sequence, which now has had a chance to be influe
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=3 dist=0.5108 preview=Instead they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many exa
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=4 dist=0.5878 preview=give more accurate predictions on the training data, but it also starts to make more reasonable predictions on text that
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=0 dist=0.6574 preview=Imagine you happen across a short movie script that describes a scene between a person and their AI assistant. The scrip
+--------------------------------------------------------------------------------
+Question 3: Why is it challenging to determine why the model makes exact predictions?
+Answer: It's challenging to determine why the model makes the exact predictions that it does because the specific behavior is an emergent phenomenon based on how those hundreds of billions of parameters are tuned during training.
+Reference: It's challenging because the specific behavior is an emergent phenomenon based on how hundreds of billions of parameters are tuned during training.
+Exact match: False
+F1: 0.780
+Generation score: 0.780
+Faithfulness score: 0.972
+Answer relevancy score: 0.780
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.957
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=8 dist=0.4227 preview=At the end, one final function is performed on the last vector in this sequence, which now has had a chance to be influe
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=3 dist=0.4333 preview=Instead they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many exa
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=4 dist=0.5452 preview=give more accurate predictions on the training data, but it also starts to make more reasonable predictions on text that
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=5 dist=0.6142 preview=This whole process is called pre-training. The goal of auto-completing a random passage of text from the internet is ver
+--------------------------------------------------------------------------------
+Question 4: What can be seen when using large language model predictions to autocomplete a prompt?
+Answer: When using large language model predictions to autocomplete a prompt, the words that it generates are uncannily fluent, fascinating, and even useful.
+Reference: The words that it generates are uncannily fluent, fascinating, and even useful.
+Exact match: False
+F1: 0.706
+Generation score: 0.706
+Faithfulness score: 1.000
+Answer relevancy score: 0.706
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=4 dist=0.4045 preview=give more accurate predictions on the training data, but it also starts to make more reasonable predictions on text that
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=3 dist=0.4239 preview=Instead they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many exa
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=8 dist=0.4402 preview=At the end, one final function is performed on the last vector in this sequence, which now has had a chance to be influe
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=5 dist=0.4750 preview=This whole process is called pre-training. The goal of auto-completing a random passage of text from the internet is ver
+--------------------------------------------------------------------------------
+Question 5: What is the scale of computation involved in training a large language model?
+Answer: The scale of computation involved in training a large language model is mind-boggling. To illustrate, if you could perform one billion additions and multiplications every single second, it would take over 100 million years to do all of the operations involved in training the largest language models. This is made possible by using special computer chips that are optimized for running many, many operations in parallel, known as GPUs. Additionally, the amount of text used to train these models is enormous, with a human taking over 2600 years to read the amount of text used to train GPT-3, and larger models training on much more text than that.
+Reference: The scale of computation involved is mind-boggling, with the largest language models requiring over 100 million years of computation.
+Exact match: False
+F1: 0.277
+Generation score: 0.277
+Faithfulness score: 0.982
+Answer relevancy score: 0.277
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.950
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=4 dist=0.2603 preview=give more accurate predictions on the training data, but it also starts to make more reasonable predictions on text that
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=3 dist=0.3996 preview=Instead they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many exa
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=5 dist=0.4274 preview=This whole process is called pre-training. The goal of auto-completing a random passage of text from the internet is ver
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=2 dist=0.4304 preview=For a standard human to read the amount of text that was used to train GPT-3, for example, if they read non-stop 24-7, i
+--------------------------------------------------------------------------------
+Question 6: What is the goal of pre-training in large language models?
+Answer: The goal of pre-training in large language models is to auto-complete a random passage of text from the internet. However, this goal is very different from the goal of being a good AI assistant, which is addressed through another type of training called reinforcement learning with human feedback.
+Reference: The goal of pre-training is to auto-complete a random passage of text from the internet.
+Exact match: False
+F1: 0.507
+Generation score: 0.507
+Faithfulness score: 0.960
+Answer relevancy score: 0.507
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.941
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=5 dist=0.3506 preview=This whole process is called pre-training. The goal of auto-completing a random passage of text from the internet is ver
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=4 dist=0.3809 preview=give more accurate predictions on the training data, but it also starts to make more reasonable predictions on text that
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=3 dist=0.4576 preview=Instead they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many exa
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=7 dist=0.5145 preview=and refine the meanings that they encode based on the context around, all done in parallel. For example, the numbers enc
+--------------------------------------------------------------------------------
+Question 7: What type of training do chatbots undergo to become good AI assistants?
+Answer: Chatbots undergo two types of training: 
+* Pre-training, where the goal is to auto-complete a random passage of text from the internet.
+* Reinforcement learning with human feedback, which involves using flag-unhelpful or problematic predictions and their corrections to further change the model's parameters, making them more likely to give predictions that users prefer.
+Reference: Chatbots undergo reinforcement learning with human feedback.
+Exact match: False
+F1: 0.222
+Generation score: 0.222
+Faithfulness score: 0.946
+Answer relevancy score: 0.222
+Retrieval score: 0.750
+Context precision: 0.750
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=1 dist=0.3102 preview=to all possible next words. To build a chatbot, what you do is lay out some text that describes an interaction between a
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=5 dist=0.3982 preview=This whole process is called pre-training. The goal of auto-completing a random passage of text from the internet is ver
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=0 dist=0.4747 preview=Imagine you happen across a short movie script that describes a scene between a person and their AI assistant. The scrip
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=7 dist=0.6340 preview=and refine the meanings that they encode based on the context around, all done in parallel. For example, the numbers enc
+--------------------------------------------------------------------------------
+Question 8: How do corrections from users change the model's parameters?
+Answer: I don't have enough information from the provided lecture to answer that question.
+Reference: Corrections from users further change the model's parameters, making them more likely to give predictions that users prefer.
+Exact match: False
+F1: 0.242
+Generation score: 0.242
+Faithfulness score: 0.429
+Answer relevancy score: 0.242
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.632
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=8 dist=0.6576 preview=At the end, one final function is performed on the last vector in this sequence, which now has had a chance to be influe
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=3 dist=0.6611 preview=Instead they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many exa
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=2 dist=0.6711 preview=For a standard human to read the amount of text that was used to train GPT-3, for example, if they read non-stop 24-7, i
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=7 dist=0.7043 preview=and refine the meanings that they encode based on the context around, all done in parallel. For example, the numbers enc
+--------------------------------------------------------------------------------
+Question 9: What type of computer chips are used to make the computation possible?
+Answer: Special computer chips that are optimized for running many, many operations in parallel, known as GPUs, are used to make the computation possible.
+Reference: Special computer chips known as GPUs (Graphics Processing Units) are used.
+Exact match: False
+F1: 0.471
+Generation score: 0.471
+Faithfulness score: 0.957
+Answer relevancy score: 0.471
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 0.818
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=7 dist=0.5973 preview=and refine the meanings that they encode based on the context around, all done in parallel. For example, the numbers enc
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=5 dist=0.6656 preview=This whole process is called pre-training. The goal of auto-completing a random passage of text from the internet is ver
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=3 dist=0.6683 preview=Instead they begin at random, meaning the model just outputs gibberish, but they're repeatedly refined based on many exa
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=1 dist=0.6800 preview=to all possible next words. To build a chatbot, what you do is lay out some text that describes an interaction between a
+--------------------------------------------------------------------------------
+Question 10: What is the difference between language models prior to 2017 and transformers?
+Answer: The main difference between language models prior to 2017 and transformers is how they process text. Prior to 2017, most language models would process text one word at a time. In contrast, transformers process text in parallel, soaking it all in at once. This allows transformers to use a special operation known as attention, which gives lists of numbers (encoding words) a chance to refine their meanings based on the context around them, all done in parallel.
+Reference: Prior to 2017, most language models would process text one word at a time, but transformers don't read text from start to finish.
+Exact match: False
+F1: 0.337
+Generation score: 0.337
+Faithfulness score: 0.870
+Answer relevancy score: 0.337
+Retrieval score: 1.000
+Context precision: 1.000
+Context recall: 1.000
+Recall@k: 1.000
+Hit Rate (Hit@k): 1.000
+MRR: 1.000
+Reference in sources: True
+Sources:
+[1] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=6 dist=0.3743 preview=Prior to 2017, most language models would process text one word at a time. But then, a team of researchers at Google int
+[2] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=7 dist=0.5000 preview=and refine the meanings that they encode based on the context around, all done in parallel. For example, the numbers enc
+[3] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=9 dist=0.5624 preview=a prompt, the words that it generates are uncannily fluent, fascinating, and even useful. If you're a new viewer and you
+[4] transcript_id=a6c2e54c-e2d8-4e97-8046-4dcf507fc771 chunk=4 dist=0.6364 preview=give more accurate predictions on the training data, but it also starts to make more reasonable predictions on text that
+--------------------------------------------------------------------------------

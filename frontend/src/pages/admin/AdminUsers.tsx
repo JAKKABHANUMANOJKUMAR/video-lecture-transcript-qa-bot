@@ -99,12 +99,15 @@ export function AdminUsers() {
 
   const list = users ?? [];
 
+  const normalizeStatus = (status: string | null | undefined) =>
+    (status ?? '').trim().toLowerCase() || 'active';
+
   const counts = useMemo(
     () => ({
       all: list.length,
-      active: list.filter((u) => u.status === 'active').length,
-      inactive: list.filter((u) => u.status === 'inactive').length,
-      blocked: list.filter((u) => u.status === 'blocked').length,
+      active: list.filter((u) => normalizeStatus(u.status) === 'active').length,
+      inactive: list.filter((u) => normalizeStatus(u.status) === 'inactive').length,
+      blocked: list.filter((u) => normalizeStatus(u.status) === 'blocked').length,
     }),
     [list],
   );
@@ -119,7 +122,9 @@ export function AdminUsers() {
             u.full_name.toLowerCase().includes(needle) || u.email.toLowerCase().includes(needle),
         )
       : list;
-    return filter === 'all' ? searched : searched.filter((u) => u.status === filter);
+    return filter === 'all'
+      ? searched
+      : searched.filter((u) => normalizeStatus(u.status) === filter);
   }, [list, needle, filter]);
 
   /* ------------------------------------------------------------- actions */
@@ -129,8 +134,9 @@ export function AdminUsers() {
     setBusyId(user.id);
     try {
       const updated = await api.setUserStatus(user.id, next);
-      setUsers((prev) => (prev ? prev.map((u) => (u.id === user.id ? updated : u)) : prev));
-      setDetail((d) => (d?.id === user.id ? updated : d));
+      const normalized = { ...updated, status: normalizeStatus(updated.status) };
+      setUsers((prev) => (prev ? prev.map((u) => (u.id === user.id ? normalized : u)) : prev));
+      setDetail((d) => (d?.id === user.id ? normalized : d));
       const verb =
         next === 'blocked' ? 'blocked' : next === 'inactive' ? 'paused' : 'reactivated';
       toast('ok', `${user.full_name} ${verb}`, `Their account is now ${next}.`);
@@ -172,6 +178,8 @@ export function AdminUsers() {
   };
 
   /* -------------------------------------------------------------- render */
+
+  const detailStatus = detail ? normalizeStatus(detail.status) : null;
 
   const header = (
     <AdminHeader
@@ -227,6 +235,12 @@ export function AdminUsers() {
           label="Active"
           value={counts.active}
           tone="mint"
+        />
+        <StatCard
+          icon={<PauseCircle size={18} />}
+          label="Inactive"
+          value={counts.inactive}
+          tone="neutral"
         />
         <StatCard icon={<Ban size={18} />} label="Blocked" value={counts.blocked} tone="rose" />
         <StatCard icon={<ShieldCheck size={18} />} label="Admins" value={admins} tone="sky" />
@@ -312,7 +326,9 @@ export function AdminUsers() {
                     </div>
                   </Td>
                   <Td>
-                    <Tag tone={accountTone(u.status)}>{titleCaseStatus(u.status)}</Tag>
+                    <Tag tone={accountTone(normalizeStatus(u.status))}>
+                      {titleCaseStatus(normalizeStatus(u.status))}
+                    </Tag>
                   </Td>
                   <Td>
                     <Tag tone={u.role === 'admin' ? 'accent' : 'neutral'}>
@@ -344,7 +360,7 @@ export function AdminUsers() {
                           View details
                         </MenuItem>
                         <MenuSeparator />
-                        {u.status !== 'active' && (
+                        {normalizeStatus(u.status) !== 'active' && (
                           <MenuItem
                             icon={<CheckCircle2 size={15} />}
                             onClick={() => void setStatus(u, 'active')}
@@ -352,7 +368,7 @@ export function AdminUsers() {
                             Reactivate
                           </MenuItem>
                         )}
-                        {u.status !== 'inactive' && (
+                        {normalizeStatus(u.status) !== 'inactive' && (
                           <MenuItem
                             icon={<PauseCircle size={15} />}
                             onClick={() => void setStatus(u, 'inactive')}
@@ -360,7 +376,7 @@ export function AdminUsers() {
                             Mark inactive
                           </MenuItem>
                         )}
-                        {u.status !== 'blocked' && (
+                        {normalizeStatus(u.status) !== 'blocked' && (
                           <MenuItem
                             icon={<Ban size={15} />}
                             onClick={() => void setStatus(u, 'blocked')}
@@ -441,7 +457,9 @@ export function AdminUsers() {
               <div>
                 <dt className="text-micro uppercase text-ink-3">Status</dt>
                 <dd className="mt-1">
-                  <Tag tone={accountTone(detail.status)}>{titleCaseStatus(detail.status)}</Tag>
+                  <Tag tone={accountTone(detailStatus ?? detail.status)}>
+                    {titleCaseStatus(detailStatus ?? detail.status)}
+                  </Tag>
                 </dd>
               </div>
               <div>
@@ -476,7 +494,7 @@ export function AdminUsers() {
                 variant="secondary"
                 size="sm"
                 icon={<CheckCircle2 size={13} />}
-                disabled={detail.status === 'active'}
+                disabled={detailStatus === 'active'}
                 onClick={() => void setStatus(detail, 'active')}
               >
                 Active
@@ -485,7 +503,7 @@ export function AdminUsers() {
                 variant="secondary"
                 size="sm"
                 icon={<PauseCircle size={13} />}
-                disabled={detail.status === 'inactive'}
+                disabled={detailStatus === 'inactive'}
                 onClick={() => void setStatus(detail, 'inactive')}
               >
                 Inactive
@@ -494,7 +512,7 @@ export function AdminUsers() {
                 variant="secondary"
                 size="sm"
                 icon={<Ban size={13} />}
-                disabled={detail.status === 'blocked'}
+                disabled={detailStatus === 'blocked'}
                 onClick={() => void setStatus(detail, 'blocked')}
               >
                 Blocked

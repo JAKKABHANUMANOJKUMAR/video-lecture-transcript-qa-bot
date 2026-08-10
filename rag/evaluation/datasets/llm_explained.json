@@ -1,0 +1,16 @@
+{
+  "name": "llm_explained",
+  "video_path": "D:\\video-lecture-transcript-qa-bot\\test_videos\\vidssave.com Large Language Models explained briefly 144P.mp4",
+  "items": [
+    {"question": "What is the final function performed on the last vector in the sequence?", "reference_answer": "The final function performed is to produce a prediction of the next word."},
+    {"question": "What does the model's prediction look like?", "reference_answer": "The model's prediction looks like a probability for every possible next word."},
+    {"question": "Why is it challenging to determine why the model makes exact predictions?", "reference_answer": "It's challenging because the specific behavior is an emergent phenomenon based on how hundreds of billions of parameters are tuned during training."},
+    {"question": "What can be seen when using large language model predictions to autocomplete a prompt?", "reference_answer": "The words that it generates are uncannily fluent, fascinating, and even useful."},
+    {"question": "What is the scale of computation involved in training a large language model?", "reference_answer": "The scale of computation involved is mind-boggling, with the largest language models requiring over 100 million years of computation."},
+    {"question": "What is the goal of pre-training in large language models?", "reference_answer": "The goal of pre-training is to auto-complete a random passage of text from the internet."},
+    {"question": "What type of training do chatbots undergo to become good AI assistants?", "reference_answer": "Chatbots undergo reinforcement learning with human feedback."},
+    {"question": "How do corrections from users change the model's parameters?", "reference_answer": "Corrections from users further change the model's parameters, making them more likely to give predictions that users prefer."},
+    {"question": "What type of computer chips are used to make the computation possible?", "reference_answer": "Special computer chips known as GPUs (Graphics Processing Units) are used."},
+    {"question": "What is the difference between language models prior to 2017 and transformers?", "reference_answer": "Prior to 2017, most language models would process text one word at a time, but transformers don't read text from start to finish."}
+  ]
+}

@@ -11,7 +11,6 @@ from sqlalchemy import (
     func,
     select,
 )
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, column_property, mapped_column, relationship
 
 from app.database import Base
@@ -26,7 +25,7 @@ class User(Base):
 
     __tablename__ = "users"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=_uuid)
     full_name: Mapped[str] = mapped_column(String(255), nullable=False)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -54,9 +53,9 @@ class User(Base):
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=_uuid)
     user_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), ForeignKey("users.id", ondelete="CASCADE"), index=True
+        String(64), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     title: Mapped[str] = mapped_column(String(255), default="New chat")
     video_name: Mapped[str | None] = mapped_column(String(512), nullable=True)
@@ -77,9 +76,9 @@ class ChatSession(Base):
 class ChatMessage(Base):
     __tablename__ = "chat_messages"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=_uuid)
     session_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), ForeignKey("chat_sessions.id", ondelete="CASCADE"), index=True
+        String(64), ForeignKey("chat_sessions.id", ondelete="CASCADE"), index=True
     )
     role: Mapped[str] = mapped_column(String(20), nullable=False)  # user | bot
     content: Mapped[str] = mapped_column(Text, nullable=False)
@@ -93,9 +92,9 @@ class Video(Base):
 
     __tablename__ = "videos"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=_uuid)
     user_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), ForeignKey("users.id", ondelete="CASCADE"), index=True
+        String(64), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     title: Mapped[str] = mapped_column(String(512), nullable=False)
     subject: Mapped[str | None] = mapped_column(String(100), nullable=True)  # python | c | java | ml | rag
@@ -113,10 +112,10 @@ class Video(Base):
 class Complaint(Base):
     __tablename__ = "complaints"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=_uuid)
     ticket_id: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     user_id: Mapped[str] = mapped_column(
-        UUID(as_uuid=False), ForeignKey("users.id", ondelete="CASCADE"), index=True
+        String(64), ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     category: Mapped[str] = mapped_column(String(50), default="other")
@@ -134,11 +133,11 @@ class Complaint(Base):
 class Alert(Base):
     __tablename__ = "alerts"
 
-    id: Mapped[str] = mapped_column(UUID(as_uuid=False), primary_key=True, default=_uuid)
+    id: Mapped[str] = mapped_column(String(64), primary_key=True, default=_uuid)
     alert_code: Mapped[str] = mapped_column(String(30), unique=True, index=True)
     alert_type: Mapped[str] = mapped_column(String(50), nullable=False)  # complaint | system | security
     user_id: Mapped[str | None] = mapped_column(
-        UUID(as_uuid=False), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+        String(64), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
     user_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     message: Mapped[str] = mapped_column(Text, nullable=False)

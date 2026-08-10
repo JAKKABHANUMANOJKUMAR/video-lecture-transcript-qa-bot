@@ -1,0 +1,1823 @@
+2026-07-31 02:09:30 | INFO | video_lecture_bot | Starting Video Lecture Transcript Q&A API
+2026-07-31 02:09:31 | INFO | video_lecture_bot | Starting Video Lecture Transcript Q&A API
+2026-07-31 02:09:36 | INFO | video_lecture_bot | test message
+2026-07-31 02:10:16 | INFO | video_lecture_bot | Shutting down Video Lecture Transcript Q&A API
+2026-07-31 02:10:16 | INFO | video_lecture_bot | Shutting down Video Lecture Transcript Q&A API
+2026-07-31 02:10:20 | INFO | video_lecture_bot | Starting Video Lecture Transcript Q&A API
+2026-07-31 02:10:21 | INFO | video_lecture_bot | Starting Video Lecture Transcript Q&A API
+2026-07-31 02:10:51 | INFO | video_lecture_bot | incoming request: GET /docs
+2026-07-31 02:10:51 | INFO | video_lecture_bot | completed request: GET /docs status=200 duration_ms=1.88
+2026-07-31 02:11:53 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:53 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:53 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:53 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=158.07
+2026-07-31 02:11:54 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:11:54 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=807.73
+2026-07-31 02:11:54 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:11:54 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=24.84
+2026-07-31 02:11:54 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:11:54 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=85.83
+2026-07-31 02:11:54 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:54 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:54 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=10.71
+2026-07-31 02:11:54 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:11:54 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=5.19
+2026-07-31 02:11:55 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:55 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:55 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:55 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=34.36
+2026-07-31 02:11:56 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:56 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:56 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=11.85
+2026-07-31 02:11:56 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:11:56 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=752.99
+2026-07-31 02:11:56 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:11:56 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=5.24
+2026-07-31 02:11:56 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:11:56 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:56 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=3.52
+2026-07-31 02:11:56 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:56 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=56.24
+2026-07-31 02:11:56 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:11:56 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=3.56
+2026-07-31 02:11:56 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:11:56 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=3.51
+2026-07-31 02:11:57 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:57 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:57 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=8.49
+2026-07-31 02:11:57 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:57 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:57 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:57 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=14.09
+2026-07-31 02:11:58 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:11:58 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=725.98
+2026-07-31 02:11:58 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:11:58 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=10.46
+2026-07-31 02:11:58 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:58 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:58 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=17.86
+2026-07-31 02:11:58 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:11:58 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=2.15
+2026-07-31 02:11:58 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:11:58 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.63
+2026-07-31 02:11:58 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:11:58 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=4.02
+2026-07-31 02:11:59 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:59 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:59 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=11.17
+2026-07-31 02:11:59 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:11:59 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:11:59 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=9.83
+2026-07-31 02:12:00 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:00 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:00 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=9.29
+2026-07-31 02:12:00 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:00 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=4.06
+2026-07-31 02:12:00 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:00 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:00 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=46.47
+2026-07-31 02:12:00 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:00 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.79
+2026-07-31 02:12:00 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:12:00 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=4.09
+2026-07-31 02:12:01 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:01 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:01 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=21.35
+2026-07-31 02:12:01 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:12:01 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=7.61
+2026-07-31 02:12:01 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:12:01 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:01 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=9.20
+2026-07-31 02:12:01 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:01 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=27.87
+2026-07-31 02:12:02 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:02 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.64
+2026-07-31 02:12:03 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:03 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:03 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=24.73
+2026-07-31 02:12:03 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:03 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=3.66
+2026-07-31 02:12:03 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:12:03 | INFO | video_lecture_bot | completed request: POST /api/videos status=401 duration_ms=7.17
+2026-07-31 02:12:03 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:03 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:03 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=8.75
+2026-07-31 02:12:04 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:12:04 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=3.24
+2026-07-31 02:12:04 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:12:04 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=4.65
+2026-07-31 02:12:04 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:04 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:04 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=18.04
+2026-07-31 02:12:05 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:05 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:05 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=26.33
+2026-07-31 02:12:05 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:12:05 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.41
+2026-07-31 02:12:05 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:05 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:05 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=9.08
+2026-07-31 02:12:06 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:06 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=3.75
+2026-07-31 02:12:06 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:06 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.65
+2026-07-31 02:12:06 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:12:06 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.39
+2026-07-31 02:12:06 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:06 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:06 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=8.66
+2026-07-31 02:12:07 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:07 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:07 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=14.63
+2026-07-31 02:12:07 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:07 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.30
+2026-07-31 02:12:07 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:07 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=3.70
+2026-07-31 02:12:08 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:08 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:08 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=24.42
+2026-07-31 02:12:08 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:08 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=4.11
+2026-07-31 02:12:08 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:12:08 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=6.65
+2026-07-31 02:12:08 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:12:08 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=14.37
+2026-07-31 02:12:09 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:09 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:09 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=15.39
+2026-07-31 02:12:09 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:09 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:09 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=19.82
+2026-07-31 02:12:10 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:10 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=5.84
+2026-07-31 02:12:10 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:10 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.62
+2026-07-31 02:12:10 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:10 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:10 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=16.99
+2026-07-31 02:12:10 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:12:10 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=6.51
+2026-07-31 02:12:11 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:11 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:11 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=11.05
+2026-07-31 02:12:11 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:11 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.99
+2026-07-31 02:12:12 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:12 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:12 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=15.54
+2026-07-31 02:12:12 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:12:12 | INFO | video_lecture_bot | completed request: POST /api/videos status=401 duration_ms=7.62
+2026-07-31 02:12:12 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:12 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:12 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=11.90
+2026-07-31 02:12:12 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:12:12 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.46
+2026-07-31 02:12:13 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:13 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.81
+2026-07-31 02:12:13 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:13 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:13 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=10.06
+2026-07-31 02:12:13 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:13 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:13 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=10.24
+2026-07-31 02:12:14 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:14 | INFO | video_lecture_bot | completed request: GET /api/videos status=401 duration_ms=3.41
+2026-07-31 02:12:14 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:12:14 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=7.93
+2026-07-31 02:12:14 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:14 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.58
+2026-07-31 02:12:14 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:14 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:14 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=14.64
+2026-07-31 02:12:15 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:15 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:15 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=11.24
+2026-07-31 02:12:15 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:12:15 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.88
+2026-07-31 02:12:16 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:16 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.69
+2026-07-31 02:12:16 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:16 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:16 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=12.32
+2026-07-31 02:12:16 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:16 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:16 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=12.83
+2026-07-31 02:12:16 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:12:16 | INFO | video_lecture_bot | completed request: POST /api/videos status=401 duration_ms=4.95
+2026-07-31 02:12:16 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:16 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:16 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=12.02
+2026-07-31 02:12:17 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:12:17 | INFO | video_lecture_bot | completed request: POST /api/videos status=401 duration_ms=4.50
+2026-07-31 02:12:17 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:12:17 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.47
+2026-07-31 02:12:17 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:12:17 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=10.81
+2026-07-31 02:12:18 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:18 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:18 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=20.49
+2026-07-31 02:12:18 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:18 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:18 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=18.11
+2026-07-31 02:12:18 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:12:18 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.70
+2026-07-31 02:12:19 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:19 | WARNING | video_lecture_bot | login failed for email=loadtest@example.com
+2026-07-31 02:12:19 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=20.47
+2026-07-31 02:12:49 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:12:49 | INFO | video_lecture_bot | login successful email=manoj@gmail.com user_id=8419e871-d8eb-4f4a-8556-837516781c3e
+2026-07-31 02:12:50 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=856.39
+2026-07-31 02:12:50 | INFO | video_lecture_bot | incoming request: GET /api/chats
+2026-07-31 02:12:50 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:50 | INFO | video_lecture_bot | listed videos for user=8419e871-d8eb-4f4a-8556-837516781c3e count=34
+2026-07-31 02:12:50 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=57.27
+2026-07-31 02:12:50 | INFO | video_lecture_bot | completed request: GET /api/chats status=200 duration_ms=111.10
+2026-07-31 02:12:50 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:50 | INFO | video_lecture_bot | incoming request: GET /api/chats
+2026-07-31 02:12:50 | INFO | video_lecture_bot | listed videos for user=8419e871-d8eb-4f4a-8556-837516781c3e count=34
+2026-07-31 02:12:50 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=24.90
+2026-07-31 02:12:50 | INFO | video_lecture_bot | completed request: GET /api/chats status=200 duration_ms=69.52
+2026-07-31 02:12:53 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:53 | INFO | video_lecture_bot | listed videos for user=8419e871-d8eb-4f4a-8556-837516781c3e count=34
+2026-07-31 02:12:53 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=29.11
+2026-07-31 02:12:53 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:53 | INFO | video_lecture_bot | listed videos for user=8419e871-d8eb-4f4a-8556-837516781c3e count=34
+2026-07-31 02:12:53 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=19.91
+2026-07-31 02:12:55 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:12:55 | INFO | video_lecture_bot | incoming request: GET /api/chats
+2026-07-31 02:12:55 | INFO | video_lecture_bot | listed videos for user=8419e871-d8eb-4f4a-8556-837516781c3e count=34
+2026-07-31 02:12:55 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=110.28
+2026-07-31 02:12:55 | INFO | video_lecture_bot | completed request: GET /api/chats status=200 duration_ms=124.90
+2026-07-31 02:13:02 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:13:03 | INFO | video_lecture_bot | login successful email=admin@example.com user_id=8ab51cb2-d93a-4e74-aaef-764d8f9711d9
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=878.35
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=75.38
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=149.60
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=229.51
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=62.42
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=85.35
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=41.34
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=36.97
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=26.44
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=41.98
+2026-07-31 02:13:03 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 02:13:03 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=32.18
+2026-07-31 02:13:09 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 02:13:09 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:13:09 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=43.86
+2026-07-31 02:13:09 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=72.21
+2026-07-31 02:13:09 | INFO | video_lecture_bot | incoming request: GET /api/complaints
+2026-07-31 02:13:09 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:13:09 | INFO | video_lecture_bot | completed request: GET /api/complaints status=200 duration_ms=38.76
+2026-07-31 02:13:09 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=28.91
+2026-07-31 02:13:10 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:13:10 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 02:13:10 | INFO | video_lecture_bot | incoming request: GET /api/complaints
+2026-07-31 02:13:10 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:13:10 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=69.09
+2026-07-31 02:13:10 | INFO | video_lecture_bot | completed request: GET /api/complaints status=200 duration_ms=75.10
+2026-07-31 02:13:10 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=88.13
+2026-07-31 02:13:10 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=248.64
+2026-07-31 02:13:11 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:13:11 | INFO | video_lecture_bot | incoming request: GET /api/complaints
+2026-07-31 02:13:11 | INFO | video_lecture_bot | completed request: GET /api/complaints status=200 duration_ms=71.76
+2026-07-31 02:13:11 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=85.47
+2026-07-31 02:13:11 | INFO | video_lecture_bot | incoming request: GET /api/complaints
+2026-07-31 02:13:11 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:13:11 | INFO | video_lecture_bot | completed request: GET /api/complaints status=200 duration_ms=35.96
+2026-07-31 02:13:11 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=37.85
+2026-07-31 02:14:20 | INFO | video_lecture_bot | Shutting down Video Lecture Transcript Q&A API
+2026-07-31 02:14:20 | INFO | video_lecture_bot | Shutting down Video Lecture Transcript Q&A API
+2026-07-31 02:14:24 | INFO | video_lecture_bot | Starting Video Lecture Transcript Q&A API
+2026-07-31 02:14:24 | INFO | video_lecture_bot | Starting Video Lecture Transcript Q&A API
+2026-07-31 02:15:19 | INFO | video_lecture_bot | Shutting down Video Lecture Transcript Q&A API
+2026-07-31 02:15:25 | INFO | video_lecture_bot | Starting Video Lecture Transcript Q&A API
+2026-07-31 02:15:36 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:36 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:37 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:15:37 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=701.07
+2026-07-31 02:15:37 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:15:37 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=20.39
+2026-07-31 02:15:37 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:37 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:15:37 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:37 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=81.95
+2026-07-31 02:15:37 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=1084.21
+2026-07-31 02:15:38 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:38 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=838.19
+2026-07-31 02:15:38 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:15:38 | INFO | video_lecture_bot | created video video_id=2a852db2-646e-4ece-85f8-961415e678a6 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video f458c210
+2026-07-31 02:15:38 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=39.87
+2026-07-31 02:15:38 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:38 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:39 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:15:39 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=688.13
+2026-07-31 02:15:39 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:15:39 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=7.42
+2026-07-31 02:15:39 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:39 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=721.16
+2026-07-31 02:15:39 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:39 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:15:39 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=3.35
+2026-07-31 02:15:40 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:40 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:40 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=829.51
+2026-07-31 02:15:40 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:15:40 | INFO | video_lecture_bot | created video video_id=31d3772e-e637-40dd-a3ce-2bd70e2bfa91 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 9eb845cb
+2026-07-31 02:15:40 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=27.22
+2026-07-31 02:15:40 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:15:40 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:40 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:40 | INFO | video_lecture_bot | created video video_id=24efdbc6-c6e6-4900-90bb-8d8d3cfbed4b user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 3b8f71f9
+2026-07-31 02:15:40 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=75.95
+2026-07-31 02:15:40 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:15:40 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.43
+2026-07-31 02:15:41 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:41 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=803.08
+2026-07-31 02:15:41 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:15:41 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=840.90
+2026-07-31 02:15:41 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:15:41 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=6.89
+2026-07-31 02:15:41 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:41 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=903.94
+2026-07-31 02:15:42 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:15:42 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=13.12
+2026-07-31 02:15:42 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:15:42 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.54
+2026-07-31 02:15:43 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:15:43 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=3.12
+2026-07-31 02:15:43 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:44 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:15:44 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=3
+2026-07-31 02:15:44 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:44 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=70.64
+2026-07-31 02:15:44 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:15:44 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=3
+2026-07-31 02:15:44 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=19.20
+2026-07-31 02:15:44 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:44 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=798.01
+2026-07-31 02:15:44 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:15:44 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=13.86
+2026-07-31 02:15:44 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:44 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=807.67
+2026-07-31 02:15:44 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:45 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:15:45 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=3.24
+2026-07-31 02:15:45 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:15:45 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=4.62
+2026-07-31 02:15:45 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:45 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=810.37
+2026-07-31 02:15:45 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:15:45 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.97
+2026-07-31 02:15:46 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:15:46 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=2.20
+2026-07-31 02:15:47 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:15:47 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=4.22
+2026-07-31 02:15:47 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:15:47 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=8.02
+2026-07-31 02:15:47 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:15:47 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=7.87
+2026-07-31 02:15:47 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:48 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:15:48 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=3
+2026-07-31 02:15:48 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=11.29
+2026-07-31 02:15:48 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:48 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=722.39
+2026-07-31 02:15:48 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:15:48 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=13.21
+2026-07-31 02:15:48 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:48 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:15:48 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=3
+2026-07-31 02:15:48 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=27.01
+2026-07-31 02:15:49 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:15:49 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.77
+2026-07-31 02:15:49 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:15:49 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.91
+2026-07-31 02:15:49 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:49 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=709.49
+2026-07-31 02:15:50 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:15:50 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.32
+2026-07-31 02:15:50 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:51 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:15:51 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=8.22
+2026-07-31 02:15:51 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:51 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:51 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=743.60
+2026-07-31 02:15:51 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:15:51 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.91
+2026-07-31 02:15:51 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:15:51 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.73
+2026-07-31 02:15:51 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:15:51 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=3
+2026-07-31 02:15:51 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=11.97
+2026-07-31 02:15:52 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:15:52 | INFO | video_lecture_bot | created video video_id=63d31e9c-39ad-48c9-b442-7779b04a5204 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video a859fb9f
+2026-07-31 02:15:52 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=21.19
+2026-07-31 02:15:52 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:52 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=705.93
+2026-07-31 02:15:52 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:15:53 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:15:53 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=5.49
+2026-07-31 02:15:53 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:15:53 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=794.48
+2026-07-31 02:15:53 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:15:53 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=5.07
+2026-07-31 02:15:54 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:15:54 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=9.45
+2026-07-31 02:15:54 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:15:54 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.12
+2026-07-31 02:16:32 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:16:33 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:16:33 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=696.95
+2026-07-31 02:16:33 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:16:33 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.66
+2026-07-31 02:17:04 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:05 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:17:05 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=731.30
+2026-07-31 02:17:05 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:17:05 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.57
+2026-07-31 02:17:05 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:06 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:06 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=784.57
+2026-07-31 02:17:06 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:06 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.34
+2026-07-31 02:17:07 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:07 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:17:07 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=9.28
+2026-07-31 02:17:08 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:08 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=695.94
+2026-07-31 02:17:08 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:08 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=4
+2026-07-31 02:17:08 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=9.94
+2026-07-31 02:17:08 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:08 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:08 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.61
+2026-07-31 02:17:09 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:17:09 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=744.30
+2026-07-31 02:17:09 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:17:09 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.60
+2026-07-31 02:17:09 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:10 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:10 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:10 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=698.01
+2026-07-31 02:17:10 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:17:10 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.64
+2026-07-31 02:17:10 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:10 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.47
+2026-07-31 02:17:10 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:10 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=708.63
+2026-07-31 02:17:11 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:11 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:12 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:12 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=701.02
+2026-07-31 02:17:12 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:17:12 | INFO | video_lecture_bot | created video video_id=8b19cb49-e99b-4ffd-950a-1538411dc5b8 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 781d0146
+2026-07-31 02:17:12 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=17.42
+2026-07-31 02:17:12 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:12 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=5
+2026-07-31 02:17:12 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=16.56
+2026-07-31 02:17:12 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:12 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:12 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.78
+2026-07-31 02:17:12 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:12 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=833.77
+2026-07-31 02:17:12 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:17:12 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.97
+2026-07-31 02:17:12 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:12 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.11
+2026-07-31 02:17:13 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 02:17:13 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=765.66
+2026-07-31 02:17:13 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:17:13 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.19
+2026-07-31 02:17:13 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:13 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:14 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:14 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=718.91
+2026-07-31 02:17:14 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:14 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:17:14 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=10.86
+2026-07-31 02:17:14 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:14 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=726.47
+2026-07-31 02:17:14 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:17:14 | INFO | video_lecture_bot | created video video_id=8f1b8ae0-9506-4038-9252-dee75f6c98e7 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 35654e86
+2026-07-31 02:17:14 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=46.60
+2026-07-31 02:17:14 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:14 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=754.70
+2026-07-31 02:17:15 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:15 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.11
+2026-07-31 02:17:15 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:15 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.59
+2026-07-31 02:17:16 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:16 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:17:16 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=9.52
+2026-07-31 02:17:16 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:16 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=6
+2026-07-31 02:17:16 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=17.71
+2026-07-31 02:17:16 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:16 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:17:16 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.91
+2026-07-31 02:17:16 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:17:16 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=6.65
+2026-07-31 02:17:16 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:16 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=891.91
+2026-07-31 02:17:17 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:17 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=814.57
+2026-07-31 02:17:17 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:18 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:18 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.04
+2026-07-31 02:17:18 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:18 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=701.04
+2026-07-31 02:17:18 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 02:17:18 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:17:18 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:18 | INFO | video_lecture_bot | created video video_id=034709fe-84a5-401c-9bc4-0aa39e2d010d user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video c6a2249c
+2026-07-31 02:17:18 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=7
+2026-07-31 02:17:18 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=19.91
+2026-07-31 02:17:18 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=53.67
+2026-07-31 02:17:18 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=26.12
+2026-07-31 02:17:19 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:19 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:19 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=4.90
+2026-07-31 02:17:20 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:20 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=813.15
+2026-07-31 02:17:20 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:17:20 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=12.89
+2026-07-31 02:17:21 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:21 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=7
+2026-07-31 02:17:21 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=11.62
+2026-07-31 02:17:21 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:21 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:17:21 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=4.46
+2026-07-31 02:17:21 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:17:21 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.62
+2026-07-31 02:17:22 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:22 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=739.89
+2026-07-31 02:17:22 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:22 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:22 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=7
+2026-07-31 02:17:22 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=35.03
+2026-07-31 02:17:22 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:17:22 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=1.66
+2026-07-31 02:17:23 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:23 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=7
+2026-07-31 02:17:23 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=12.51
+2026-07-31 02:17:23 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:23 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:23 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=814.82
+2026-07-31 02:17:23 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:17:23 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=6.51
+2026-07-31 02:17:24 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:24 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=768.08
+2026-07-31 02:17:24 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:17:24 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.40
+2026-07-31 02:17:24 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:25 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:25 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.85
+2026-07-31 02:17:25 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:17:25 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=11.03
+2026-07-31 02:17:25 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:25 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=821.08
+2026-07-31 02:17:25 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:25 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=7
+2026-07-31 02:17:25 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=10.28
+2026-07-31 02:17:25 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:25 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=7
+2026-07-31 02:17:25 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=9.63
+2026-07-31 02:17:26 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:17:26 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.88
+2026-07-31 02:17:26 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:26 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.59
+2026-07-31 02:17:26 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:17:26 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=4.51
+2026-07-31 02:17:27 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:27 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:17:27 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=9.11
+2026-07-31 02:17:27 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:17:27 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.66
+2026-07-31 02:17:27 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:27 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:27 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=700.07
+2026-07-31 02:17:27 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:27 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=10.27
+2026-07-31 02:17:28 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:28 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:28 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=726.66
+2026-07-31 02:17:28 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 02:17:28 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.36
+2026-07-31 02:17:28 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 02:17:28 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=2.49
+2026-07-31 02:17:28 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:28 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=710.22
+2026-07-31 02:17:29 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 02:17:29 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.40
+2026-07-31 02:17:29 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:29 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=7
+2026-07-31 02:17:29 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=12.09
+2026-07-31 02:17:30 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 02:17:30 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.78
+2026-07-31 02:17:30 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:17:30 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 02:17:30 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=7
+2026-07-31 02:17:30 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=13.53
+2026-07-31 02:17:30 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 02:17:30 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.90
+2026-07-31 02:17:31 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:17:31 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=745.03
+2026-07-31 02:20:01 | INFO | video_lecture_bot | Shutting down Video Lecture Transcript Q&A API
+2026-07-31 02:20:02 | INFO | video_lecture_bot | Shutting down Video Lecture Transcript Q&A API
+2026-07-31 02:20:06 | INFO | video_lecture_bot | Starting Video Lecture Transcript Q&A API
+2026-07-31 02:20:06 | INFO | video_lecture_bot | Starting Video Lecture Transcript Q&A API
+2026-07-31 02:26:58 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 02:26:58 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 02:26:58 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=806.69
+2026-07-31 08:44:21 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:21 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 08:44:21 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=222.03
+2026-07-31 08:44:21 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:21 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=50.45
+2026-07-31 08:44:22 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:22 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:22 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=239.62
+2026-07-31 08:44:22 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:22 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=5.81
+2026-07-31 08:44:23 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:23 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.80
+2026-07-31 08:44:24 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:24 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:24 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=223.18
+2026-07-31 08:44:24 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 08:44:24 | INFO | video_lecture_bot | created video video_id=c5f90e2b-3cba-4296-8aba-a8660b2f0f5a user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video a4d19a09
+2026-07-31 08:44:24 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=22.28
+2026-07-31 08:44:25 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:25 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:25 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 08:44:25 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=281.71
+2026-07-31 08:44:25 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:25 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=11.82
+2026-07-31 08:44:25 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:25 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=299.47
+2026-07-31 08:44:26 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:26 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.64
+2026-07-31 08:44:26 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:26 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=1.63
+2026-07-31 08:44:26 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:26 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:26 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=233.09
+2026-07-31 08:44:26 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 08:44:26 | INFO | video_lecture_bot | created video video_id=f62f30a2-4ae4-413c-b64d-6c27f01e3cf8 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 316ef0d4
+2026-07-31 08:44:26 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=16.78
+2026-07-31 08:44:27 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 08:44:27 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=0.54
+2026-07-31 08:44:27 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:28 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:28 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=230.55
+2026-07-31 08:44:28 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:28 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:28 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.76
+2026-07-31 08:44:28 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:28 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=245.08
+2026-07-31 08:44:28 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:28 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:28 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=260.26
+2026-07-31 08:44:28 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:28 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=9
+2026-07-31 08:44:28 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=8.71
+2026-07-31 08:44:29 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:29 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.01
+2026-07-31 08:44:29 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:29 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 08:44:29 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=237.22
+2026-07-31 08:44:29 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:29 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=0.98
+2026-07-31 08:44:30 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:30 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.92
+2026-07-31 08:44:30 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:30 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:30 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=3.81
+2026-07-31 08:44:30 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:30 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=301.38
+2026-07-31 08:44:30 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:30 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=2.91
+2026-07-31 08:44:31 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:31 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 08:44:31 | INFO | video_lecture_bot | created video video_id=1b56f2a0-6e3f-4c10-b952-fb8b729166c5 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video ff1eb6a9
+2026-07-31 08:44:31 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=5.69
+2026-07-31 08:44:31 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:31 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.34
+2026-07-31 08:44:31 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:31 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=207.05
+2026-07-31 08:44:32 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:32 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=2.62
+2026-07-31 08:44:32 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:32 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 08:44:32 | INFO | video_lecture_bot | created video video_id=1ccda790-6e3b-400c-becc-23a622045afb user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 2a75fbcf
+2026-07-31 08:44:32 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=11.23
+2026-07-31 08:44:32 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:32 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=244.17
+2026-07-31 08:44:33 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:33 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.52
+2026-07-31 08:44:33 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:33 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=1.21
+2026-07-31 08:44:33 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:33 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=1.00
+2026-07-31 08:44:33 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:33 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=2.37
+2026-07-31 08:44:33 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:33 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.49
+2026-07-31 08:44:33 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:33 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:34 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:34 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=11
+2026-07-31 08:44:34 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=43.44
+2026-07-31 08:44:34 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:34 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=246.02
+2026-07-31 08:44:34 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:34 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=244.10
+2026-07-31 08:44:34 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 08:44:34 | INFO | video_lecture_bot | created video video_id=2c036289-528d-4309-99d2-8d2a16caaedb user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video d51922cd
+2026-07-31 08:44:34 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=8.22
+2026-07-31 08:44:34 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:35 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:35 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=236.38
+2026-07-31 08:44:35 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:35 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:35 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=237.74
+2026-07-31 08:44:36 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:36 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=3.46
+2026-07-31 08:44:36 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:36 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=8.44
+2026-07-31 08:44:36 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:36 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:36 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.46
+2026-07-31 08:44:36 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:36 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.14
+2026-07-31 08:44:36 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:36 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=238.50
+2026-07-31 08:44:36 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:36 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:36 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.23
+2026-07-31 08:44:36 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 08:44:36 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=0.83
+2026-07-31 08:44:37 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:37 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=355.36
+2026-07-31 08:44:37 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:37 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:37 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=285.04
+2026-07-31 08:44:38 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 08:44:38 | INFO | video_lecture_bot | created video video_id=daf5fc93-1f11-42dc-b3c9-1d93ae790915 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video a9813604
+2026-07-31 08:44:38 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=9.60
+2026-07-31 08:44:38 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:38 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=13
+2026-07-31 08:44:38 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=4.52
+2026-07-31 08:44:38 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:38 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=2.71
+2026-07-31 08:44:39 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:39 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=4.10
+2026-07-31 08:44:40 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 08:44:40 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=1.17
+2026-07-31 08:44:40 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:40 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:40 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=13
+2026-07-31 08:44:40 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=4.42
+2026-07-31 08:44:40 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:40 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=237.30
+2026-07-31 08:44:40 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:40 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.90
+2026-07-31 08:44:40 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:40 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:40 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=236.45
+2026-07-31 08:44:40 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:40 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=2.14
+2026-07-31 08:44:41 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:41 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:41 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=5.23
+2026-07-31 08:44:41 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:41 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=251.05
+2026-07-31 08:44:41 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:41 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=2.02
+2026-07-31 08:44:42 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:42 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=6.53
+2026-07-31 08:44:42 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:42 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.88
+2026-07-31 08:44:42 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:42 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=13
+2026-07-31 08:44:42 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=6.73
+2026-07-31 08:44:43 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:43 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:43 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=311.29
+2026-07-31 08:44:43 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:43 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:43 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.00
+2026-07-31 08:44:43 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:43 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=277.99
+2026-07-31 08:44:44 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:44 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=2.56
+2026-07-31 08:44:44 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:44 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:44 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=332.10
+2026-07-31 08:44:44 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:44 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=13
+2026-07-31 08:44:44 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=3.65
+2026-07-31 08:44:45 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:45 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.75
+2026-07-31 08:44:45 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:45 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=13
+2026-07-31 08:44:45 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=8.02
+2026-07-31 08:44:45 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:45 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=2.60
+2026-07-31 08:44:46 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:46 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:46 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=10.68
+2026-07-31 08:44:46 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:46 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=290.26
+2026-07-31 08:44:47 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:47 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:47 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.24
+2026-07-31 08:44:47 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:47 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=229.92
+2026-07-31 08:44:47 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:48 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:48 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:48 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=13
+2026-07-31 08:44:48 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=258.20
+2026-07-31 08:44:48 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=7.08
+2026-07-31 08:44:48 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:48 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=1.68
+2026-07-31 08:44:48 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:48 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.48
+2026-07-31 08:44:48 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:48 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.62
+2026-07-31 08:44:48 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:48 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=13
+2026-07-31 08:44:48 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=5.81
+2026-07-31 08:44:49 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:49 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:49 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=3.86
+2026-07-31 08:44:49 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:49 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=327.91
+2026-07-31 08:44:49 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:49 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:49 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=286.69
+2026-07-31 08:44:50 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:50 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=13
+2026-07-31 08:44:50 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=5.49
+2026-07-31 08:44:50 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:50 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:50 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=300.20
+2026-07-31 08:44:51 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:51 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.03
+2026-07-31 08:44:51 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 08:44:51 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=1.00
+2026-07-31 08:44:51 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:51 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:51 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.58
+2026-07-31 08:44:52 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:52 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=230.87
+2026-07-31 08:44:52 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 08:44:52 | INFO | video_lecture_bot | created video video_id=612fabee-f7d3-494f-bf2c-16a492b4f629 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 2af77e96
+2026-07-31 08:44:52 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=10.75
+2026-07-31 08:44:52 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:52 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:52 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.37
+2026-07-31 08:44:52 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:52 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=307.73
+2026-07-31 08:44:52 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:52 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=3.92
+2026-07-31 08:44:52 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:52 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=14
+2026-07-31 08:44:52 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=5.20
+2026-07-31 08:44:53 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:53 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=11.57
+2026-07-31 08:44:54 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:54 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:54 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=259.87
+2026-07-31 08:44:54 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:54 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:54 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.09
+2026-07-31 08:44:54 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:54 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:54 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=298.89
+2026-07-31 08:44:55 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:55 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=319.41
+2026-07-31 08:44:55 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:55 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.46
+2026-07-31 08:44:55 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:56 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:44:56 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=2.45
+2026-07-31 08:44:56 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:56 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=14
+2026-07-31 08:44:56 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=5.05
+2026-07-31 08:44:56 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:56 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=287.24
+2026-07-31 08:44:56 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:56 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:56 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=5.84
+2026-07-31 08:44:56 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=14
+2026-07-31 08:44:56 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=16.01
+2026-07-31 08:44:56 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 08:44:56 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=0.99
+2026-07-31 08:44:57 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:57 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:57 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=259.64
+2026-07-31 08:44:57 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:58 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:58 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=267.03
+2026-07-31 08:44:58 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:58 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.24
+2026-07-31 08:44:58 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:58 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:58 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=245.43
+2026-07-31 08:44:58 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:44:58 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=14
+2026-07-31 08:44:58 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=16.89
+2026-07-31 08:44:59 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:44:59 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=3.79
+2026-07-31 08:44:59 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:44:59 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.85
+2026-07-31 08:44:59 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:44:59 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:44:59 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.91
+2026-07-31 08:44:59 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:44:59 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=235.59
+2026-07-31 08:45:00 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:45:00 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:45:00 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=227.95
+2026-07-31 08:45:00 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:45:00 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=6.57
+2026-07-31 08:45:00 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 08:45:00 | INFO | video_lecture_bot | created video video_id=0b17754f-cd2a-425d-a60a-02e971d82385 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 740b5b67
+2026-07-31 08:45:00 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=5.52
+2026-07-31 08:45:01 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:45:01 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:45:01 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=235.32
+2026-07-31 08:45:01 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:45:01 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.91
+2026-07-31 08:45:02 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:45:02 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:45:02 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=280.28
+2026-07-31 08:45:02 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 08:45:02 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.88
+2026-07-31 08:45:02 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:45:03 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:45:03 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.49
+2026-07-31 08:45:03 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:45:03 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=15
+2026-07-31 08:45:03 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=7.64
+2026-07-31 08:45:03 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:45:03 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=305.95
+2026-07-31 08:45:03 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:45:03 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 08:45:03 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=275.27
+2026-07-31 08:45:03 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:45:03 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.47
+2026-07-31 08:47:31 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:47:31 | INFO | video_lecture_bot | incoming request: GET /api/chats
+2026-07-31 08:47:31 | INFO | video_lecture_bot | listed videos for user=8ab51cb2-d93a-4e74-aaef-764d8f9711d9 count=0
+2026-07-31 08:47:31 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=47.01
+2026-07-31 08:47:31 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:47:31 | INFO | video_lecture_bot | completed request: GET /api/chats status=200 duration_ms=68.17
+2026-07-31 08:47:31 | INFO | video_lecture_bot | incoming request: GET /api/chats
+2026-07-31 08:47:31 | INFO | video_lecture_bot | listed videos for user=8ab51cb2-d93a-4e74-aaef-764d8f9711d9 count=0
+2026-07-31 08:47:31 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=56.72
+2026-07-31 08:47:31 | INFO | video_lecture_bot | completed request: GET /api/chats status=200 duration_ms=45.91
+2026-07-31 08:47:46 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:47:46 | INFO | video_lecture_bot | login successful email=admin@example.com user_id=8ab51cb2-d93a-4e74-aaef-764d8f9711d9
+2026-07-31 08:47:46 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=483.42
+2026-07-31 08:47:46 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 08:47:46 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:47:46 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=46.80
+2026-07-31 08:47:47 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=64.73
+2026-07-31 08:47:47 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=118.95
+2026-07-31 08:47:47 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=41.89
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=28.02
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=28.84
+2026-07-31 08:47:47 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=45.71
+2026-07-31 08:47:47 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=53.85
+2026-07-31 08:47:47 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=47.68
+2026-07-31 08:47:47 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 08:47:47 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=33.21
+2026-07-31 08:48:01 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:48:01 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=11.30
+2026-07-31 08:48:01 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:48:01 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=13.46
+2026-07-31 08:48:04 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 08:48:04 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:48:04 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=27.33
+2026-07-31 08:48:04 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=36.27
+2026-07-31 08:48:04 | INFO | video_lecture_bot | incoming request: GET /api/complaints
+2026-07-31 08:48:04 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:48:04 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=15.83
+2026-07-31 08:48:04 | INFO | video_lecture_bot | completed request: GET /api/complaints status=200 duration_ms=34.56
+2026-07-31 08:48:04 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 08:48:04 | INFO | video_lecture_bot | incoming request: GET /api/analytics/summary
+2026-07-31 08:48:04 | INFO | video_lecture_bot | completed request: GET /api/users status=200 duration_ms=19.61
+2026-07-31 08:48:04 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:48:04 | INFO | video_lecture_bot | completed request: GET /api/analytics/summary status=200 duration_ms=32.72
+2026-07-31 08:48:04 | INFO | video_lecture_bot | incoming request: GET /api/complaints
+2026-07-31 08:48:04 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=22.19
+2026-07-31 08:48:04 | INFO | video_lecture_bot | completed request: GET /api/complaints status=200 duration_ms=13.48
+2026-07-31 08:48:08 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:48:08 | INFO | video_lecture_bot | incoming request: GET /api/complaints
+2026-07-31 08:48:08 | INFO | video_lecture_bot | completed request: GET /api/complaints status=200 duration_ms=13.98
+2026-07-31 08:48:08 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=18.56
+2026-07-31 08:48:08 | INFO | video_lecture_bot | incoming request: GET /api/complaints
+2026-07-31 08:48:08 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 08:48:08 | INFO | video_lecture_bot | completed request: GET /api/complaints status=200 duration_ms=16.29
+2026-07-31 08:48:08 | INFO | video_lecture_bot | completed request: GET /api/alerts status=200 duration_ms=15.59
+2026-07-31 08:48:30 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 08:48:30 | INFO | video_lecture_bot | login successful email=bhanumanojkumar@gmail.com user_id=262dc487-6cd0-47cb-9b07-d9558784e24b
+2026-07-31 08:48:30 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=413.31
+2026-07-31 08:48:30 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:48:30 | INFO | video_lecture_bot | incoming request: GET /api/chats
+2026-07-31 08:48:30 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:48:30 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=14.69
+2026-07-31 08:48:30 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:48:30 | INFO | video_lecture_bot | completed request: GET /api/chats status=200 duration_ms=24.58
+2026-07-31 08:48:31 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:48:31 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=18.49
+2026-07-31 08:48:31 | INFO | video_lecture_bot | incoming request: GET /api/chats
+2026-07-31 08:48:31 | INFO | video_lecture_bot | completed request: GET /api/chats status=200 duration_ms=10.96
+2026-07-31 08:48:59 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:48:59 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:48:59 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=9.14
+2026-07-31 08:48:59 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:48:59 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:48:59 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=7.27
+2026-07-31 08:49:05 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:49:05 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:49:05 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=12.56
+2026-07-31 08:49:05 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:49:05 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:49:05 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=15.71
+2026-07-31 08:49:23 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:49:23 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:49:23 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=12.66
+2026-07-31 08:49:23 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:49:23 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:49:23 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=13.45
+2026-07-31 08:49:53 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:49:53 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:49:53 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=12.41
+2026-07-31 08:49:53 | INFO | video_lecture_bot | incoming request: GET /api/chats
+2026-07-31 08:49:53 | INFO | video_lecture_bot | completed request: GET /api/chats status=200 duration_ms=21.97
+2026-07-31 08:49:59 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:49:59 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.41
+2026-07-31 08:49:59 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 08:49:59 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=5.85
+2026-07-31 08:50:13 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:50:13 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:50:13 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=16.21
+2026-07-31 08:50:13 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 08:50:13 | INFO | video_lecture_bot | listed videos for user=262dc487-6cd0-47cb-9b07-d9558784e24b count=2
+2026-07-31 08:50:13 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=15.35
+2026-07-31 08:56:52 | INFO | video_lecture_bot | incoming request: GET /openapi.json
+2026-07-31 08:56:52 | INFO | video_lecture_bot | completed request: GET /openapi.json status=200 duration_ms=231.19
+2026-07-31 09:19:14 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:15 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 09:19:15 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=464.13
+2026-07-31 09:19:15 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:15 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=4.25
+2026-07-31 09:19:15 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:16 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:16 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=409.15
+2026-07-31 09:19:16 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:16 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.72
+2026-07-31 09:19:16 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:16 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.99
+2026-07-31 09:19:17 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:18 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:18 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=405.18
+2026-07-31 09:19:18 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:18 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=15
+2026-07-31 09:19:18 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=7.32
+2026-07-31 09:19:18 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:19 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:19 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.31
+2026-07-31 09:19:19 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:19 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 09:19:19 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=436.18
+2026-07-31 09:19:19 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:19 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.56
+2026-07-31 09:19:19 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:19 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.63
+2026-07-31 09:19:19 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:19 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=525.47
+2026-07-31 09:19:19 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:20 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:20 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=385.05
+2026-07-31 09:19:20 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:20 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=4.74
+2026-07-31 09:19:20 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:20 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.85
+2026-07-31 09:19:21 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:21 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=6.59
+2026-07-31 09:19:21 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:21 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=6.13
+2026-07-31 09:19:21 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:21 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:21 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=15
+2026-07-31 09:19:21 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=18.36
+2026-07-31 09:19:22 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:22 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=414.78
+2026-07-31 09:19:22 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:22 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=15
+2026-07-31 09:19:22 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=8.83
+2026-07-31 09:19:22 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:22 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.12
+2026-07-31 09:19:22 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:23 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 09:19:23 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=384.34
+2026-07-31 09:19:23 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:23 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.98
+2026-07-31 09:19:23 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:23 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.82
+2026-07-31 09:19:23 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:24 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:24 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:19:24 | INFO | video_lecture_bot | created video video_id=288ba3bc-54ac-4270-873f-8cddfd7cf5a9 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video a993a9fd
+2026-07-31 09:19:24 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=15.75
+2026-07-31 09:19:24 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:24 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=555.44
+2026-07-31 09:19:24 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:24 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:24 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=571.94
+2026-07-31 09:19:24 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:24 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.51
+2026-07-31 09:19:25 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:25 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=526.19
+2026-07-31 09:19:25 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:25 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.66
+2026-07-31 09:19:26 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:26 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:26 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.69
+2026-07-31 09:19:26 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:26 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.90
+2026-07-31 09:19:26 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:26 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=418.99
+2026-07-31 09:19:26 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:26 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:26 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=16
+2026-07-31 09:19:26 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=10.81
+2026-07-31 09:19:27 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:27 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:27 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=640.95
+2026-07-31 09:19:27 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:27 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=470.03
+2026-07-31 09:19:27 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:19:27 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=1.58
+2026-07-31 09:19:28 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:19:28 | INFO | video_lecture_bot | created video video_id=0a924d83-1ecf-4e9d-821b-176c5fd12864 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 31647f83
+2026-07-31 09:19:28 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=18.09
+2026-07-31 09:19:28 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:28 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.51
+2026-07-31 09:19:28 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:29 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:29 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=417.99
+2026-07-31 09:19:30 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:19:30 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:30 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:30 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.67
+2026-07-31 09:19:30 | INFO | video_lecture_bot | created video video_id=5c852911-203b-4d27-b3aa-11276eec8c5f user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 69a3a2b0
+2026-07-31 09:19:30 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=29.31
+2026-07-31 09:19:30 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=20.49
+2026-07-31 09:19:30 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:30 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:30 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:30 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.47
+2026-07-31 09:19:30 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=18
+2026-07-31 09:19:30 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=12.50
+2026-07-31 09:19:30 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:19:30 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=1.73
+2026-07-31 09:19:30 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:30 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=500.37
+2026-07-31 09:19:31 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:31 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:31 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=5.93
+2026-07-31 09:19:31 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:31 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:31 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:31 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=516.13
+2026-07-31 09:19:32 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:32 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=476.44
+2026-07-31 09:19:32 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:32 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=452.24
+2026-07-31 09:19:32 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:32 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.75
+2026-07-31 09:19:32 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:19:32 | INFO | video_lecture_bot | created video video_id=2fbf7405-b8b6-4e22-9011-4f120a18b6be user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 7abada76
+2026-07-31 09:19:32 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=11.42
+2026-07-31 09:19:33 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:33 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:19:33 | INFO | video_lecture_bot | created video video_id=8a19a07c-0145-45fd-84a0-2474c862e59b user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video a3adf497
+2026-07-31 09:19:33 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=14.89
+2026-07-31 09:19:33 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:33 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:33 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=498.35
+2026-07-31 09:19:34 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:34 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=6.03
+2026-07-31 09:19:34 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:34 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=2.45
+2026-07-31 09:19:34 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:34 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=455.78
+2026-07-31 09:19:34 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:34 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.35
+2026-07-31 09:19:35 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:35 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.53
+2026-07-31 09:19:35 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:35 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:35 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:35 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.25
+2026-07-31 09:19:35 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:35 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:35 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=614.25
+2026-07-31 09:19:35 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:35 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=522.08
+2026-07-31 09:19:36 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:36 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=591.49
+2026-07-31 09:19:37 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:37 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=20
+2026-07-31 09:19:37 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=3.51
+2026-07-31 09:19:37 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:37 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=2.38
+2026-07-31 09:19:37 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:19:37 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=1.15
+2026-07-31 09:19:38 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:38 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=20
+2026-07-31 09:19:38 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=5.61
+2026-07-31 09:19:38 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:38 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.20
+2026-07-31 09:19:38 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:38 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:38 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.47
+2026-07-31 09:19:39 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:39 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=469.79
+2026-07-31 09:19:39 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:39 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:39 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.85
+2026-07-31 09:19:39 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=7.45
+2026-07-31 09:19:40 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:40 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.36
+2026-07-31 09:19:40 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:40 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:40 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=395.23
+2026-07-31 09:19:40 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:40 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=20
+2026-07-31 09:19:40 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=12.86
+2026-07-31 09:19:41 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:41 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:41 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=20
+2026-07-31 09:19:41 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=14.76
+2026-07-31 09:19:41 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:41 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:41 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=457.24
+2026-07-31 09:19:41 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:41 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=6.27
+2026-07-31 09:19:41 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:41 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=486.40
+2026-07-31 09:19:42 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:42 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=5.03
+2026-07-31 09:19:42 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:42 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:42 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.69
+2026-07-31 09:19:42 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:42 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=8.65
+2026-07-31 09:19:42 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:42 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.90
+2026-07-31 09:19:43 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:43 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:43 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=453.05
+2026-07-31 09:19:43 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:43 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=367.76
+2026-07-31 09:19:44 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:44 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:45 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:45 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=20
+2026-07-31 09:19:45 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=13.19
+2026-07-31 09:19:45 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:45 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=489.05
+2026-07-31 09:19:45 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:45 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=477.08
+2026-07-31 09:19:45 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:45 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=20
+2026-07-31 09:19:45 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=9.18
+2026-07-31 09:19:46 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:46 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:46 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.58
+2026-07-31 09:19:46 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:46 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=6.97
+2026-07-31 09:19:46 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:46 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.51
+2026-07-31 09:19:46 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:46 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=459.95
+2026-07-31 09:19:47 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:47 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=7.38
+2026-07-31 09:19:48 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:48 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:48 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=6.89
+2026-07-31 09:19:48 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:48 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=439.52
+2026-07-31 09:19:48 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:49 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:49 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=377.22
+2026-07-31 09:19:49 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:49 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.36
+2026-07-31 09:19:49 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:49 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=20
+2026-07-31 09:19:49 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=12.18
+2026-07-31 09:19:49 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:19:49 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=1.91
+2026-07-31 09:19:49 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:49 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.42
+2026-07-31 09:19:49 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:49 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=4.11
+2026-07-31 09:19:50 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:50 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=20
+2026-07-31 09:19:50 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=10.88
+2026-07-31 09:19:50 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:51 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:51 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=444.43
+2026-07-31 09:19:51 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:51 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=5.55
+2026-07-31 09:19:51 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:51 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:19:51 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=0.99
+2026-07-31 09:19:51 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:19:51 | INFO | video_lecture_bot | created video video_id=b21963c8-0bf2-4f9a-9ff0-d5922731b7b4 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video e8b9a00a
+2026-07-31 09:19:51 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=15.41
+2026-07-31 09:19:52 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:52 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:52 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=432.38
+2026-07-31 09:19:52 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:52 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:52 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.41
+2026-07-31 09:19:52 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=6.06
+2026-07-31 09:19:52 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:19:52 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=6.54
+2026-07-31 09:19:52 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:52 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=428.57
+2026-07-31 09:19:53 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:19:53 | INFO | video_lecture_bot | created video video_id=7cbf853f-8d53-4d2e-a51c-b0bc9611fd0c user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 0cf66996
+2026-07-31 09:19:53 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=15.66
+2026-07-31 09:19:53 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:53 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.05
+2026-07-31 09:19:54 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:54 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=22
+2026-07-31 09:19:54 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=12.07
+2026-07-31 09:19:54 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:54 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:54 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:19:54 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=10.82
+2026-07-31 09:19:54 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:54 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.24
+2026-07-31 09:19:54 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:54 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=557.90
+2026-07-31 09:19:54 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:54 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=525.54
+2026-07-31 09:19:55 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:55 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:55 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=493.76
+2026-07-31 09:19:56 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:56 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.52
+2026-07-31 09:19:57 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:19:57 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=22
+2026-07-31 09:19:57 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=10.24
+2026-07-31 09:19:57 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:19:57 | INFO | video_lecture_bot | created video video_id=51e522ed-62b6-4f7d-b2cf-7ee0f4a58769 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video c37f1196
+2026-07-31 09:19:57 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=17.19
+2026-07-31 09:19:57 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:57 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:57 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.41
+2026-07-31 09:19:57 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:57 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:57 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.61
+2026-07-31 09:19:58 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:58 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=455.07
+2026-07-31 09:19:58 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:19:58 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.77
+2026-07-31 09:19:58 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:58 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=435.25
+2026-07-31 09:19:58 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:19:58 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:19:58 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=391.68
+2026-07-31 09:19:59 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:19:59 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=5.48
+2026-07-31 09:20:00 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:20:00 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=9.36
+2026-07-31 09:20:00 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:00 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:20:00 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.39
+2026-07-31 09:20:00 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:20:00 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=8.02
+2026-07-31 09:20:00 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:00 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=402.24
+2026-07-31 09:20:01 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:20:01 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=4.04
+2026-07-31 09:20:01 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:20:01 | INFO | video_lecture_bot | created video video_id=06596f3f-eeb4-4de5-8a8d-bf5f2541d814 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 68bd922e
+2026-07-31 09:20:01 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=17.24
+2026-07-31 09:20:01 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:20:01 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=4.26
+2026-07-31 09:20:01 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:20:01 | INFO | video_lecture_bot | created video video_id=b895b331-b964-41dd-b0d4-7cacd3797f67 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 2fccb6f6
+2026-07-31 09:20:01 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=16.07
+2026-07-31 09:20:02 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:02 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:20:02 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.65
+2026-07-31 09:20:02 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:02 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:02 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=406.48
+2026-07-31 09:20:02 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:02 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=431.71
+2026-07-31 09:20:03 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:03 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:20:03 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.52
+2026-07-31 09:20:03 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:03 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=478.44
+2026-07-31 09:20:03 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:20:03 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=2.46
+2026-07-31 09:20:04 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:20:04 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=25
+2026-07-31 09:20:04 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=11.66
+2026-07-31 09:20:04 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:04 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:20:04 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=4.97
+2026-07-31 09:20:04 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:04 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=432.13
+2026-07-31 09:20:05 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:05 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:05 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=461.68
+2026-07-31 09:20:05 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:06 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:20:06 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:20:06 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=4.28
+2026-07-31 09:20:06 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=4.38
+2026-07-31 09:20:06 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:20:06 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=25
+2026-07-31 09:20:06 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=11.37
+2026-07-31 09:20:06 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:06 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=433.61
+2026-07-31 09:20:07 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:20:07 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=25
+2026-07-31 09:20:07 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=10.72
+2026-07-31 09:20:07 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:07 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:07 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=450.13
+2026-07-31 09:20:08 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:20:08 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.36
+2026-07-31 09:20:08 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:20:08 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=2.97
+2026-07-31 09:20:08 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:20:08 | INFO | video_lecture_bot | created video video_id=9fa451b0-75ba-47c6-8463-6b9829b657fe user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 0deb2804
+2026-07-31 09:20:08 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=14.31
+2026-07-31 09:20:08 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:20:08 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.06
+2026-07-31 09:20:08 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:20:08 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.44
+2026-07-31 09:20:09 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:09 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:20:09 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.47
+2026-07-31 09:20:09 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:20:09 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=4.08
+2026-07-31 09:20:09 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:09 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=501.80
+2026-07-31 09:20:09 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:20:09 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.56
+2026-07-31 09:20:10 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:20:10 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=8.20
+2026-07-31 09:20:10 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:20:10 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=6.72
+2026-07-31 09:20:11 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:20:11 | INFO | video_lecture_bot | created video video_id=6c92ae0e-2b5a-468f-97ac-801fb12327ba user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 37901a81
+2026-07-31 09:20:11 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=16.45
+2026-07-31 09:20:11 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:20:11 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=1.68
+2026-07-31 09:20:11 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:20:11 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=4.27
+2026-07-31 09:20:11 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:20:11 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.64
+2026-07-31 09:20:11 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:20:11 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=27
+2026-07-31 09:20:11 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=10.16
+2026-07-31 09:20:12 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:20:12 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:20:12 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=381.27
+2026-07-31 09:31:00 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:00 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 09:31:00 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=368.97
+2026-07-31 09:31:00 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:00 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.77
+2026-07-31 09:31:01 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:02 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:02 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=472.38
+2026-07-31 09:31:02 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:02 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.51
+2026-07-31 09:31:03 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:03 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:04 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:04 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=464.18
+2026-07-31 09:31:04 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:04 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=27
+2026-07-31 09:31:04 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=11.94
+2026-07-31 09:31:04 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:04 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=457.07
+2026-07-31 09:31:04 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:05 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 09:31:05 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=514.35
+2026-07-31 09:31:05 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:05 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.87
+2026-07-31 09:31:05 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:05 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:31:05 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=6.08
+2026-07-31 09:31:05 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:05 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.34
+2026-07-31 09:31:06 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:06 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=402.18
+2026-07-31 09:31:06 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:06 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.72
+2026-07-31 09:31:07 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:07 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:07 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:07 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=491.22
+2026-07-31 09:31:08 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:08 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=413.55
+2026-07-31 09:31:08 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:31:08 | INFO | video_lecture_bot | created video video_id=c353d717-cac2-465a-ab08-d2ac8e05f2a7 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 38106e7c
+2026-07-31 09:31:08 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=10.83
+2026-07-31 09:31:08 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:08 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:08 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:08 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=203.78
+2026-07-31 09:31:08 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:08 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.33
+2026-07-31 09:31:08 | WARNING | video_lecture_bot | login failed for email=admin@example.com
+2026-07-31 09:31:08 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=401 duration_ms=200.49
+2026-07-31 09:31:08 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:08 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=0.79
+2026-07-31 09:31:08 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:31:08 | INFO | video_lecture_bot | created video video_id=fe889127-81c5-437b-8ede-6c2c9564c482 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 88ff30a3
+2026-07-31 09:31:08 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=5.36
+2026-07-31 09:31:08 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:08 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.68
+2026-07-31 09:31:09 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:09 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:09 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=220.34
+2026-07-31 09:31:10 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:31:10 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=0.64
+2026-07-31 09:31:10 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:10 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:10 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=204.54
+2026-07-31 09:31:10 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:10 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=29
+2026-07-31 09:31:10 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=7.97
+2026-07-31 09:31:11 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:11 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.23
+2026-07-31 09:31:11 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:11 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=29
+2026-07-31 09:31:11 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=4.53
+2026-07-31 09:31:11 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:11 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:11 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=213.48
+2026-07-31 09:31:11 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:31:11 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=1.79
+2026-07-31 09:31:12 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:12 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.09
+2026-07-31 09:31:12 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:13 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:13 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=208.05
+2026-07-31 09:31:13 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:13 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=29
+2026-07-31 09:31:13 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=4.82
+2026-07-31 09:31:13 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:13 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:13 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.64
+2026-07-31 09:31:13 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:13 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:13 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=207.97
+2026-07-31 09:31:14 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:14 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=207.85
+2026-07-31 09:31:14 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:14 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.49
+2026-07-31 09:31:15 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:15 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=29
+2026-07-31 09:31:15 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=6.78
+2026-07-31 09:31:15 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:15 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:15 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.11
+2026-07-31 09:31:15 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:15 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:15 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=218.57
+2026-07-31 09:31:16 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:16 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.12
+2026-07-31 09:31:16 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:16 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=209.49
+2026-07-31 09:31:16 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:16 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:16 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.69
+2026-07-31 09:31:16 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:16 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=214.42
+2026-07-31 09:31:17 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:17 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.96
+2026-07-31 09:31:17 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:17 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=29
+2026-07-31 09:31:17 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=8.97
+2026-07-31 09:31:17 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:17 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.30
+2026-07-31 09:31:17 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:17 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=29
+2026-07-31 09:31:17 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=8.20
+2026-07-31 09:31:18 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:18 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:18 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:18 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=212.94
+2026-07-31 09:31:18 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:18 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=202.11
+2026-07-31 09:31:18 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:18 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:18 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=214.22
+2026-07-31 09:31:19 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:31:19 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=1.78
+2026-07-31 09:31:19 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:31:19 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=2.29
+2026-07-31 09:31:20 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:20 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.55
+2026-07-31 09:31:20 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:20 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:20 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:20 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=204.35
+2026-07-31 09:31:20 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:20 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.40
+2026-07-31 09:31:20 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:20 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=201.87
+2026-07-31 09:31:20 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:20 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=29
+2026-07-31 09:31:20 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=9.69
+2026-07-31 09:31:21 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:21 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=29
+2026-07-31 09:31:21 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=3.96
+2026-07-31 09:31:21 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:31:21 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=7.01
+2026-07-31 09:31:22 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:22 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:22 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:22 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=204.49
+2026-07-31 09:31:22 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:22 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=205.59
+2026-07-31 09:31:22 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:22 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.15
+2026-07-31 09:31:23 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:23 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:23 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=29
+2026-07-31 09:31:23 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=4.54
+2026-07-31 09:31:23 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:23 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=214.04
+2026-07-31 09:31:23 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:31:23 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=1.25
+2026-07-31 09:31:24 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:24 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:24 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.62
+2026-07-31 09:31:24 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:24 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.68
+2026-07-31 09:31:24 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:24 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=219.91
+2026-07-31 09:31:24 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:31:24 | INFO | video_lecture_bot | created video video_id=a89816c4-09cf-4e83-9959-102f68626ae9 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video aacc2f67
+2026-07-31 09:31:24 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=6.09
+2026-07-31 09:31:24 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:24 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:24 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=210.37
+2026-07-31 09:31:24 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:31:24 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=2.68
+2026-07-31 09:31:26 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:31:26 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=2.56
+2026-07-31 09:31:26 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:26 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=2.81
+2026-07-31 09:31:26 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:31:26 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=2.79
+2026-07-31 09:31:27 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:27 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.12
+2026-07-31 09:31:27 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:27 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.51
+2026-07-31 09:31:27 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:27 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=0.97
+2026-07-31 09:31:27 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:27 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:27 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=217.18
+2026-07-31 09:31:27 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:27 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=30
+2026-07-31 09:31:27 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=4.00
+2026-07-31 09:31:28 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:28 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.19
+2026-07-31 09:31:29 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:31:29 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=3.88
+2026-07-31 09:31:29 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:29 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=30
+2026-07-31 09:31:29 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=4.91
+2026-07-31 09:31:29 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:29 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:29 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=1.40
+2026-07-31 09:31:29 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:29 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=210.96
+2026-07-31 09:31:30 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:30 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=3.03
+2026-07-31 09:31:30 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:30 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:30 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.39
+2026-07-31 09:31:31 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:31 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.19
+2026-07-31 09:31:31 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:31 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=449.94
+2026-07-31 09:31:31 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:31:31 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=8.32
+2026-07-31 09:31:32 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:31:32 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=2.33
+2026-07-31 09:31:32 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:32 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:32 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=30
+2026-07-31 09:31:32 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=7.65
+2026-07-31 09:31:32 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:32 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:32 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=413.46
+2026-07-31 09:31:33 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:33 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=409.94
+2026-07-31 09:31:33 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:31:33 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=8.50
+2026-07-31 09:31:33 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:33 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.05
+2026-07-31 09:31:34 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:31:34 | INFO | video_lecture_bot | created video video_id=4413ea5b-97fb-4427-9884-c1f48dedabda user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 897041f5
+2026-07-31 09:31:34 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=14.21
+2026-07-31 09:31:34 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:34 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:31:34 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.11
+2026-07-31 09:31:34 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:34 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=427.76
+2026-07-31 09:31:35 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:35 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.98
+2026-07-31 09:31:35 | INFO | video_lecture_bot | incoming request: GET /api/auth/me
+2026-07-31 09:31:35 | INFO | video_lecture_bot | completed request: GET /api/auth/me status=200 duration_ms=4.07
+2026-07-31 09:31:35 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:35 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:35 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=31
+2026-07-31 09:31:35 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=16.75
+2026-07-31 09:31:36 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:36 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=457.30
+2026-07-31 09:31:36 | INFO | video_lecture_bot | incoming request: POST /api/videos
+2026-07-31 09:31:36 | INFO | video_lecture_bot | created video video_id=78d0605c-ea8d-4423-a66e-052fb7f889b4 user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 title=Load test video 6b42acee
+2026-07-31 09:31:36 | INFO | video_lecture_bot | completed request: POST /api/videos status=201 duration_ms=14.23
+2026-07-31 09:31:36 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:37 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:37 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=419.46
+2026-07-31 09:31:37 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:37 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:31:37 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=2.31
+2026-07-31 09:31:37 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:37 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=510.69
+2026-07-31 09:31:37 | INFO | video_lecture_bot | incoming request: GET /ingest/status/not-a-real-job
+2026-07-31 09:31:37 | INFO | video_lecture_bot | completed request: GET /ingest/status/not-a-real-job status=404 duration_ms=0.63
+2026-07-31 09:31:38 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:31:38 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.30
+2026-07-31 09:31:38 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:38 | INFO | video_lecture_bot | incoming request: GET /api/alerts
+2026-07-31 09:31:38 | INFO | video_lecture_bot | completed request: GET /api/alerts status=401 duration_ms=3.70
+2026-07-31 09:31:38 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:38 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=420.92
+2026-07-31 09:31:39 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:39 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:39 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=420.75
+2026-07-31 09:31:39 | INFO | video_lecture_bot | incoming request: GET /api/users
+2026-07-31 09:31:39 | INFO | video_lecture_bot | completed request: GET /api/users status=401 duration_ms=7.69
+2026-07-31 09:31:39 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:39 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=32
+2026-07-31 09:31:39 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=9.70
+2026-07-31 09:31:39 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:39 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:40 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:40 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=1.63
+2026-07-31 09:31:40 | INFO | video_lecture_bot | incoming request: GET /api/videos
+2026-07-31 09:31:40 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:40 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=477.89
+2026-07-31 09:31:40 | INFO | video_lecture_bot | listed videos for user=74faaf8b-a7e3-4f90-bc2f-bd765ede3285 count=32
+2026-07-31 09:31:40 | INFO | video_lecture_bot | completed request: GET /api/videos status=200 duration_ms=14.41
+2026-07-31 09:31:40 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:40 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=461.71
+2026-07-31 09:31:40 | INFO | video_lecture_bot | incoming request: POST /api/auth/login
+2026-07-31 09:31:41 | INFO | video_lecture_bot | login successful email=loadtest@example.com user_id=74faaf8b-a7e3-4f90-bc2f-bd765ede3285
+2026-07-31 09:31:41 | INFO | video_lecture_bot | completed request: POST /api/auth/login status=200 duration_ms=419.85
+2026-07-31 09:31:41 | INFO | video_lecture_bot | incoming request: POST /query
+2026-07-31 09:31:41 | INFO | video_lecture_bot | completed request: POST /query status=404 duration_ms=3.67

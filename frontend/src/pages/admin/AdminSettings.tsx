@@ -32,11 +32,9 @@ import {
 import { AdminHeader, LoadFailure, accountTone } from './parts';
 
 const API_URL =
-  import.meta.env.VITE_API_URL !== undefined
+  import.meta.env.VITE_API_URL !== undefined && import.meta.env.VITE_API_URL !== ''
     ? import.meta.env.VITE_API_URL
-    : import.meta.env.DEV
-      ? 'http://localhost:8000/api'
-      : `${window.location.origin}/api`;
+    : '/api';
 
 type Health = 'checking' | 'up' | 'down';
 

@@ -19,6 +19,7 @@ import {
   StatusBadge,
   Tag,
   formatTime,
+  useToast,
 } from '../components/ui';
 import { LektaLogo } from '../components/LektaLogo';
 import { isYouTubeOrDriveUrl, type ChatSession, type SessionIntent } from '../components/session/types';
@@ -72,6 +73,25 @@ export function Desk({
   const [dragging, setDragging] = useState(false);
   const dragDepth = useRef(0);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+
+  const isSupportedMediaFile = (file: File) => {
+    if (file.type.startsWith('video/') || file.type.startsWith('audio/')) return true;
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    return [
+      'mp4',
+      'mov',
+      'webm',
+      'mkv',
+      'avi',
+      'mp3',
+      'wav',
+      'm4a',
+      'aac',
+      'flac',
+      'ogg',
+    ].includes(ext ?? '');
+  };
 
   useEffect(() => {
     api
@@ -97,8 +117,11 @@ export function Desk({
       dragDepth.current = 0;
       setDragging(false);
       const f = e.dataTransfer?.files?.[0];
-      if (f && (f.type.startsWith('video/') || f.type.startsWith('audio/'))) {
+      if (!f) return;
+      if (isSupportedMediaFile(f)) {
         onStart({ file: f });
+      } else {
+        toast('warn', 'Invalid format', 'Please drop a video or audio file.');
       }
     };
     window.addEventListener('dragenter', enter);
@@ -154,7 +177,13 @@ export function Desk({
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];
-          if (f) onStart({ file: f });
+          if (f) {
+            if (isSupportedMediaFile(f)) {
+              onStart({ file: f });
+            } else {
+              toast('warn', 'Invalid format', 'Please upload a video or audio file.');
+            }
+          }
           e.target.value = '';
         }}
       />
