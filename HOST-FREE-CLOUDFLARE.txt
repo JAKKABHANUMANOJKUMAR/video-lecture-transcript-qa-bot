@@ -264,7 +264,7 @@ WINDOW 1 — Backend API (port 8000)
 
 WINDOW 2 — RAG service (port 8100)
 
-    .\rag\.venv\Scripts\python.exe -m uvicorn app:app --port 8100
+    .\rag\.venv\Scripts\python.exe -m uvicorn rag.app:app --port 8100
 
 WINDOW 3 — Caddy (port 8080, the single entry point)
 
@@ -395,7 +395,7 @@ The moment the tunnel opens, this is a public website. Do these:
 START (four windows, project root):
 
     1)  cd backend ; .\.venv\Scripts\Activate.ps1 ; uvicorn app.main:app --port 8000
-    2)  cd rag ; .\.venv\Scripts\python.exe -m uvicorn app:app --port 8100
+    2)  .\rag\.venv\Scripts\python.exe -m uvicorn rag.app:app --port 8100
     3)  caddy run
     4)  cloudflared tunnel --url http://localhost:8080
 

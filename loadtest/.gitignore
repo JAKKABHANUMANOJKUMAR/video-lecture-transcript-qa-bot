@@ -1,0 +1,8 @@
+.venv/
+reports/
+__pycache__/
+*.html
+*_stats.csv
+*_failures.csv
+*_exceptions.csv
+*_stats_history.csv
